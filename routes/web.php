@@ -237,9 +237,32 @@ Route::group(['middleware' => ['userAuth']], function () {
             Route::post('insertParlourService', 'backend\HomeAssistantController@insertParlourService');
             Route::post('getParlorServiceById', 'backend\HomeAssistantController@getParlorServiceById');
             Route::post('deleteParlorService', 'backend\HomeAssistantController@deleteParlorService');
-
         //ClothWashing
             Route::get('clothWashing', 'backend\HomeAssistantController@clothWashing');
+            Route::post('insertCloth', 'backend\HomeAssistantController@insertCloth');
+            Route::post('getClothById', 'backend\HomeAssistantController@getClothById');
+            Route::post('deleteCloth', 'backend\HomeAssistantController@deleteCloth');
+            Route::post('roomCleaning', 'backend\HomeAssistantController@roomCleaning');
+        //Room Cleaning
+            Route::get('roomCleaning', 'backend\HomeAssistantController@roomCleaning');
+            Route::post('insertRoomCleaning', 'backend\HomeAssistantController@insertRoomCleaning');
+            Route::post('getRoomCleaningById', 'backend\HomeAssistantController@getRoomCleaningById');
+            Route::post('deleteRoomCleaning', 'backend\HomeAssistantController@deleteRoomCleaning');
+        //Child care & Helping Hand
+            Route::get('childCaring', 'backend\HomeAssistantController@childCaring');
+            Route::post('insertChildCaring', 'backend\HomeAssistantController@insertChildCaring');
+            Route::post('getChildCaringById', 'backend\HomeAssistantController@getChildCaringById');
+            Route::post('deleteChildCaring', 'backend\HomeAssistantController@deleteChildCaring');
+        //GuardList
+            Route::get('guardSetting', 'backend\HomeAssistantController@guardSetting');
+            Route::post('insertGuardSetting', 'backend\HomeAssistantController@insertGuardSetting');
+            Route::post('getGuardSettingById', 'backend\HomeAssistantController@getGuardSettingById');
+            Route::post('deleteGuardSetting', 'backend\HomeAssistantController@deleteGuardSetting');
+        //Various Servicing
+            Route::get('variousServicing', 'backend\HomeAssistantController@variousServicing');
+            Route::post('insertVariousServicing', 'backend\HomeAssistantController@insertVariousServicing');
+            Route::post('getVariousServiceById', 'backend\HomeAssistantController@getVariousServiceById');
+            Route::post('deleteVariousService', 'backend\HomeAssistantController@deleteVariousService');
         }
 });
 //Login

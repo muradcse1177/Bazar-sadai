@@ -1,8 +1,8 @@
 @extends('backend.layout')
-@section('title','কাপড় পরিষ্কার সার্ভিস')
-@section('page_header', 'কাপড় পরিষ্কার ব্যবস্থাপনা')
+@section('title','গার্ড সার্ভিস')
+@section('page_header', 'গার্ড সার্ভিস ব্যবস্থাপনা')
 @section('homeAssistantMainLi','active menu-open')
-@section('clothWashing','active')
+@section('guardSetting','active')
 @section('serviceMainLi','active menu-open')
 @section('content')
     @if ($message = Session::get('successMessage'))
@@ -29,12 +29,20 @@
                     <h3 class="box-title rembut" style="display:none;"><button type="button" class="btn btn-block btn-success btn-flat"><i class="fa fa-minus-square"></i> মুছে ফেলুন </button></h3>
                 </div>
                 <div class="divform" style="display:none">
-                    {{ Form::open(array('url' => 'insertCloth',  'method' => 'post')) }}
+                    {{ Form::open(array('url' => 'insertGuardSetting',  'method' => 'post')) }}
                     {{ csrf_field() }}
                     <div class="box-body">
                         <div class="form-group">
-                            <label for="">কাপড় নাম</label>
-                            <input type="text" class="form-control name" id="name"  name="name" placeholder="নাম লিখুন" required>
+                            <label> ধরন</label>
+                            <select class="form-control select2 type" name="type" style="width: 100%;" required>
+                                <option value="" selected>ধরন  নির্বাচন করুন</option>
+                                <option value="ডেইলি">ডেইলি</option>
+                                <option value="মাসিক">মাসিক</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="">সময় (ঘন্টা)</label>
+                            <input type="number" class="form-control time" id="time"  name="time" placeholder="সময় লিখুন" required>
                         </div>
                         <div class="form-group">
                             <label for="">দাম </label>
@@ -52,32 +60,34 @@
         <div class="col-md-12">
             <div class="box">
                 <div class="box-header with-border">
-                    <h3 class="box-title">কাপড়  লিস্ট </h3>
+                    <h3 class="box-title">গার্ড সার্ভিস  লিস্ট </h3>
                 </div>
                 <!-- /.box-header -->
                 <div class="box-body table-responsive">
                     <table class="table table-bordered">
                         <tr>
-                            <th>কাপড়</th>
+                            <th>ধরন</th>
+                            <th>সময় (ঘন্টা)</th>
                             <th>দাম  </th>
                             <th>টুল</th>
                         </tr>
-                        @foreach($cloths as $cloth)
+                        @foreach($guards as $guard)
                             <tr>
-                                <td> {{$cloth-> name}} </td>
-                                <td> {{$cloth->price}} </td>
+                                <td> {{$guard-> type}} </td>
+                                <td> {{$guard->time}} </td>
+                                <td> {{$guard->price}} </td>
                                 <td class="td-actions text-center">
-                                    <button type="button" rel="tooltip" class="btn btn-success edit" data-id="{{$cloth->id}}">
+                                    <button type="button" rel="tooltip" class="btn btn-success edit" data-id="{{$guard->id}}">
                                         <i class="fa fa-edit"></i>
                                     </button>
-                                    <button type="button" rel="tooltip"  class="btn btn-danger delete" data-id="{{$cloth->id}}">
+                                    <button type="button" rel="tooltip"  class="btn btn-danger delete" data-id="{{$guard->id}}">
                                         <i class="fa fa-close"></i>
                                     </button>
                                 </td>
                             </tr>
                         @endforeach
                     </table>
-                    {{ $cloths->links() }}
+                    {{ $guards->links() }}
                     <div class="modal modal-danger fade" id="modal-danger">
                         <div class="modal-dialog">
                             <div class="modal-content">
@@ -90,7 +100,7 @@
                                     <center><p>মুছে ফেলতে চান?</p></center>
                                 </div>
                                 <div class="modal-footer">
-                                    {{ Form::open(array('url' => 'deleteCloth',  'method' => 'post')) }}
+                                    {{ Form::open(array('url' => 'deleteGuardSetting',  'method' => 'post')) }}
                                     {{ csrf_field() }}
                                     <button type="button" class="btn btn-outline pull-left" data-dismiss="modal">না</button>
                                     <button type="submit" class="btn btn-outline">হ্যা</button>
@@ -142,7 +152,7 @@
         function getRow(id){
             $.ajax({
                 type: 'POST',
-                url: 'getClothById',
+                url: 'getGuardSettingById',
                 data: {
                     "_token": "{{ csrf_token() }}",
                     "id": id
@@ -150,7 +160,8 @@
                 dataType: 'json',
                 success: function(response){
                     var data = response.data;
-                    $('.name').val(data.name);
+                    $('.type').val(data.type);
+                    $('.time').val(data.time);
                     $('.price').val(data.price);
                     $('.id').val(data.id);
                     $('.select2').select2()

@@ -428,15 +428,10 @@
                             <ul class="treeview-menu">
                                 <li class ="@yield('cookingPage')"><a href="{{ url('cookingPage') }}"><i class="fa fa-circle-o"></i> কুকিং</a></li>
                                 <li class ="@yield('clothWashing')"><a href="{{ url('clothWashing') }}"><i class="fa fa-circle-o"></i>কাপড় পরিষ্কার</a></li>
-                                <li class ="@yield('cookingPage')"><a href="{{ url('cookingPage') }}"><i class="fa fa-circle-o"></i>ওয়াশরুম পরিষ্কার</a></li>
-                                <li class ="@yield('cookingPage')"><a href="{{ url('cookingPage') }}"><i class="fa fa-circle-o"></i>রুম পরিষ্কার</a></li>
-                                <li class ="@yield('cookingPage')"><a href="{{ url('cookingPage') }}"><i class="fa fa-circle-o"></i>বাচ্চা দেখাশোনা ও কাজে সহায়তা</a></li>
-                                <li class ="@yield('cookingPage')"><a href="{{ url('cookingPage') }}"><i class="fa fa-circle-o"></i>গার্ড</a></li>
-                                <li class ="@yield('cookingPage')"><a href="{{ url('cookingPage') }}"><i class="fa fa-circle-o"></i>এসি সার্ভিসিং</a></li>
-                                <li class ="@yield('cookingPage')"><a href="{{ url('cookingPage') }}"><i class="fa fa-circle-o"></i>পানির ট্যাংক পরিষ্কার</a></li>
-                                <li class ="@yield('cookingPage')"><a href="{{ url('cookingPage') }}"><i class="fa fa-circle-o"></i>স্যানিটারি সার্ভিসিং</a></li>
-                                <li class ="@yield('cookingPage')"><a href="{{ url('cookingPage') }}"><i class="fa fa-circle-o"></i>ইলেক্ট্রনিক্স সার্ভিসিং</a></li>
-                                <li class ="@yield('cookingPage')"><a href="{{ url('cookingPage') }}"><i class="fa fa-circle-o"></i>স্টোভ সার্ভিসিং</a></li>
+                                <li class ="@yield('roomCleaning')"><a href="{{ url('roomCleaning') }}"><i class="fa fa-circle-o"></i>রুম/ওয়াশরুম/ট্যাংক পরিষ্কার</a></li>
+                                <li class ="@yield('childCaring')"><a href="{{ url('childCaring') }}"><i class="fa fa-circle-o"></i>বাচ্চা দেখাশোনা ও কাজে সহায়তা</a></li>
+                                <li class ="@yield('guardSetting')"><a href="{{ url('guardSetting') }}"><i class="fa fa-circle-o"></i>গার্ড</a></li>
+                                <li class ="@yield('variousServicing')"><a href="{{ url('variousServicing') }}"><i class="fa fa-circle-o"></i> বিভিন্ন সার্ভিসিং</a></li>
                                 <li class ="@yield('parlorService')"><a href="{{ url('parlorService') }}"><i class="fa fa-circle-o"></i>পার্লার সার্ভিস</a></li>
                             </ul>
                         </li>

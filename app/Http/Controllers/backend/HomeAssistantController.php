@@ -172,6 +172,7 @@ class HomeAssistantController extends Controller
             return back()->with('errorMessage', $ex->getMessage());
         }
     }
+
     public function getParlorServiceById(Request $request){
         try{
             $rows = DB::table('parlor_service')
@@ -210,11 +211,435 @@ class HomeAssistantController extends Controller
     }
 
     public function clothWashing(){
-//        $rows = DB::table('parlor_service')
-//            ->select('*','parlor_service.id as p_id')
-//            ->join('parlor','parlor.id','=','parlor_service.p_type')
-//            ->where('parlor_service.status', 1)
-//            ->orderBy('parlor_service.id', 'DESC')->Paginate(10);
-        return view('backend.clothWashing');//, ['p_services' => $rows]);
+        $rows = DB::table('cloth_washing')
+            ->orderBy('id', 'DESC')->Paginate(20);
+        return view('backend.clothWashing', ['cloths' => $rows]);
+    }
+    public function insertCloth(Request $request){
+        try{
+            if($request) {
+                if($request->id) {
+                    $result =DB::table('cloth_washing')
+                        ->where('id', $request->id)
+                        ->update([
+                            'name' => $request->name,
+                            'price' => $request->price,
+                        ]);
+                    if ($result) {
+                        return back()->with('successMessage', 'সফল্ভাবে সম্পন্ন্য হয়েছে।');
+                    } else {
+                        return back()->with('errorMessage', 'আবার চেষ্টা করুন।');
+                    }
+                }
+                else{
+                    $rows = DB::table('cloth_washing')->select('id')->where([
+                        ['name', '=', $request->name],
+                    ])->where('status', 1)->distinct()->get()->count();
+                    if ($rows > 0) {
+                        return back()->with('errorMessage', ' নতুন আইটেম লিখুন।');
+                    } else {
+                        $result = DB::table('cloth_washing')->insert([
+                            'name' => $request->name,
+                            'price' => $request->price,
+                        ]);
+                        if ($result) {
+                            return back()->with('successMessage', 'সফল্ভাবে সম্পন্ন্য হয়েছে।');
+                        } else {
+                            return back()->with('errorMessage', 'আবার চেষ্টা করুন।');
+                        }
+                    }
+                }
+            }
+            else{
+                return back()->with('errorMessage', 'ফর্ম পুরন করুন।');
+            }
+        }
+        catch(\Illuminate\Database\QueryException $ex){
+            return back()->with('errorMessage', $ex->getMessage());
+        }
+    }
+    public function getClothById(Request $request){
+        try{
+            $rows = DB::table('cloth_washing')
+                ->where('id', $request->id)
+                ->where('status', 1)
+                ->first();
+            return response()->json(array('data'=>$rows));
+        }
+        catch(\Illuminate\Database\QueryException $ex){
+            return response()->json(array('data'=>$ex->getMessage()));
+        }
+    }
+    public function deleteCloth(Request $request){
+        try{
+
+            if($request->id) {
+                $result =DB::table('cloth_washing')
+                    ->where('id', $request->id)
+                    ->update([
+                        'status' =>  0,
+                    ]);
+                if ($result) {
+                    return back()->with('successMessage', 'সফল্ভাবে সম্পন্ন্য হয়েছে।');
+                } else {
+                    return back()->with('errorMessage', 'আবার চেষ্টা করুন।');
+                }
+            }
+            else{
+                return back()->with('errorMessage', 'আবার চেষ্টা করুন।');
+            }
+
+        }
+        catch(\Illuminate\Database\QueryException $ex){
+            return back()->with('errorMessage', $ex->getMessage());
+        }
+    }
+    public function roomCleaning(){
+        $rows = DB::table('room_cleaning')
+            ->orderBy('id', 'DESC')->Paginate(20);
+        return view('backend.roomCleaning', ['rooms' => $rows]);
+    }
+    public function insertRoomCleaning(Request $request){
+        try{
+            if($request) {
+                if($request->id) {
+                    $result =DB::table('room_cleaning')
+                        ->where('id', $request->id)
+                        ->update([
+                            'type' => $request->type,
+                            'size' => $request->size,
+                            'price' => $request->price,
+                        ]);
+                    if ($result) {
+                        return back()->with('successMessage', 'সফল্ভাবে সম্পন্ন্য হয়েছে।');
+                    } else {
+                        return back()->with('errorMessage', 'আবার চেষ্টা করুন।');
+                    }
+                }
+                else{
+                    $rows = DB::table('room_cleaning')->select('id')->where([
+                        ['type', '=', $request->type],
+                        ['size', '=', $request->size],
+                    ])->where('status', 1)->distinct()->get()->count();
+                    if ($rows > 0) {
+                        return back()->with('errorMessage', ' নতুন আইটেম লিখুন।');
+                    } else {
+                        $result = DB::table('room_cleaning')->insert([
+                            'type' => $request->type,
+                            'size' => $request->size,
+                            'price' => $request->price,
+                        ]);
+                        if ($result) {
+                            return back()->with('successMessage', 'সফল্ভাবে সম্পন্ন্য হয়েছে।');
+                        } else {
+                            return back()->with('errorMessage', 'আবার চেষ্টা করুন।');
+                        }
+                    }
+                }
+            }
+            else{
+                return back()->with('errorMessage', 'ফর্ম পুরন করুন।');
+            }
+        }
+        catch(\Illuminate\Database\QueryException $ex){
+            return back()->with('errorMessage', $ex->getMessage());
+        }
+    }
+    public function getRoomCleaningById(Request $request){
+        try{
+            $rows = DB::table('room_cleaning')
+                ->where('id', $request->id)
+                ->where('status', 1)
+                ->first();
+            return response()->json(array('data'=>$rows));
+        }
+        catch(\Illuminate\Database\QueryException $ex){
+            return response()->json(array('data'=>$ex->getMessage()));
+        }
+    }
+    public function deleteRoomCleaning(Request $request){
+        try{
+
+            if($request->id) {
+                $result =DB::table('room_cleaning')
+                    ->where('id', $request->id)
+                    ->update([
+                        'status' =>  0,
+                    ]);
+                if ($result) {
+                    return back()->with('successMessage', 'সফল্ভাবে সম্পন্ন্য হয়েছে।');
+                } else {
+                    return back()->with('errorMessage', 'আবার চেষ্টা করুন।');
+                }
+            }
+            else{
+                return back()->with('errorMessage', 'আবার চেষ্টা করুন।');
+            }
+
+        }
+        catch(\Illuminate\Database\QueryException $ex){
+            return back()->with('errorMessage', $ex->getMessage());
+        }
+    }
+    public function childCaring(){
+        $rows = DB::table('child_caring')
+            ->orderBy('id', 'DESC')->Paginate(20);
+        return view('backend.childCaring', ['childs' => $rows]);
+    }
+    public function insertChildCaring(Request $request){
+        try{
+            if($request) {
+                if($request->id) {
+                    $result =DB::table('child_caring')
+                        ->where('id', $request->id)
+                        ->update([
+                            'type' => $request->type,
+                            'time' => $request->time,
+                            'price' => $request->price,
+                        ]);
+                    if ($result) {
+                        return back()->with('successMessage', 'সফল্ভাবে সম্পন্ন্য হয়েছে।');
+                    } else {
+                        return back()->with('errorMessage', 'আবার চেষ্টা করুন।');
+                    }
+                }
+                else{
+                    $rows = DB::table('child_caring')->select('id')->where([
+                        ['type', '=', $request->type],
+                        ['time', '=', $request->size],
+                    ])->where('status', 1)->distinct()->get()->count();
+                    if ($rows > 0) {
+                        return back()->with('errorMessage', ' নতুন আইটেম লিখুন।');
+                    } else {
+                        $result = DB::table('child_caring')->insert([
+                            'type' => $request->type,
+                            'time' => $request->time,
+                            'price' => $request->price,
+                        ]);
+                        if ($result) {
+                            return back()->with('successMessage', 'সফল্ভাবে সম্পন্ন্য হয়েছে।');
+                        } else {
+                            return back()->with('errorMessage', 'আবার চেষ্টা করুন।');
+                        }
+                    }
+                }
+            }
+            else{
+                return back()->with('errorMessage', 'ফর্ম পুরন করুন।');
+            }
+        }
+        catch(\Illuminate\Database\QueryException $ex){
+            return back()->with('errorMessage', $ex->getMessage());
+        }
+    }
+    public function getChildCaringById(Request $request){
+        try{
+            $rows = DB::table('child_caring')
+                ->where('id', $request->id)
+                ->where('status', 1)
+                ->first();
+            return response()->json(array('data'=>$rows));
+        }
+        catch(\Illuminate\Database\QueryException $ex){
+            return response()->json(array('data'=>$ex->getMessage()));
+        }
+    }
+    public function deleteChildCaring(Request $request){
+        try{
+
+            if($request->id) {
+                $result =DB::table('room_cleaning')
+                    ->where('id', $request->id)
+                    ->update([
+                        'status' =>  0,
+                    ]);
+                if ($result) {
+                    return back()->with('successMessage', 'সফল্ভাবে সম্পন্ন্য হয়েছে।');
+                } else {
+                    return back()->with('errorMessage', 'আবার চেষ্টা করুন।');
+                }
+            }
+            else{
+                return back()->with('errorMessage', 'আবার চেষ্টা করুন।');
+            }
+
+        }
+        catch(\Illuminate\Database\QueryException $ex){
+            return back()->with('errorMessage', $ex->getMessage());
+        }
+    }
+    public function guardSetting(){
+        $rows = DB::table('guard_setting')
+            ->orderBy('id', 'DESC')->Paginate(20);
+        return view('backend.guardSetting', ['guards' => $rows]);
+    }
+    public function insertGuardSetting(Request $request){
+        try{
+            if($request) {
+                if($request->id) {
+                    $result =DB::table('guard_setting')
+                        ->where('id', $request->id)
+                        ->update([
+                            'type' => $request->type,
+                            'time' => $request->time,
+                            'price' => $request->price,
+                        ]);
+                    if ($result) {
+                        return back()->with('successMessage', 'সফল্ভাবে সম্পন্ন্য হয়েছে।');
+                    } else {
+                        return back()->with('errorMessage', 'আবার চেষ্টা করুন।');
+                    }
+                }
+                else{
+                    $rows = DB::table('guard_setting')->select('id')->where([
+                        ['type', '=', $request->type],
+                        ['time', '=', $request->size],
+                    ])->where('status', 1)->distinct()->get()->count();
+                    if ($rows > 0) {
+                        return back()->with('errorMessage', ' নতুন আইটেম লিখুন।');
+                    } else {
+                        $result = DB::table('guard_setting')->insert([
+                            'type' => $request->type,
+                            'time' => $request->time,
+                            'price' => $request->price,
+                        ]);
+                        if ($result) {
+                            return back()->with('successMessage', 'সফল্ভাবে সম্পন্ন্য হয়েছে।');
+                        } else {
+                            return back()->with('errorMessage', 'আবার চেষ্টা করুন।');
+                        }
+                    }
+                }
+            }
+            else{
+                return back()->with('errorMessage', 'ফর্ম পুরন করুন।');
+            }
+        }
+        catch(\Illuminate\Database\QueryException $ex){
+            return back()->with('errorMessage', $ex->getMessage());
+        }
+    }
+    public function getGuardSettingById(Request $request){
+        try{
+            $rows = DB::table('guard_setting')
+                ->where('id', $request->id)
+                ->where('status', 1)
+                ->first();
+            return response()->json(array('data'=>$rows));
+        }
+        catch(\Illuminate\Database\QueryException $ex){
+            return response()->json(array('data'=>$ex->getMessage()));
+        }
+    }
+    public function deleteGuardSetting(Request $request){
+        try{
+
+            if($request->id) {
+                $result =DB::table('guard_setting')
+                    ->where('id', $request->id)
+                    ->update([
+                        'status' =>  0,
+                    ]);
+                if ($result) {
+                    return back()->with('successMessage', 'সফল্ভাবে সম্পন্ন্য হয়েছে।');
+                } else {
+                    return back()->with('errorMessage', 'আবার চেষ্টা করুন।');
+                }
+            }
+            else{
+                return back()->with('errorMessage', 'আবার চেষ্টা করুন।');
+            }
+
+        }
+        catch(\Illuminate\Database\QueryException $ex){
+            return back()->with('errorMessage', $ex->getMessage());
+        }
+    }
+    public function variousServicing(){
+        $rows = DB::table('various_servicing')
+            ->orderBy('id', 'DESC')->Paginate(20);
+        return view('backend.variousServicing', ['services' => $rows]);
+    }
+    public function insertVariousServicing(Request $request){
+        try{
+            if($request) {
+                if($request->id) {
+                    $result =DB::table('various_servicing')
+                        ->where('id', $request->id)
+                        ->update([
+                            'type' => $request->type,
+                            'name' => $request->name,
+                            'price' => $request->price,
+                        ]);
+                    if ($result) {
+                        return back()->with('successMessage', 'সফল্ভাবে সম্পন্ন্য হয়েছে।');
+                    } else {
+                        return back()->with('errorMessage', 'আবার চেষ্টা করুন।');
+                    }
+                }
+                else{
+                    $rows = DB::table('various_servicing')->select('id')->where([
+                        ['type', '=', $request->type],
+                        ['name', '=', $request->name],
+                    ])->where('status', 1)->distinct()->get()->count();
+                    if ($rows > 0) {
+                        return back()->with('errorMessage', ' নতুন আইটেম লিখুন।');
+                    } else {
+                        $result = DB::table('various_servicing')->insert([
+                            'type' => $request->type,
+                            'name' => $request->name,
+                            'price' => $request->price,
+                        ]);
+                        if ($result) {
+                            return back()->with('successMessage', 'সফল্ভাবে সম্পন্ন্য হয়েছে।');
+                        } else {
+                            return back()->with('errorMessage', 'আবার চেষ্টা করুন।');
+                        }
+                    }
+                }
+            }
+            else{
+                return back()->with('errorMessage', 'ফর্ম পুরন করুন।');
+            }
+        }
+        catch(\Illuminate\Database\QueryException $ex){
+            return back()->with('errorMessage', $ex->getMessage());
+        }
+    }
+    public function getVariousServiceById(Request $request){
+        try{
+            $rows = DB::table('various_servicing')
+                ->where('id', $request->id)
+                ->where('status', 1)
+                ->first();
+            return response()->json(array('data'=>$rows));
+        }
+        catch(\Illuminate\Database\QueryException $ex){
+            return response()->json(array('data'=>$ex->getMessage()));
+        }
+    }
+    public function deleteVariousService(Request $request){
+        try{
+
+            if($request->id) {
+                $result =DB::table('various_servicing')
+                    ->where('id', $request->id)
+                    ->update([
+                        'status' =>  0,
+                    ]);
+                if ($result) {
+                    return back()->with('successMessage', 'সফল্ভাবে সম্পন্ন্য হয়েছে।');
+                } else {
+                    return back()->with('errorMessage', 'আবার চেষ্টা করুন।');
+                }
+            }
+            else{
+                return back()->with('errorMessage', 'আবার চেষ্টা করুন।');
+            }
+
+        }
+        catch(\Illuminate\Database\QueryException $ex){
+            return back()->with('errorMessage', $ex->getMessage());
+        }
     }
 }

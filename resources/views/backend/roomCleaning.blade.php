@@ -1,8 +1,8 @@
 @extends('backend.layout')
-@section('title','কাপড় পরিষ্কার সার্ভিস')
-@section('page_header', 'কাপড় পরিষ্কার ব্যবস্থাপনা')
+@section('title','রুম/ওয়াশরুম সার্ভিস')
+@section('page_header', 'রুম/ওয়াশরুম সার্ভিস ব্যবস্থাপনা')
 @section('homeAssistantMainLi','active menu-open')
-@section('clothWashing','active')
+@section('roomCleaning','active')
 @section('serviceMainLi','active menu-open')
 @section('content')
     @if ($message = Session::get('successMessage'))
@@ -29,12 +29,21 @@
                     <h3 class="box-title rembut" style="display:none;"><button type="button" class="btn btn-block btn-success btn-flat"><i class="fa fa-minus-square"></i> মুছে ফেলুন </button></h3>
                 </div>
                 <div class="divform" style="display:none">
-                    {{ Form::open(array('url' => 'insertCloth',  'method' => 'post')) }}
+                    {{ Form::open(array('url' => 'insertRoomCleaning',  'method' => 'post')) }}
                     {{ csrf_field() }}
                     <div class="box-body">
                         <div class="form-group">
-                            <label for="">কাপড় নাম</label>
-                            <input type="text" class="form-control name" id="name"  name="name" placeholder="নাম লিখুন" required>
+                            <label> ধরন</label>
+                            <select class="form-control select2 type" name="type" style="width: 100%;" required>
+                                <option value="" selected>ধরন  নির্বাচন করুন</option>
+                                <option value="রুম">রুম</option>
+                                <option value="ওয়াশরুম">ওয়াশরুম</option>
+                                <option value="ট্যাংক">ট্যাংক</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="">সাইজ</label>
+                            <input type="text" class="form-control size" id="size"  name="size" placeholder="সাইজ লিখুন" required>
                         </div>
                         <div class="form-group">
                             <label for="">দাম </label>
@@ -52,32 +61,34 @@
         <div class="col-md-12">
             <div class="box">
                 <div class="box-header with-border">
-                    <h3 class="box-title">কাপড়  লিস্ট </h3>
+                    <h3 class="box-title">রুম/ওয়াশরুম সার্ভিস  লিস্ট </h3>
                 </div>
                 <!-- /.box-header -->
                 <div class="box-body table-responsive">
                     <table class="table table-bordered">
                         <tr>
-                            <th>কাপড়</th>
+                            <th>ধরন</th>
+                            <th>সাইজ</th>
                             <th>দাম  </th>
                             <th>টুল</th>
                         </tr>
-                        @foreach($cloths as $cloth)
+                        @foreach($rooms as $room)
                             <tr>
-                                <td> {{$cloth-> name}} </td>
-                                <td> {{$cloth->price}} </td>
+                                <td> {{$room-> type}} </td>
+                                <td> {{$room->size}} </td>
+                                <td> {{$room->price}} </td>
                                 <td class="td-actions text-center">
-                                    <button type="button" rel="tooltip" class="btn btn-success edit" data-id="{{$cloth->id}}">
+                                    <button type="button" rel="tooltip" class="btn btn-success edit" data-id="{{$room->id}}">
                                         <i class="fa fa-edit"></i>
                                     </button>
-                                    <button type="button" rel="tooltip"  class="btn btn-danger delete" data-id="{{$cloth->id}}">
+                                    <button type="button" rel="tooltip"  class="btn btn-danger delete" data-id="{{$room->id}}">
                                         <i class="fa fa-close"></i>
                                     </button>
                                 </td>
                             </tr>
                         @endforeach
                     </table>
-                    {{ $cloths->links() }}
+                    {{ $rooms->links() }}
                     <div class="modal modal-danger fade" id="modal-danger">
                         <div class="modal-dialog">
                             <div class="modal-content">
@@ -90,7 +101,7 @@
                                     <center><p>মুছে ফেলতে চান?</p></center>
                                 </div>
                                 <div class="modal-footer">
-                                    {{ Form::open(array('url' => 'deleteCloth',  'method' => 'post')) }}
+                                    {{ Form::open(array('url' => 'deleteRoomCleaning',  'method' => 'post')) }}
                                     {{ csrf_field() }}
                                     <button type="button" class="btn btn-outline pull-left" data-dismiss="modal">না</button>
                                     <button type="submit" class="btn btn-outline">হ্যা</button>
@@ -142,7 +153,7 @@
         function getRow(id){
             $.ajax({
                 type: 'POST',
-                url: 'getClothById',
+                url: 'getRoomCleaningById',
                 data: {
                     "_token": "{{ csrf_token() }}",
                     "id": id
@@ -150,7 +161,8 @@
                 dataType: 'json',
                 success: function(response){
                     var data = response.data;
-                    $('.name').val(data.name);
+                    $('.type').val(data.type);
+                    $('.size').val(data.size);
                     $('.price').val(data.price);
                     $('.id').val(data.id);
                     $('.select2').select2()
