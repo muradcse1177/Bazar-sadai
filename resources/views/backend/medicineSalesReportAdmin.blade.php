@@ -39,7 +39,7 @@
         <!-- general form elements -->
         <div class="box box-primary">
             <div class="divform">
-                {{ Form::open(array('url' => 'getOrderListByDate',  'method' => 'post')) }}
+                {{ Form::open(array('url' => 'getOrderListByDateAdmin',  'method' => 'post')) }}
                 {{ csrf_field() }}
                 <div class="box-body">
                     <div class="form-group">
@@ -71,6 +71,7 @@
                             <th>বিস্তারিত</th>
                             <th>তারিখ</th>
                             <th>কোম্পানি </th>
+                            <th>দাম </th>
                         </tr>
                         @foreach($orders as $order)
                             <tr class="">
@@ -81,6 +82,7 @@
                                 </td>
                                 <td> {{$order->date}} </td>
                                 <td> {{$order->company}} </td>
+                                <td> {{$order->price}} </td>
                             </tr>
                         @endforeach
                     </table>
@@ -100,7 +102,6 @@
                                     <th>নাম</th>
                                     <th>ধরন</th>
                                     <th>পরিমান</th>
-                                    <th>দাম</th>
                                     </thead>
                                     <tbody id="detail">
                                     </tbody>
@@ -147,7 +148,7 @@
                 console.log(id);
                 $.ajax({
                     type: 'POST',
-                    url: 'getMyMedicineOrderById',
+                    url: 'getAdminMedicineOrderById',
                     data: {
                         "_token": "{{ csrf_token() }}",
                         "id": id

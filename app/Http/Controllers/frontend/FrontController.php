@@ -186,10 +186,8 @@ class FrontController extends Controller
                         foreach ($stmt as $row) {
                             $output['count']++;
                             $image = (!empty($row->photo)) ? $row->photo : 'public/asset/images/noImage.jpg';
-                            if ($row->quantity > 101)
-                                $quantity = $row->quantity / 1000;
-                            else
-                                $quantity = $row->quantity;
+
+                            $quantity = $row->quantity / $row->minqty;
                             $bprice = $this->en2bn($row->edit_price);
                             $bquantity = $this->en2bn($quantity);
                             $bsum = $this->en2bn($row->edit_price * $quantity);
@@ -232,10 +230,8 @@ class FrontController extends Controller
                             ->where('id', $row['productid'])
                             ->first();
                         $image = (!empty($product->photo)) ? $product->photo : 'public/asset/images/noImage.jpg';
-                        if ($row['quantity'] > 101)
-                            $quantity = $row['quantity'] / 1000;
-                        else
-                            $quantity = $row['quantity'];
+
+                        $quantity = $row['quantity']/$product->minqty;
                         $bprice = $this->en2bn($product->price);
                         $bquantity = $this->en2bn($quantity);
                         if (strpos($product->price, '৳') !== false) {
@@ -344,11 +340,7 @@ class FrontController extends Controller
                     if($stmt->count() > 0) {
                         foreach ($stmt as $row) {
                             $image = (!empty($row->photo)) ? $url . $row->photo : $url . 'public/asset/images/noImage.jpg';
-                            if ($row->quantity > 101) {
-                                $quantity = $row->quantity / 1000;
-                            } else {
-                                $quantity = $row->quantity;
-                            }
+                            $quantity = $row->quantity / $row->minqty;
                             $subtotal = $row->edit_price * $quantity;
                             $total += $subtotal;
                             $output .= "
@@ -395,18 +387,8 @@ class FrontController extends Controller
                             ->where('id', $row['productid'])
                             ->first();
                         $image = (!empty($product->photo)) ? $url . $product->photo : $url . 'public/asset/images/noImage.jpg';
-                        if ($row['quantity'] > 101) {
-                            $quantity = $row['quantity'] / 1000;
-                        } else {
-                            $quantity = $row['quantity'];
-                        }
-                        if (strpos($product->price, '৳') !== false) {
-                            $priceArr = explode("৳",$product->price);
-                            $price = (int)$priceArr[1];
-                        }
-                        else{
-                            $price=$product->price;
-                        }
+                        $quantity = $row['quantity'] / $product->minqty;
+                        $price=$product->price;
                         $subtotal =$price * $quantity;
                         $total += $subtotal;
                         $bprice = $this->en2bn($price);
@@ -831,9 +813,12 @@ class FrontController extends Controller
                         ->orderBy('products.id', 'ASC')->get();
                     if($dealer_product->count()>0){
                         $dealer_status['status'] = 1;
-                        //dd($dealer_product);
                         return view('frontend.productPage', ['products' => $dealer_product,'status' =>$dealer_status]);
                     }
+                    else{
+                        return back()->with('errorMessage', 'পণ্যটি পাওয়া যায়নি।');
+                    }
+
                 }
                 else{
                     $dealer_product = DB::table('products')
@@ -841,8 +826,13 @@ class FrontController extends Controller
                         ->orWhere('genre', 'LIKE','%'.$request->key.'%')
                         ->where('status', 1)
                         ->orderBy('id', 'ASC')->get();
-                    $dealer_status['status'] = 0;
-                    return view('frontend.productPage', ['products' => $dealer_product ,'status' =>$dealer_status]);
+                    if($dealer_product->count()>0){
+                        $dealer_status['status'] = 0;
+                        return view('frontend.productPage', ['products' => $dealer_product,'status' =>$dealer_status]);
+                    }
+                    else{
+                        return back()->with('errorMessage', 'পণ্যটি পাওয়া যায়নি।');
+                    }
                 }
 
             }
@@ -852,8 +842,13 @@ class FrontController extends Controller
                     ->orWhere('genre', 'LIKE','%'.$request->key.'%')
                     ->where('status', 1)
                     ->orderBy('id', 'ASC')->get();
-                $dealer_status['status'] = 0;
-                return view('frontend.productPage', ['products' => $dealer_product,'status' =>$dealer_status]);
+                if($dealer_product->count()>0){
+                    $dealer_status['status'] = 0;
+                    return view('frontend.productPage', ['products' => $dealer_product,'status' =>$dealer_status]);
+                }
+                else{
+                    return back()->with('errorMessage', 'পণ্যটি পাওয়া যায়নি।');
+                }
             }
 
         }
@@ -914,8 +909,10 @@ class FrontController extends Controller
                         }
                         if($dealer_product->count()>0){
                             $dealer_status['status'] = 1;
-                            //dd($dealer_product);
                             return view('frontend.productPage', ['products' => $dealer_product,'status' =>$dealer_status]);
+                        }
+                        else{
+                            return back()->with('errorMessage', 'পণ্যটি পাওয়া যায়নি।');
                         }
                     }
                     else{
@@ -925,8 +922,13 @@ class FrontController extends Controller
                                 ->where('status', 1)
                                 ->where('cat_id', 3)
                                 ->orderBy('id', 'ASC')->get();
-                            $dealer_status['status'] = 0;
-                            return view('frontend.productPage', ['products' => $dealer_product, 'status' => $dealer_status]);
+                            if($dealer_product->count()>0){
+                                $dealer_status['status'] = 0;
+                                return view('frontend.productPage', ['products' => $dealer_product,'status' =>$dealer_status]);
+                            }
+                            else{
+                                return back()->with('errorMessage', 'পণ্যটি পাওয়া যায়নি।');
+                            }
                         }
                         if($generic_name) {
                             $dealer_product = DB::table('products')
@@ -934,8 +936,13 @@ class FrontController extends Controller
                                 ->where('status', 1)
                                 ->where('cat_id', 3)
                                 ->orderBy('id', 'ASC')->get();
-                            $dealer_status['status'] = 0;
-                            return view('frontend.productPage', ['products' => $dealer_product, 'status' => $dealer_status]);
+                            if($dealer_product->count()>0){
+                                $dealer_status['status'] = 0;
+                                return view('frontend.productPage', ['products' => $dealer_product,'status' =>$dealer_status]);
+                            }
+                            else{
+                                return back()->with('errorMessage', 'পণ্যটি পাওয়া যায়নি।');
+                            }
                         }
                         if($company_name) {
                             $dealer_product = DB::table('products')
@@ -943,8 +950,13 @@ class FrontController extends Controller
                                 ->where('status', 1)
                                 ->where('cat_id', 3)
                                 ->orderBy('id', 'ASC')->get();
-                            $dealer_status['status'] = 0;
-                            return view('frontend.productPage', ['products' => $dealer_product, 'status' => $dealer_status]);
+                            if($dealer_product->count()>0){
+                                $dealer_status['status'] = 0;
+                                return view('frontend.productPage', ['products' => $dealer_product,'status' =>$dealer_status]);
+                            }
+                            else{
+                                return back()->with('errorMessage', 'পণ্যটি পাওয়া যায়নি।');
+                            }
                         }
                     }
 
@@ -956,8 +968,13 @@ class FrontController extends Controller
                             ->where('status', 1)
                             ->where('cat_id', 3)
                             ->orderBy('id', 'ASC')->get();
-                        $dealer_status['status'] = 0;
-                        return view('frontend.productPage', ['products' => $dealer_product, 'status' => $dealer_status]);
+                        if($dealer_product->count()>0){
+                            $dealer_status['status'] = 0;
+                            return view('frontend.productPage', ['products' => $dealer_product,'status' =>$dealer_status]);
+                        }
+                        else{
+                            return back()->with('errorMessage', 'পণ্যটি পাওয়া যায়নি।');
+                        }
                     }
                     if ($generic_name) {
                         $dealer_product = DB::table('products')
@@ -965,8 +982,13 @@ class FrontController extends Controller
                             ->where('status', 1)
                             ->where('cat_id', 3)
                             ->orderBy('id', 'ASC')->get();
-                        $dealer_status['status'] = 0;
-                        return view('frontend.productPage', ['products' => $dealer_product, 'status' => $dealer_status]);
+                        if($dealer_product->count()>0){
+                            $dealer_status['status'] = 0;
+                            return view('frontend.productPage', ['products' => $dealer_product,'status' =>$dealer_status]);
+                        }
+                        else{
+                            return back()->with('errorMessage', 'পণ্যটি পাওয়া যায়নি।');
+                        }
                     }
                     if ($company_name) {
                         $dealer_product = DB::table('products')
@@ -974,8 +996,13 @@ class FrontController extends Controller
                             ->where('status', 1)
                             ->where('cat_id', 3)
                             ->orderBy('id', 'ASC')->get();
-                        $dealer_status['status'] = 0;
-                        return view('frontend.productPage', ['products' => $dealer_product, 'status' => $dealer_status]);
+                        if($dealer_product->count()>0){
+                            $dealer_status['status'] = 0;
+                            return view('frontend.productPage', ['products' => $dealer_product,'status' =>$dealer_status]);
+                        }
+                        else{
+                            return back()->with('errorMessage', 'পণ্যটি পাওয়া যায়নি।');
+                        }
                     }
                 }
             }

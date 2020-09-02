@@ -78,6 +78,7 @@ class AuthController extends Controller
     public function insertNewUser(Request $request){
         try{
             if($request) {
+                //dd($request);
                 $rows = DB::table('users')
                     ->where('phone', $request->phone)
                     ->orwhere('email', $request->email)
@@ -155,6 +156,15 @@ class AuthController extends Controller
                                 'user_id' => $pharmacy_id,
                                 'pharmacy_name' => $request->p_name,
                                 'pharmacy_address' => $request->p_address,
+                            ]);
+                        }
+                        if($user_type == 16){
+                            $Cooker_id = DB::getPdo()->lastInsertId();
+                            $result = DB::table('cookers')->insert([
+                                'cooker_id' => $Cooker_id,
+                                'mealtype' => $request->mealtype,
+                                'meal' => $request->meal,
+                                'mealtime' => $request->mealtime,
                             ]);
                         }
                         $rows = DB::table('users')

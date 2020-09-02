@@ -4,13 +4,13 @@ namespace App\Http\Controllers\backend;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\DB;
 
 class ReportController extends Controller
 {
     public function salesReport ( ){
         try{
-
             return view('backend.sales', ['divisions' => '']);
         }
         catch(\Illuminate\Database\QueryException $ex){
@@ -37,7 +37,6 @@ class ReportController extends Controller
     }
     public function ticketSalesReport ( ){
         try{
-
             $ticket_Sale = DB::table('ticket_booking')
                 ->join('users', 'ticket_booking.user_id', '=', 'users.id')
                 ->orderBy('ticket_booking.id','desc')
@@ -46,6 +45,91 @@ class ReportController extends Controller
         }
         catch(\Illuminate\Database\QueryException $ex){
             return back()->with('errorMessage', $ex->getMessage());
+        }
+    }
+    public function accounting ( ){
+        try{
+            $row = DB::table('accounting')
+                ->orderBy('date','desc')
+                ->paginate(20);
+            return view('backend.accounting', ['accountings' => $row]);
+        }
+        catch(\Illuminate\Database\QueryException $ex){
+            return back()->with('errorMessage', $ex->getMessage());
+        }
+    }
+    public function insertAccounting(Request $request){
+        try{
+            if($request) {
+                if($request->id) {
+                    $result =DB::table('accounting')
+                        ->where('id', $request->id)
+                        ->update([
+                            'type' => $request->type,
+                            'purpose' => $request->purpose,
+                            'amount' => $request->amount,
+                            'date' => $request->date,
+                            'person' => $request->person,
+                        ]);
+                    if ($result) {
+                        return back()->with('successMessage', 'সফল্ভাবে সম্পন্ন্য হয়েছে।');
+                    } else {
+                        return back()->with('errorMessage', 'আবার চেষ্টা করুন।');
+                    }
+                }
+                else {
+                    $rows = DB::table('accounting')
+                        ->select('id')
+                        ->where([
+                            ['type', '=', $request->type],
+                            ['purpose', '=', $request->purpose],
+                            ['amount', '=', $request->amount],
+                            ['date', '=', $request->date],
+                            ['person', '=', $request->person],
+                        ])
+                        ->distinct()->get()->count();
+                    if ($rows > 0) {
+                        return back()->with('errorMessage', ' নতুন ডাটা দিন');
+                    } else {
+                        $result = DB::table('accounting')->insert([
+                            'type' => $request->type,
+                            'purpose' => $request->purpose,
+                            'amount' => $request->amount,
+                            'date' => $request->date,
+                            'person' => $request->person,
+                        ]);
+                        if ($result) {
+                            return back()->with('successMessage', 'সফল্ভাবে সম্পন্ন্য হয়েছে।');
+                        } else {
+                            return back()->with('errorMessage', 'আবার চেষ্টা করুন।');
+                        }
+                    }
+                }
+            }
+            else{
+                return back()->with('errorMessage', 'ফর্ম পুরন করুন।');
+            }
+        }
+        catch(\Illuminate\Database\QueryException $ex){
+            return back()->with('errorMessage', $ex->getMessage());
+        }
+    }
+    public function getAccountingReportByDate (Request $request){
+        $row = DB::table('accounting')
+            ->whereBetween('date',array($request->from_date,$request->to_date))
+            ->orderBy('date', 'Desc')->paginate(20);
+        //dd($orders);
+        return view('backend.accounting', ['accountings' => $row,'from_date'=>$request->from_date,'to_date'=>$request->to_date]);
+    }
+    public function getAccountingListById(Request $request){
+        try{
+            $rows = DB::table('accounting')
+                ->where('id', $request->id)
+                ->first();
+            return response()->json(array('data'=>$rows));
+        }
+        catch(\Illuminate\Database\QueryException $ex){
+            return response()->json(array('data'=>$ex->getMessage()));
         }
     }
 

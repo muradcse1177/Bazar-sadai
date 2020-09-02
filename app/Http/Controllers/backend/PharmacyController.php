@@ -257,67 +257,60 @@ class PharmacyController extends Controller
 
         $quantity = array_filter($request->quantity, function($value) { return !is_null($value) && $value !== ''; });
         $medicine_id = array_filter($request->med_id, function($value) { return !is_null($value) && $value !== ''; });
+        $price = array_filter($request->price, function($value) { return !is_null($value) && $value !== ''; });
+        $output = array('list'=>'');
+        $email = trim($request->email);
+        $user =DB::table('users')
+            ->where('id',  Cookie::get('user_id'))
+            ->first();
+        $pharmacy =DB::table('pharmacy')
+            ->where('user_id',  Cookie::get('user_id'))
+            ->first();
+        $i =0;
+        $j=0;
+        foreach ($quantity as $q){
+            $quantity_arr[$i] =$q;
+            $i++;
+        }
+        foreach ($price as $p){
+            $price_arr[$j] =$p;
+            $j++;
+        }
 
-        $row =DB::table('med_company_email')
-            ->where('company_name',$request->company)
-            ->get();
-        if(count($row)>0){
-            $row =DB::table('med_company_email')
-                ->where('company_name',$request->company)
-                ->first();
-            $email = trim($row->email);
-            $user =DB::table('users')
-                ->where('id',  Cookie::get('user_id'))
-                ->first();
-            $pharmacy =DB::table('pharmacy')
-                ->where('user_id',  Cookie::get('user_id'))
-                ->first();
-            $i =0;
-            foreach ($quantity as $q){
-                $quantity_arr[$i] =$q;
-                $i++;
-            }
-
-            $data = array(
-                'companyName'=> $request->company,
-                'medicine_id'=>$medicine_id,
-                'quantity'=>$quantity_arr,
-                'price'=> $request->price,
-                'user_name'=> $user->name,
-                'user_phone'=> $user->phone,
-                'pharmacy'=> $pharmacy->pharmacy_name,
-                'address'=> $pharmacy->pharmacy_address,
-            );
-            $customerName = $user->name;
-            Mail::send('backend.pharmacy.medicineOrderEmailFormat', $data, function($message) use($email,$customerName) {
-                $message->to($email, $customerName)->subject('Medicine Order Request');
-                $message->from('support@bazar-sadai.com','Bazar-sadai.com');
-            });
-            if (Mail::failures()) {
+        $data = array(
+            'companyName'=> $request->company,
+            'medicines'=>$medicine_id,
+            'quantity'=>$quantity_arr,
+            'price'=>  $price_arr,
+            'user_name'=> $user->name,
+            'user_phone'=> $user->phone,
+            'pharmacy'=> $pharmacy->pharmacy_name,
+            'address'=> $pharmacy->pharmacy_address,
+        );
+        $customerName = $user->name;
+        Mail::send('backend.pharmacy.medicineOrderEmailFormat', $data, function($message) use($email,$customerName) {
+            $message->to($email, $customerName)->subject('Medicine Order Request');
+            $message->from('support@bazar-sadai.com','Bazar-sadai.com');
+        });
+        if (Mail::failures()) {
+            return back()->with('errorMessage', 'আবার চেষ্টা করুন।');
+        }
+        else {
+            $result = DB::table('medicine_order')->insert([
+                'user_id' => Cookie::get('user_id'),
+                'med_id' => json_encode($medicine_id),
+                'quantity' => json_encode($quantity),
+                'price' =>  json_encode($price_arr),
+                'date' => date("Y-m-d"),
+                'company' => $request->company,
+                'email' => $request->email,
+            ]);
+            if ($result) {
+                return back()->with('successMessage', 'সফল্ভাবে সম্পন্ন্য হয়েছে।');
+            } else {
                 return back()->with('errorMessage', 'আবার চেষ্টা করুন।');
             }
-            else{
-                return back()->with('successMessage', 'সফল্ভাবে সম্পন্ন্য হয়েছে।');
-//            $result = DB::table('medicine_order')->insert([
-//                'user_id' => Cookie::get('user_id'),
-//                'med_id' => json_encode($medicine_id),
-//                'quantity' => json_encode($quantity),
-//                'price' => $request->price,
-//                'date' => date("Y-m-d"),
-//                'company' => $request->company,
-//            ]);
-//            if($result){
-//                return back()->with('successMessage', 'সফল্ভাবে সম্পন্ন্য হয়েছে।');
-//            }
-//            else{
-//                return back()->with('errorMessage', 'আবার চেষ্টা করুন।');
-//            }
-            }
         }
-        else{
-            return back()->with('errorMessage', 'এই কোম্পানির ইমেইল আমাদের কাসে নেই।');
-        }
-
 
     }
     public function myMedicineOrder(){
@@ -335,10 +328,16 @@ class PharmacyController extends Controller
             ->first();
         $medicine_id = json_decode($orders->med_id);
         $quantity = json_decode($orders->quantity);
-        $i =0;
+        $price = json_decode($orders->price);
+        $i=0;
+        $j=0;
         foreach ($quantity as $q){
             $quantity_arr[$i] =$q;
             $i++;
+        }
+        foreach ($price as $p){
+            $price_arr[$j] =$p;
+            $j++;
         }
         for($i=0; $i<count($medicine_id); $i++){
             $medicine = DB::table('products')
@@ -350,11 +349,13 @@ class PharmacyController extends Controller
                         <td>".$medicine->name."</td>
                         <td>".$medicine->type."</td>
                         <td>".$quantity_arr[$i]."</td>
+                        <td>".$price_arr[$i]."</td>
                     </tr>
                 ";
         }
         return response()->json(array('data'=>$output));
     }
+
     public function getOrderListByDate(Request $request){
         $orders = DB::table('medicine_order')
             ->select('*')
@@ -510,5 +511,46 @@ class PharmacyController extends Controller
             return back()->with('errorMessage', $ex->getMessage());
         }
 
+    }
+    public function medicineOrderReportAdmin(){
+        $orders = DB::table('medicine_order')
+            ->select('*')
+            ->orderBy('id', 'Desc')->paginate(100);
+        return view('backend.medicineSalesReportAdmin', ['orders' => $orders]);
+    }
+    public function getAdminMedicineOrderById(Request $request){
+        $output = array('list'=>'');
+        $orders = DB::table('medicine_order')
+            ->where('id',  $request->id)
+            ->first();
+        $medicine_id = json_decode($orders->med_id);
+        $quantity = json_decode($orders->quantity);
+        $i =0;
+        foreach ($quantity as $q){
+            $quantity_arr[$i] =$q;
+            $i++;
+        }
+        for($i=0; $i<count($medicine_id); $i++){
+            $medicine = DB::table('products')
+                ->select('*')
+                ->where('id',  $medicine_id[$i])
+                ->first();
+            $output['list'] .= "
+                    <tr class='prepend_items'>
+                        <td>".$medicine->name."</td>
+                        <td>".$medicine->type."</td>
+                        <td>".$quantity_arr[$i]."</td>
+                    </tr>
+                ";
+        }
+        return response()->json(array('data'=>$output));
+    }
+    public function getOrderListByDateAdmin(Request $request){
+        $orders = DB::table('medicine_order')
+            ->select('*')
+            ->whereBetween('date',array($request->from_date,$request->to_date))
+            ->orderBy('id', 'Desc')->paginate(100);
+        //dd($orders);
+        return view('backend.medicineSalesReportAdmin', ['orders' => $orders,'from_date'=>$request->from_date,'to_date'=>$request->to_date]);
     }
 }

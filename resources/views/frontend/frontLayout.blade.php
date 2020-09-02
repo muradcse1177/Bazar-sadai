@@ -416,6 +416,8 @@
         getCart();
         $('.submit').on('click',function(){
             var id = $(this).data('id');
+            $("#ch"+id).show();
+            $("#bg"+id).css("display", "none");
             $('#'+id+'productForm').submit(function(e){
                 e.preventDefault();
                 var quantity = $("#"+id+"q").val();
@@ -438,8 +440,8 @@
                                 showHideTransition: 'slide',
                                 icon: 'error',
                                 position: {
-                                    left: 120,
-                                    top: 120
+                                    left: 40,
+                                    top: 60
                                 },
                                 stack: false
                             })
@@ -451,8 +453,8 @@
                                 showHideTransition: 'slide',
                                 icon: 'success',
                                 position: {
-                                    left: 120,
-                                    top: 120
+                                    left: 40,
+                                    top: 60
                                 },
                                 stack: false
                             })

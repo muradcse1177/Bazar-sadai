@@ -17,7 +17,7 @@ use Illuminate\Support\Facades\Session;
 */
 Route::group(['middleware' => ['pharmacyAuth']], function () {
     //Pharmacy
-    //Route::post('/', 'backend\PharmacyController@myMedicineSale');
+    Route::post('/', 'backend\PharmacyController@myMedicineSale');
     Route::get('medicineSelfManagement', 'backend\PharmacyController@medicineSelfManagement');
     Route::get('searchMedicineBackend', 'backend\PharmacyController@searchMedicineBackend');
     Route::get('medicineSelfName', 'backend\PharmacyController@medicineSelfName');
@@ -142,6 +142,15 @@ Route::group(['middleware' => ['userAuth']], function () {
             Route::get('salesReport', 'backend\ReportController@salesReport');
             Route::get('animalSalesReport', 'backend\ReportController@animalSalesReport');
             Route::get('ticketSalesReport', 'backend\ReportController@ticketSalesReport');
+            Route::get('doctorAppointmentReport', 'backend\MedicalServiceController@doctorAppointmentReport');
+            Route::get('therapyAppointmentReport', 'backend\MedicalServiceController@therapyAppointmentReport');
+            Route::get('diagnosticAppointmentReport', 'backend\MedicalServiceController@diagnosticAppointmentReport');
+            Route::get('medicineOrderReportAdmin', 'backend\PharmacyController@medicineOrderReportAdmin');
+//Accounting
+            Route::get('accounting', 'backend\ReportController@accounting');
+            Route::post('insertAccounting', 'backend\ReportController@insertAccounting');
+            Route::post('getAccountingReportByDate', 'backend\ReportController@getAccountingReportByDate');
+            Route::post('getAccountingListById', 'backend\ReportController@getAccountingListById');
 
             Route::get('login', function () {
                 return view('backend.dashboard');
@@ -206,21 +215,31 @@ Route::group(['middleware' => ['userAuth']], function () {
             Route::post('insertDiagnosticFees', 'backend\MedicalServiceController@insertDiagnosticFees');
             Route::post('diagnosticFeesListsById', 'backend\MedicalServiceController@diagnosticFeesListsById');
             Route::post('deleteDiagnosticFees', 'backend\MedicalServiceController@deleteDiagnosticFees');
-            Route::get('doctorAppointmentReport', 'backend\MedicalServiceController@doctorAppointmentReport');
-            Route::get('therapyAppointmentReport', 'backend\MedicalServiceController@therapyAppointmentReport');
-            Route::get('diagnosticAppointmentReport', 'backend\MedicalServiceController@diagnosticAppointmentReport');
  //Pharmacy
             Route::get('medicineCompanyEmail', 'backend\PharmacyController@medicineCompanyEmail');
             Route::get('getAllMedicineCompany', 'backend\PharmacyController@getAllMedicineCompany');
             Route::post('insertMedicineCompanyEmail', 'backend\PharmacyController@insertMedicineCompanyEmail');
             Route::post('getMedicineCompanyEmailById', 'backend\PharmacyController@getMedicineCompanyEmailById');
             Route::post('deleteMedicineCompanyEmail', 'backend\PharmacyController@deleteMedicineCompanyEmail');
+            Route::post('getAdminMedicineOrderById', 'backend\PharmacyController@getAdminMedicineOrderById');
+            Route::post('getOrderListByDateAdmin', 'backend\PharmacyController@getOrderListByDateAdmin');
 
 //Home Asistance Services
+        //Cooking
             Route::get('cookingPage', 'backend\HomeAssistantController@cookingPage');
             Route::post('insertCooking', 'backend\HomeAssistantController@insertCooking');
             Route::post('getCookingList', 'backend\HomeAssistantController@getCookingList');
             Route::post('deleteCooking', 'backend\HomeAssistantController@deleteCooking');
+
+        //Parlour
+            Route::get('parlorService', 'backend\HomeAssistantController@parlorService');
+            Route::get('getAllParlorType', 'backend\HomeAssistantController@getAllParlorType');
+            Route::post('insertParlourService', 'backend\HomeAssistantController@insertParlourService');
+            Route::post('getParlorServiceById', 'backend\HomeAssistantController@getParlorServiceById');
+            Route::post('deleteParlorService', 'backend\HomeAssistantController@deleteParlorService');
+
+        //ClothWashing
+            Route::get('clothWashing', 'backend\HomeAssistantController@clothWashing');
         }
 });
 //Login
@@ -314,3 +333,4 @@ Route::group(['middleware' => ['userAuth']], function () {
     Route::get('changeWorkingStatus', 'frontend\FrontController@changeWorkingStatus');
     Route::get('getAllMedDept ', 'backend\UserController@getAllMedDept');
     Route::get('getHospitalListAll ', 'backend\UserController@getHospitalListAll');
+    Route::get('getMealTypeAll ', 'backend\UserController@getMealTypeAll');

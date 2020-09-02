@@ -6,6 +6,26 @@
         font-size: 20px;
         text-align: justify;
     }
+    .col-sm-12{
+        padding-right: 0px;
+        padding-left: 0px;
+    }
+    .col-sm-6{
+        padding-right: 0px;
+        padding-left: 0px;
+    }
+    .pDiv1 {
+        width: 120px;
+        height: 120px;
+        margin-right: 2px;
+        float: left;
+    }
+    .imgProduct{
+        border: 1px solid darkgreen;
+    }
+    .pProduct{
+        margin-bottom:2px;
+    }
 </style>
 @endsection
 @section('content')
@@ -101,52 +121,57 @@
                         @php
                             if($status['status']==1)  $price = $product->edit_price;
                             if($status['status']==0)  $price = $product->price;
-                            //$Image =url('/')."/public/asset/images/noImage.jpg";
                             $Image ="";
                                if(!empty($product->photo))
                                    $Image =url('/').'/'.$product->photo;
+                               else
+                                   $Image =url('/')."/public/asset/images/noImage.jpg";
                         @endphp
-                        @if((!empty($product->photo)))
-                        <div style="display: none;" id="{{$product->id.'bphoto'}}" class="photoShow">
-                            <img src="{{$Image}}" width ="100%" height="150" >
-                        </div>
-                        @endif
                         <div class='col-sm-12'>
-                            <p>
-                                <b>{{$product->name .' '.'('. en2bn($price).' টাকা প্রতি'.' '.$product->unit.' '.$product->type.')'}} </b>
-                                <span>
-                                    &nbsp;&nbsp;&nbsp;&nbsp;
-                                    <input type="checkbox" class="" id="{{'ch'.$product->id}}" style="display: none;" checked>
-                                </span>
-                           </p>
+                                <div class="pDiv1">
+                                    <div id="{{$product->id.'bphoto'}}" >
+                                        <img class="imgProduct" src="{{$Image}}" width ="118" height="115">
+                                    </div>
+                                </div>
+
+                                <div class="pDiv2">
+                                    <p class="pProduct">{{$product->name .' - '.en2bn($price.' টাকা')}}
+                                    </p>
+                                    @if($product->cat_id !=3)
+                                        <p class="pProduct">{{en2bn($product->minqty).' '.$product->unit}}</p>
+                                    @endif
+                                    @if($product->cat_id==3)
+                                        <p class="pProduct">{{$product->unit}}</p>
+                                        <p class="pProduct">{{$product->type}}</p>
+                                        <p class="pProduct">{{$product->company}}</p>
+                                    @endif
+                                </div>
                         </div>
-                        <?php
-                            if($product->cat_id==3){
-                        ?>
-                        <div class='col-sm-12'>
-                            <p><b>{{$product->genre .' - '.$product->company.' '}} </b></p>
-                        </div>
-                        <?php } ?>
-                        <div class="col-md-12">
+                        <div class="col-sm-12 pForm">
                             <form class="form-inline" id="{{$product->id.'productForm'}}">
                                 <div class="form-group">
                                     <div class="input-group col-sm-12">
+                                    <span class="input-group-btn">
+                                        <button type="button" id="minus" class="btn btn-default btn-flat btn-lg minus"  data-id="{{$product->id}}"><i class="fa fa-minus"></i></button>
+                                    </span>
+                                        <input type="text" name="quantity" style="text-align: center; " id="{{$product->id.'q'}}" class="form-control input-lg" value="{{$product->minqty}}" readonly>
                                         <span class="input-group-btn">
-                                            <button type="button" id="minus" class="btn btn-default btn-flat btn-lg minus"  data-id="{{$product->id}}"><i class="fa fa-minus"></i></button>
-                                        </span>
-                                        <input type="text" name="quantity" id="{{$product->id.'q'}}" class="form-control input-lg" value="{{$product->minqty}}" readonly>
-                                        <span class="input-group-btn">
-                                            <button type="button" id="add" class="btn btn-default btn-flat btn-lg add" data-id="{{$product->id}}"><i class="fa fa-plus"></i>
-                                            </button>
-                                        </span>
+                                        <button type="button" id="add" class="btn btn-default btn-flat btn-lg add" data-id="{{$product->id}}"><i class="fa fa-plus"></i>
+                                        </button>
+                                    </span>
                                         <input type="hidden" value="{{$product->id}}" name="id">
                                         <span class="input-group-btn">
-                                            <button type="submit" data-id="{{$product->id}}" class="btn btn-default btn-flat btn-lg submit"><i class="fa fa-shopping-bag"></i>
+                                             <button type="submit" data-id="{{$product->id}}" id="{{'bg'.$product->id}}"  class="btn btn-default btn-flat btn-lg submit">
+                                                 <i class="fa fa-shopping-bag"></i>
+                                             </button>
+                                            <button type="submit" id="{{'ch'.$product->id}}" class="btn btn-default btn-flat btn-lg" style="display: none;" >
+                                                 <i class="fa fa-check"></i>
                                             </button>
-                                        </span>
+                                    </span>
                                     </div>
                                 </div>
                             </form>
+
                         </div>
                     </div>
                 </div>

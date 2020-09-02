@@ -87,7 +87,7 @@
                             </select>
                         </div>
                         <div class="form-group">
-                            <select id="c_ward_name" name ="c_wardid" class="form-control select2 c_ward_name"   style="width: 100%;" required="required">
+                            <select id="c_ward_name" name ="c_wardid" class="form-control select2 c_ward_name"   style=" width: 100%;" required="required">
                                 <option value="" selected>ওয়ার্ড  নির্বাচন করুন</option>
                             </select>
                         </div>
@@ -186,6 +186,31 @@
                             <input type="text" class="form-control p_address" id="p_address"  name="p_address" min="0" placeholder="ফার্মেসী ঠিকানা " required>
                         </div>
                     </div>
+                    <div class="cookingForm" style="display: none;">
+                        <div class="form-group">
+                            <label> ধরণ</label>
+                            <select class="form-control select2 mealtype" name="mealtype" id="mealtype" style="width: 100%;" required>
+                                <option  value="" selected> ধরণ নির্বাচন করুন</option>
+                                <option  value="1"> প্রতি দিন</option>
+                                <option  value="30"> প্রতি মাস</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>প্রতিদিন মিল</label>
+                            <select class="form-control select2 meal" name="meal" id="meal" style="width: 100%;" required>
+                                <option  value="" selected> মিল নির্বাচন করুন</option>
+                                <option  value="১ বার"> ১ বার</option>
+                                <option  value="২ বার"> ২ বার</option>
+                                <option  value="৩ বার"> ৩ বার</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>প্রতিদিন মিল</label>
+                            <select class="form-control select2 mealtime" name="mealtime" id="mealtime" style="width: 100%;" required>
+                                <option  value="" selected> মিল নির্বাচন করুন</option>
+                            </select>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="row">
@@ -231,6 +256,25 @@
                 failure: function (msg) {
                     alert('an error occured');
                 }
+            });
+            $(".meal").change(function(){
+                var id =$(this).val();
+                $('.mealtime').find('option:not(:first)').remove();
+                $.ajax({
+                    type: 'GET',
+                    url: 'getMealTypeAll',
+                    data: {id:id},
+                    dataType: 'json',
+                    success: function(response){
+                        var data = response.data;
+                        var len = data.length;
+                        for( var i = 0; i<len; i++){
+                            var id = data[i]['name'];
+                            var name = data[i]['name'];
+                            $(".mealtime").append("<option value='"+id+"'>"+name+"</option>");
+                        }
+                    }
+                });
             });
             $(".doc_department").change(function(){
                 var id =$(this).val();
@@ -312,11 +356,18 @@
                 var value = $(this).val();
                 if(value==13){
                     $(".doctorsForm").show();
+                    //pharmacy
                     $('.p_name').prop('required',false);
                     $('.p_address').prop('required',false);
+                    //cooking
+                    $('.mealtype').prop('required',false);
+                    $('.meal').prop('required',false);
+                    $('.mealtime').prop('required',false);
+
                 }
                 else if(value==15){
                     $(".pharmacyForm").show();
+                    //doctor
                     $('.doc_department').prop('required',false);
                     $('.doc_hospital').prop('required',false);
                     $('.designation').prop('required',false);
@@ -326,10 +377,32 @@
                     $('.intimezone').prop('required',false);
                     $('.outtime').prop('required',false);
                     $('.outtimezone').prop('required',false);
+                    //cooking
+                    $('.mealtype').prop('required',false);
+                    $('.meal').prop('required',false);
+                    $('.mealtime').prop('required',false);
+                }
+                else if(value==16){
+                    $(".cookingForm").show();
+                    //doctor
+                    $('.doc_department').prop('required',false);
+                    $('.doc_hospital').prop('required',false);
+                    $('.designation').prop('required',false);
+                    $('.fees').prop('required',false);
+                    $('.pa_address').prop('required',false);
+                    $('.intime').prop('required',false);
+                    $('.intimezone').prop('required',false);
+                    $('.outtime').prop('required',false);
+                    $('.outtimezone').prop('required',false);
+                    //pharmacy
+                    $('.p_name').prop('required',false);
+                    $('.p_address').prop('required',false);
                 }
                 else{
                     $(".doctorsForm").hide();
                     $(".pharmacyForm").hide();
+                    (".cookingForm").hide();
+                    //doctor
                     $('.doc_department').prop('required',false);
                     $('.doc_hospital').prop('required',false);
                     $('.designation').prop('required',false);
@@ -339,8 +412,13 @@
                     $('.intimezone').prop('required',false);
                     $('.outtime').prop('required',false);
                     $('.outtimezone').prop('required',false);
+                    //pharmacy
                     $('.p_name').prop('required',false);
                     $('.p_address').prop('required',false);
+                    //cooking
+                    $('.mealtype').prop('required',false);
+                    $('.meal').prop('required',false);
+                    $('.mealtime').prop('required',false);
                 }
             });
             $(".div_name").change(function(){

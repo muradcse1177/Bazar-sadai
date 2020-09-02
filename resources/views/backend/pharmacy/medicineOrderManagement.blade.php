@@ -44,6 +44,10 @@
             {{ csrf_field() }}
             <div class="box-body">
                 <div class="form-group">
+                    <label>কোম্পানি ইমেইল</label>
+                    <input type="text" class="form-control email" name="email" id="email" placeholder="কোম্পানি ইমেইল" required>
+                </div>
+                <div class="form-group">
                     <label>কোম্পানি নাম</label>
                     <select class="form-control select2 company" name="company" style="width: 100%;" required>
                         <option value="" selected>কোম্পানি নির্বাচন করুন</option>
@@ -57,6 +61,7 @@
                         <tr>
                             <th>#</th>
                             <th>পরিমান </th>
+                            <th>দাম </th>
                             <th>ট্রেড নাম </th>
                             <th>জেনেরিক নাম </th>
                             <th>কোম্পানি নাম </th>
@@ -66,9 +71,6 @@
                     </table>
                 </div>
                 <div class="box-footer">
-                    <div class="form-group">
-                        <input type="text" class="form-control" name="price" placeholder="আনুমানিক খরচ" required>
-                    </div>
                     <button type="submit" class="btn allButton">সেভ করুন</button>
                 </div>
             </div>
@@ -114,26 +116,31 @@
                         for(var  i=0; i<data.length; i++) {
                             trHTML +=
                                 '<tr>' +
-                                    '<td>' +
-                                        '<div class="form-check">' +
-                                        '<input type="checkbox" class="form-check-input medCheckbox" name="med_id[]"  value="'+ data[i].id  +'"' +
-                                        '</div>' +
-                                    '</td>' +
-                                    '<td>' +
-                                        '<div class="form-check">' +
-                                        '<input type="text" class="form-check-input quantity" name="quantity[]" size="4" id="q'+data[i].id+'" ' +
-                                        '</div>' +
-                                    '</td>' +
-                                    '<td>' + data[i].name +
-                                    '</td>' +
-                                    '<td>' + data[i].genre +
-                                    '</td>' +
-                                    '<td>' + data[i].company +
-                                    '</td>' +
-                                    '<td>' + data[i].unit +
-                                    '</td>' +
-                                    '<td>' + data[i].type +
-                                    '</td>' +
+                                '<td>' +
+                                '<div class="form-check">' +
+                                '<input type="checkbox" class="form-check-input medCheckbox" name="med_id[]"  value="'+ data[i].id  +'"' +
+                                '</div>' +
+                                '</td>' +
+                                '<td>' +
+                                '<div class="form-check">' +
+                                '<input type="text" class="form-check-input quantity" name="quantity[]" size="4" id="q'+data[i].id+'" ' +
+                                '</div>' +
+                                '</td>' +
+                                '<td>' +
+                                '<div class="form-check">' +
+                                '<input type="text" class="form-check-input price" name="price[]" size="4" id="q'+data[i].id+'" ' +
+                                '</div>' +
+                                '</td>' +
+                                '<td>' + data[i].name +
+                                '</td>' +
+                                '<td>' + data[i].genre +
+                                '</td>' +
+                                '<td>' + data[i].company +
+                                '</td>' +
+                                '<td>' + data[i].unit +
+                                '</td>' +
+                                '<td>' + data[i].type +
+                                '</td>' +
                                 '</tr>';
                         }
                         $('.medicineList').append(trHTML);

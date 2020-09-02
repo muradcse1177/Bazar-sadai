@@ -20,17 +20,17 @@
     <div class="row">
         <div class="col-md-12">
             @foreach($p_categories as $category)
-                <a href='{{ URL::to('product/'.$category->id) }}'>
-                    <div class='col-sm-4'>
-                        <div class='box box-solid'>
-                            <div class='box-body prod-body'>
-                                <div class="alert boxBody">
-                                    <center><strong>{{ $category->name }}</strong></center>
+                    <a href='{{ URL::to('product/'.$category->id) }}'>
+                        <div class='col-sm-4'>
+                            <div class='box box-solid'>
+                                <div class='box-body prod-body'>
+                                    <div class="alert boxBody">
+                                        <center><strong>{{ $category->name }}</strong></center>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                </a>
+                    </a>
             @endforeach
             @foreach($se_categories as $secategory)
             <a href='{{ URL::to('buySale/'.$secategory->id) }}'>

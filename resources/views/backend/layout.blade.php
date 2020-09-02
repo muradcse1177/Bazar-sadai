@@ -149,15 +149,14 @@
                     </li>
                     <!-- User Account: style can be found in dropdown.less -->
                     @php
-                        $user_info = Session::get('user_info');
                         $Image =url("public/asset/images/noImage.jpg");
-                        if($user_info->photo)
-                            $Image =$user_info->photo;
+                        if(Cookie::get('user_photo'))
+                            $Image = Cookie::get('user_photo');
                     @endphp
                     <li class="dropdown user user-menu">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                             <img src="{{ $Image}}" class="user-image" alt="User Image">
-                            <span class="hidden-xs">{{ $user_info->name }}</span>
+                            <span class="hidden-xs">{{ Cookie::get('user_name') }}</span>
                         </a>
                         <ul class="dropdown-menu">
                             <!-- User image -->
@@ -165,7 +164,7 @@
                                 <img src="{{$Image}}" class="img-circle" alt="User Image">
 
                                 <p>
-                                    {{$user_info->name}}
+                                    {{ Cookie::get('user_name') }}
                                 </p>
                             </li>
                             <li class="user-footer">
@@ -225,6 +224,11 @@
                         <i class="fa fa-dashboard"></i> <span>ড্যাসবোরড</span>
                     </a>
                 </li>
+                <li class="@yield('accountingLiAdd')">
+                    <a href="{{ url('accounting') }}">
+                        <i class="fa fa-dashboard"></i> <span>হিসাব</span>
+                    </a>
+                </li>
                 <li class="@yield('salesLiAdd')">
                     <a href="{{ url('salesReport') }}">
                         <i class="fa fa-shopping-bag"></i> <span>পন্য বিক্রয় রিপোর্ট</span>
@@ -253,6 +257,11 @@
                 <li class="@yield('diagnosticAppointmentLiAdd')">
                     <a href="{{ url('diagnosticAppointmentReport') }}">
                         <i class="fa fa-shopping-bag"></i> <span>ডায়াগনস্টিক  রিপোর্ট</span>
+                    </a>
+                </li>
+                <li class="@yield('medicineOrderReportAdmin')">
+                    <a href="{{ url('medicineOrderReportAdmin') }}">
+                        <i class="fa fa-shopping-bag"></i> <span>মেডিসিন অর্ডার  রিপোর্ট</span>
                     </a>
                 </li>
                 @endif
@@ -418,7 +427,7 @@
                             </a>
                             <ul class="treeview-menu">
                                 <li class ="@yield('cookingPage')"><a href="{{ url('cookingPage') }}"><i class="fa fa-circle-o"></i> কুকিং</a></li>
-                                <li class ="@yield('cookingPage')"><a href="{{ url('cookingPage') }}"><i class="fa fa-circle-o"></i>কাপড় পরিষ্কার</a></li>
+                                <li class ="@yield('clothWashing')"><a href="{{ url('clothWashing') }}"><i class="fa fa-circle-o"></i>কাপড় পরিষ্কার</a></li>
                                 <li class ="@yield('cookingPage')"><a href="{{ url('cookingPage') }}"><i class="fa fa-circle-o"></i>ওয়াশরুম পরিষ্কার</a></li>
                                 <li class ="@yield('cookingPage')"><a href="{{ url('cookingPage') }}"><i class="fa fa-circle-o"></i>রুম পরিষ্কার</a></li>
                                 <li class ="@yield('cookingPage')"><a href="{{ url('cookingPage') }}"><i class="fa fa-circle-o"></i>বাচ্চা দেখাশোনা ও কাজে সহায়তা</a></li>
@@ -428,7 +437,7 @@
                                 <li class ="@yield('cookingPage')"><a href="{{ url('cookingPage') }}"><i class="fa fa-circle-o"></i>স্যানিটারি সার্ভিসিং</a></li>
                                 <li class ="@yield('cookingPage')"><a href="{{ url('cookingPage') }}"><i class="fa fa-circle-o"></i>ইলেক্ট্রনিক্স সার্ভিসিং</a></li>
                                 <li class ="@yield('cookingPage')"><a href="{{ url('cookingPage') }}"><i class="fa fa-circle-o"></i>স্টোভ সার্ভিসিং</a></li>
-                                <li class ="@yield('cookingPage')"><a href="{{ url('cookingPage') }}"><i class="fa fa-circle-o"></i>হোম পার্লার</a></li>
+                                <li class ="@yield('parlorService')"><a href="{{ url('parlorService') }}"><i class="fa fa-circle-o"></i>পার্লার সার্ভিস</a></li>
                             </ul>
                         </li>
                     </ul>

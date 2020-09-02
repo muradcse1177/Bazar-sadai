@@ -466,5 +466,16 @@ class UserController extends Controller
             return response()->json(array('data'=>$ex->getMessage()));
         }
     }
+    public function getMealTypeAll(Request $request){
+        try{
+            $rows = DB::table('meal_time')
+                ->where('m_time', $request->id)
+                ->get();
+            return response()->json(array('data'=>$rows));
+        }
+        catch(\Illuminate\Database\QueryException $ex){
+            return response()->json(array('data'=>$ex->getMessage()));
+        }
+    }
 
 }
