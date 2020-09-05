@@ -109,6 +109,11 @@ class FrontController extends Controller
                             'product_id' => $id,
                             'quantity' =>$quantity
                         ]);
+                        $result1 = DB::table('donate_carts')->insert([
+                            'user_id' => Cookie::get('user_id'),
+                            'product_id' => $id,
+                            'quantity' =>$quantity
+                        ]);
                         $output['message'] = 'Item added to cart';
 
                     }
@@ -284,6 +289,138 @@ class FrontController extends Controller
             return back()->with('errorMessage', $ex->getMessage());
         }
     }
+    public function donate(){
+        $output="";
+        $url =url('/').'/';
+        if(Cookie::get('user_id') != null ){
+            try{
+                $total = 0;
+                $customer = DB::table('users')
+                    ->where('id',Cookie::get('user_id'))
+                    ->first();
+                $dealer = DB::table('users')
+                    ->where('add_part1',$customer->add_part1)
+                    ->where('add_part2',$customer->add_part2)
+                    ->where('add_part3',$customer->add_part3)
+                    ->where('address_type',$customer->address_type)
+                    ->where('user_type',7)
+                    ->first();
+                $stmt = DB::table('donate_carts')
+                    ->select('*','donate_carts.id AS cartid','products.id as p_id')
+                    ->leftJoin('products', 'products.id', '=', 'donate_carts.product_id')
+                    ->join('product_assign','product_assign.product_id', '=','products.id')
+                    ->where('donate_carts.user_id',Cookie::get('user_id'))
+                    ->where('product_assign.dealer_id',$dealer->id)
+                    ->orderBy('products.id','Asc')
+                    ->get();
+                if($stmt->count() > 0) {
+                    foreach ($stmt as $row) {
+                        $image = (!empty($row->photo)) ? $url . $row->photo : $url . 'public/asset/images/noImage.jpg';
+                        $quantity = $row->quantity / $row->minqty;
+                        $subtotal = $row->edit_price * $quantity;
+                        $total += $subtotal;
+                        $output .= "
+                        <tr>
+                            <td><button type='button' data-id='" . $row->cartid . "' class='btn btn-danger btn-flat cart_delete_donate'><i class='fa fa-remove'></i></button></td>
+                            <td><img src='" . $image . "' width='30px' height='30px'></td>
+                            <td>" . $row->name . "</td>
+                            <td> " . $this->en2bn(number_format($row->edit_price, 2)) . "</td>
+                            <td><input style='width: 60px; text-align: center;' min='1' type='number' data-id='".$row->p_id."' id='".'q'.$row->p_id."' class='quantity' value='".$row->quantity."'></td>
+                            <td>" . $row->unit . "</td>
+                            <td> " . $this->en2bn(number_format($subtotal, 2)) . "</td>
+                        </tr>
+                        ";
+                    }
+                    $output .= "
+                        <tr>
+                            <td colspan='6' align='right'><b>সর্বমোট</b></td>
+                            <td><b> " . $this->en2bn(number_format($total , 2)) . "</b></td>
+                        <tr>
+                        ";
+                }
+                else{
+                    $output .= "
+                        <tr>
+                            <td colspan='7' align='center'>Donate cart empty</td>
+                        <tr>
+                    ";
+                }
+                return response()->json(array('output'=>$output));
+            }
+            catch(\Illuminate\Database\QueryException $ex){
+                return back()->with('errorMessage', $ex->getMessage());
+            }
+        }
+    }
+    public function donateQuantityChange(Request $request){
+        $result =DB::table('donate_carts')
+            ->where('user_id',  Cookie::get('user_id'))
+            ->where('product_id', $request->id)
+            ->update([
+                'quantity' => $request->value,
+            ]);
+        $output="";
+        $url =url('/').'/';
+        if(Cookie::get('user_id') != null ){
+            try{
+                $total = 0;
+                $customer = DB::table('users')
+                    ->where('id',Cookie::get('user_id'))
+                    ->first();
+                $dealer = DB::table('users')
+                    ->where('add_part1',$customer->add_part1)
+                    ->where('add_part2',$customer->add_part2)
+                    ->where('add_part3',$customer->add_part3)
+                    ->where('address_type',$customer->address_type)
+                    ->where('user_type',7)
+                    ->first();
+                $stmt = DB::table('donate_carts')
+                    ->select('*','donate_carts.id AS cartid','products.id as p_id')
+                    ->leftJoin('products', 'products.id', '=', 'donate_carts.product_id')
+                    ->join('product_assign','product_assign.product_id', '=','products.id')
+                    ->where('donate_carts.user_id',Cookie::get('user_id'))
+                    ->where('product_assign.dealer_id',$dealer->id)
+                    ->orderBy('products.id','Asc')
+                    ->get();
+                if($stmt->count() > 0) {
+                    foreach ($stmt as $row) {
+                        $image = (!empty($row->photo)) ? $url . $row->photo : $url . 'public/asset/images/noImage.jpg';
+                        $quantity = $row->quantity / $row->minqty;
+                        $subtotal = $row->edit_price * $quantity;
+                        $total += $subtotal;
+                        $output .= "
+                        <tr>
+                            <td><button type='button' data-id='" . $row->cartid . "' class='btn btn-danger btn-flat cart_delete_donate'><i class='fa fa-remove'></i></button></td>
+                            <td><img src='" . $image . "' width='30px' height='30px'></td>
+                            <td>" . $row->name . "</td>
+                            <td> " . $this->en2bn(number_format($row->edit_price, 2)) . "</td>
+                            <td><input style='width: 60px; text-align: center;' min='1' type='number' data-id='".$row->p_id."' id='".'q'.$row->p_id."' class='quantity' value='".$row->quantity."'></td>
+                            <td>" . $row->unit . "</td>
+                            <td> " . $this->en2bn(number_format($subtotal, 2)) . "</td>
+                        </tr>
+                        ";
+                    }
+                    $output .= "
+                        <tr>
+                            <td colspan='6' align='right'><b>সর্বমোট</b></td>
+                            <td><b> " . $this->en2bn(number_format($total , 2)) . "</b></td>
+                        <tr>
+                        ";
+                }
+                else{
+                    $output .= "
+                        <tr>
+                            <td colspan='7' align='center'>Donate cart empty</td>
+                        <tr>
+                    ";
+                }
+                return response()->json(array('output'=>$output));
+            }
+            catch(\Illuminate\Database\QueryException $ex){
+                return back()->with('errorMessage', $ex->getMessage());
+            }
+        }
+    }
     public function cart_details(Request $request){
         try{
             $output="";
@@ -305,10 +442,21 @@ class FrontController extends Controller
                                 'product_id' => $row['productid'],
                                 'quantity' => $row['quantity']
                             ]);
+                            $result1 = DB::table('donate_carts')->insert([
+                                'user_id' => Cookie::get('user_id'),
+                                'product_id' => $row['productid'],
+                                'quantity' => $row['quantity']
+                            ]);
                         }
                         else{
                             $result =DB::table('carts')
-                                ->where('id',  Cookie::get('user_id'))
+                                ->where('user_id',  Cookie::get('user_id'))
+                                ->where('product_id', $row['productid'])
+                                ->update([
+                                    'quantity' => $row['quantity'],
+                                ]);
+                            $result1 =DB::table('donate_carts')
+                                ->where('user_id',  Cookie::get('user_id'))
                                 ->where('product_id', $row['productid'])
                                 ->update([
                                     'quantity' => $row['quantity'],
@@ -459,9 +607,32 @@ class FrontController extends Controller
             return back()->with('errorMessage', $ex->getMessage());
         }
     }
-    public function sales($tnxId){
+    public function cart_delete_donate(Request $request){
         try{
-            $payid = $tnxId;
+            $output = array('error'=>false);
+            $id = $request->id;
+            if(Cookie::get('user_id') != null ){
+                try{
+                    DB::table('donate_carts')->where('id', $id)->delete();
+                    $output['message'] = 'Deleted';
+
+                }
+                catch(\Illuminate\Database\QueryException $ex){
+                    return back()->with('errorMessage', $ex->getMessage());
+                }
+                return response()->json(array('output' => $output));
+            }
+
+        }
+        catch(\Illuminate\Database\QueryException $ex){
+            return back()->with('errorMessage', $ex->getMessage());
+        }
+    }
+    public function sales(Request $request){
+        try{
+            $set='123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+            $code=substr(str_shuffle($set), 0, 12);
+            $payid = $code;
             $date = date('Y-m-d');
             if(!empty($payid)){
                 $result = DB::table('v_assign')->insert([
@@ -483,11 +654,32 @@ class FrontController extends Controller
                         'quantity' => $row->quantity
                     ]);
                 }
+                if($request->donate == 'want_donate'){
+                    $d_cart = DB::table('donate_carts')
+                        ->select('*')
+                        ->where('user_id', Cookie::get('user_id'))
+                        ->get();
+                    if($d_cart->count()>0){
+                        $d_stmt = DB::table('donate_carts')
+                            ->select('*')
+                            ->join('products', 'products.id', '=', 'donate_carts.product_id')
+                            ->where('donate_carts.user_id', Cookie::get('user_id'))
+                            ->get();
+                        foreach($d_stmt as $d_row){
+                            $result = DB::table('donation_details')->insert([
+                                'sales_id' => $salesid,
+                                'product_id' => $d_row->product_id,
+                                'quantity' => $d_row->quantity
+                            ]);
+                        }
+                    }
+                }
                 $product_cart = DB::table('carts')
                     ->select('*')
                     ->where('user_id', Cookie::get('user_id'))
                     ->first();
                 DB::table('carts')->where('user_id',  Cookie::get('user_id'))->delete();
+                DB::table('donate_carts')->where('user_id',  Cookie::get('user_id'))->delete();
                 $user_info = DB::table('users')
                     ->select('*')
                     ->where('id', Cookie::get('user_id'))

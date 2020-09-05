@@ -161,10 +161,12 @@
                                     </span>
                                         <input type="hidden" value="{{$product->id}}" name="id">
                                         <span class="input-group-btn">
-                                             <button type="submit" data-id="{{$product->id}}" id="{{'bg'.$product->id}}"  class="btn btn-default btn-flat btn-lg submit">
-                                                 <i class="fa fa-shopping-bag"></i>
-                                             </button>
-                                            <button type="submit" id="{{'ch'.$product->id}}" class="btn btn-default btn-flat btn-lg" style="display: none;" >
+                                            <div data-id="effect{{$product->id}}">
+                                                <button type="submit" data-id="{{$product->id}}" id="{{'bg'.$product->id}}"  class="submit" style="margin-right: 0; margin-left: 0; padding: 0;">
+                                                    <img src="{{url('public/bs.ico')}}" height="42px" width="42x" id="img{{$product->id}}">
+                                                 </button>
+                                            </div>
+                                            <button type="submit" id="{{'ch'.$product->id}}" class="btn btn-default btn-flat btn-lg" style="display: none; border: 1px solid darkgreen;" >
                                                  <i class="fa fa-check"></i>
                                             </button>
                                     </span>

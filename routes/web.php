@@ -311,8 +311,10 @@ Route::group(['middleware' => ['userAuth']], function () {
     Route::post('product/cart_fetch', 'frontend\FrontController@cart_fetch');
     Route::post('product/cart_details', 'frontend\FrontController@cart_details');
     Route::post('product/cart_delete', 'frontend\FrontController@cart_delete');
-    Route::post('product/cart_delete', 'frontend\FrontController@cart_delete');
-    Route::get('sales/{id}', 'frontend\FrontController@sales');
+    Route::post('product/cart_delete_donate', 'frontend\FrontController@cart_delete_donate');
+    Route::post('product/donate', 'frontend\FrontController@donate');
+    Route::post('product/donateQuantityChange', 'frontend\FrontController@donateQuantityChange');
+    Route::post('sales', 'frontend\FrontController@sales');
     Route::post('transaction', 'frontend\AuthController@transaction');
     Route::post('insertContactUs', 'backend\UserController@insertContactUs');
     Route::get('buySale/{id}', 'frontend\FrontController@buySale');
