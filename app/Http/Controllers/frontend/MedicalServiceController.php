@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\DB;
+use smasif\ShurjopayLaravelPackage\ShurjopayService;
 
 class MedicalServiceController extends Controller
 {
@@ -135,6 +136,12 @@ class MedicalServiceController extends Controller
     }
     public function insertTherapyAppointment(Request $request){
         try{
+            $shurjopay_service = new ShurjopayService();
+            $tx_id = $shurjopay_service->generateTxId();
+            $success_route = 'http://localhost/bazar-sadai/insertTherapyAppointment';
+            $shurjopay_service->sendPayment(1, $success_route);
+            exit();
+//            dd($tx_id);
             if($request) {
                 $result = DB::table('therapy_appointment')->insert([
                     'therapy_fees_id' => $request->tf_id,

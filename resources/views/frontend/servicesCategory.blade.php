@@ -45,6 +45,19 @@
                     </div>
                 </a>
             @endforeach
+            @foreach($home_assistants as $home_assistant)
+                <a href='{{ URL::to('serviceSubCategoryHomeAssistant/'.$home_assistant->id) }}'>
+                    <div class='col-sm-4'>
+                        <div class='box box-solid'>
+                            <div class='box-body prod-body'>
+                                <div class="alert boxBody">
+                                    <center><strong>{{ $home_assistant->name }}</strong></center>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            @endforeach
         </div>
     </div>
 @endsection

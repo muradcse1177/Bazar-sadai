@@ -486,7 +486,7 @@ abstract class Calculator
      * Rounding is performed when the remainder of the division is not zero.
      *
      * @param string $a            The dividend.
-     * @param string $b            The divisor.
+     * @param string $b            The divisor, must not be zero.
      * @param int    $roundingMode The rounding mode.
      *
      * @return string
@@ -695,7 +695,11 @@ abstract class Calculator
                 break;
             }
 
-            $number[$i] = \chr(0);
+            $number[$i] = "\x00";
+
+            if ($i === 0) {
+                $number = "\x01" . $number;
+            }
         }
 
         return $number;

@@ -14,7 +14,7 @@ class ShurjopayService
     {
         $this->merchant_username = config('shurjopay.merchant_username');
         $this->merchant_password = config('shurjopay.merchant_password');
-        $this->client_ip = $_SERVER["REMOTE_ADDR"] ?? '127.0.0.1';
+        $this->client_ip = '127.0.0.1';
         $this->merchant_key_prefix = config('shurjopay.merchant_key_prefix');
     }
 

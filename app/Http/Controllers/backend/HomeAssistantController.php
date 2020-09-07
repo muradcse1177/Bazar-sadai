@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Http\Controllers\backend;
-
+use smasif\ShurjopayLaravelPackage\ShurjopayService;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -9,6 +9,10 @@ use Illuminate\Support\Facades\DB;
 class HomeAssistantController extends Controller
 {
     public function cookingPage(){
+        $shurjopay_service = new ShurjopayService();
+        $tx_id = $shurjopay_service->generateTxId();
+        $a = $shurjopay_service->sendPayment(200);
+        dd($a);
         $rows = DB::table('cooking')
             ->where('status', 1)
             ->orderBy('id', 'DESC')->Paginate(10);
@@ -109,10 +113,8 @@ class HomeAssistantController extends Controller
     }
     public function parlorService(){
         $rows = DB::table('parlor_service')
-            ->select('*','parlor_service.id as p_id')
-            ->join('parlor','parlor.id','=','parlor_service.p_type')
-            ->where('parlor_service.status', 1)
-            ->orderBy('parlor_service.id', 'DESC')->Paginate(10);
+            ->where('status', 1)
+            ->orderBy('id', 'DESC')->Paginate(10);
         return view('backend.parlorService', ['p_services' => $rows]);
     }
     public function getAllParlorType(Request $request){

@@ -1,5 +1,4 @@
 <?php
-
 use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
@@ -359,3 +358,40 @@ Route::group(['middleware' => ['userAuth']], function () {
     Route::get('getAllMedDept ', 'backend\UserController@getAllMedDept');
     Route::get('getHospitalListAll ', 'backend\UserController@getHospitalListAll');
     Route::get('getMealTypeAll ', 'backend\UserController@getMealTypeAll');
+    Route::get('serviceSubCategoryHomeAssistant/{id}', 'frontend\HomeAssistantController@serviceSubCategoryHomeAssistant');
+    Route::get('cookingPageFront', 'frontend\HomeAssistantController@cookingPageFront');
+    Route::get('getAllCookingType', 'frontend\HomeAssistantController@getAllCookingType');
+    Route::get('getMealTypeFront', 'frontend\HomeAssistantController@getMealTypeFront');
+    Route::get('getMealPersonFront', 'frontend\HomeAssistantController@getMealPersonFront');
+    Route::get('getMealTimeFront', 'frontend\HomeAssistantController@getMealTimeFront');
+    Route::get('getMealPriceFront', 'frontend\HomeAssistantController@getMealPriceFront');
+    Route::post('cookingBookingFront', 'frontend\HomeAssistantController@cookingBookingFront');
+    Route::get('clothWashingPage', 'frontend\HomeAssistantController@clothWashingPage');
+    Route::get('getAllClothTypeFront', 'frontend\HomeAssistantController@getAllClothTypeFront');
+    Route::post('clothWashingBookingFront', 'frontend\HomeAssistantController@clothWashingBookingFront');
+    Route::get('getClothPriceByIdFront', 'frontend\HomeAssistantController@getClothPriceByIdFront');
+    Route::get('cleaningPage', 'frontend\HomeAssistantController@cleaningPage');
+    Route::get('getAllCleaningTypeFront', 'frontend\HomeAssistantController@getAllCleaningTypeFront');
+    Route::get('getCleaningSizeFront', 'frontend\HomeAssistantController@getCleaningSizeFront');
+    Route::get('getCleaningPriceFront', 'frontend\HomeAssistantController@getCleaningPriceFront');
+    Route::post('cleaningBookingFront', 'frontend\HomeAssistantController@cleaningBookingFront');
+    Route::get('helpingHandPage', 'frontend\HomeAssistantController@helpingHandPage');
+    Route::get('getAllHelpingHandTypeFront', 'frontend\HomeAssistantController@getAllHelpingHandTypeFront');
+    Route::get('getHelpingTimeFront', 'frontend\HomeAssistantController@getHelpingTimeFront');
+    Route::get('getHelpingPriceFront', 'frontend\HomeAssistantController@getHelpingPriceFront');
+    Route::post('helpingHandBookingFront', 'frontend\HomeAssistantController@helpingHandBookingFront');
+    Route::get('guardPage', 'frontend\HomeAssistantController@guardPage');
+    Route::get('getAllGuardTypeFront', 'frontend\HomeAssistantController@getAllGuardTypeFront');
+    Route::get('getGuardTimeFront', 'frontend\HomeAssistantController@getGuardTimeFront');
+    Route::get('getGuardPriceFront', 'frontend\HomeAssistantController@getGuardPriceFront');
+    Route::post('guardBookingFront', 'frontend\HomeAssistantController@guardBookingFront');
+    Route::get('productServicingPage', 'frontend\HomeAssistantController@productServicingPage');
+    Route::get('getAllProductServiceTypeFront', 'frontend\HomeAssistantController@getAllProductServiceTypeFront');
+    Route::get('getProductServiceNameTimeFront', 'frontend\HomeAssistantController@getProductServiceNameTimeFront');
+    Route::get('getProductServicePriceFront', 'frontend\HomeAssistantController@getProductServicePriceFront');
+    Route::post('productServicingBookingFront', 'frontend\HomeAssistantController@productServicingBookingFront');
+    Route::get('parlorServicingPage', 'frontend\HomeAssistantController@parlorServicingPage');
+    Route::get('getAllParlorTypeFront', 'frontend\HomeAssistantController@getAllParlorTypeFront');
+    Route::get('getParlorServiceNameFront', 'frontend\HomeAssistantController@getParlorServiceNameFront');
+    Route::get('getParlorServicePriceFront', 'frontend\HomeAssistantController@getParlorServicePriceFront');
+    Route::post('parlorServiceBookingFront', 'frontend\HomeAssistantController@parlorServiceBookingFront');

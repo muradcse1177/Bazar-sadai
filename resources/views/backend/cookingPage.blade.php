@@ -36,8 +36,8 @@
                             <label> ধরণ</label>
                             <select class="form-control select2 type" name="type" id="type" style="width: 100%;" required>
                                 <option  value="" selected> ধরণ নির্বাচন করুন</option>
-                                <option  value="1"> প্রতি দিন</option>
-                                <option  value="30"> প্রতি মাস</option>
+                                <option  value="ডেইলি">ডেইলি</option>
+                                <option  value="মাসিক">মাসিক</option>
                             </select>
                         </div>
                         <div class="form-group">
@@ -113,7 +113,7 @@
                         </tr>
                         @foreach($cookings as $cooking)
                             <tr>
-                                <td>  @if ($cooking->cooking_type ==1){{'দৈনিক' }}  @else{{'মাসিক'}}@endif </td>
+                                <td> {{$cooking->cooking_type}}</td>
                                 <td> {{$cooking->meal}} </td>
                                 <td> {{$cooking->person}} </td>
                                 <td> {{$cooking->time}} </td>

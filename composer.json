@@ -16,7 +16,9 @@
         "laravel/tinker": "^2.0",
         "laravel/ui": "^2.0",
         "laravelcollective/html": "^6.1",
-        "smasif/shurjopay-laravel-package": "^1.0"
+        "smasif/shurjopay-laravel-package": "^1.0",
+        "ext-simplexml": "*",
+        "ext-curl": "*"
     },
     "require-dev": {
         "facade/ignition": "^2.0",

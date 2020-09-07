@@ -7,12 +7,12 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
+use smasif\ShurjopayLaravelPackage\ShurjopayService;
 
 class FrontController extends Controller
 {
     public function homepageManager(Request $request){
         try{
-
             $product_cat = DB::table('categories')
                 ->where('type', 1)
                 ->where('status', 1)
@@ -1297,10 +1297,16 @@ class FrontController extends Controller
             ->where('type', 2)
             ->where('status', 1)
             ->orderBy('id', 'ASC')->get();
+        $home_assistants = DB::table('categories')
+            ->where('id', 9)
+            ->where('type', 2)
+            ->where('status', 1)
+            ->orderBy('id', 'ASC')->get();
         return view('frontend.servicesCategory',
                 [
                     'services_cat_trans' => $services_cat_trans,
-                    'services_cat_medical'=>$services_cat_medical
+                    'services_cat_medical'=>$services_cat_medical,
+                    'home_assistants'=>$home_assistants
                 ]);
     }
     public function serviceSubCategoryMedical($id){
@@ -1403,5 +1409,7 @@ class FrontController extends Controller
             return response()->json(array('data'=>'not ok'));
         }
     }
+
+
 
 }

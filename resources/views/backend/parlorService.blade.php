@@ -35,7 +35,9 @@
                         <div class="form-group">
                             <label>পার্লার ধরন</label>
                             <select class="form-control select2 p_type" name="p_type" style="width: 100%;" required>
-                                <option selected>পার্লার ধরন  নির্বাচন করুন</option>
+                                <option value="" selected>পার্লার ধরন  নির্বাচন করুন</option>
+                                <option value="ইন্সটিটিউশন">ইন্সটিটিউশন</option>
+                                <option value="প্রাইভেট">প্রাইভেট</option>
                             </select>
                         </div>
                         <div class="form-group">
@@ -71,14 +73,14 @@
                         </tr>
                         @foreach($p_services as $p_service)
                             <tr>
-                                <td> {{$p_service-> name}} </td>
+                                <td> {{$p_service->p_type}} </td>
                                 <td> {{$p_service->service}} </td>
                                 <td> {{$p_service->price}} </td>
                                 <td class="td-actions text-center">
-                                    <button type="button" rel="tooltip" class="btn btn-success edit" data-id="{{$p_service->p_id}}">
+                                    <button type="button" rel="tooltip" class="btn btn-success edit" data-id="{{$p_service->id}}">
                                         <i class="fa fa-edit"></i>
                                     </button>
-                                    <button type="button" rel="tooltip"  class="btn btn-danger delete" data-id="{{$p_service->p_id}}">
+                                    <button type="button" rel="tooltip"  class="btn btn-danger delete" data-id="{{$p_service->id}}">
                                         <i class="fa fa-close"></i>
                                     </button>
                                 </td>
@@ -120,28 +122,6 @@
 @endsection
 @section('js')
     <script>
-
-        $(document).ready(function(){
-            $.ajax({
-                url: 'getAllParlorType',
-                type: "GET",
-                contentType: "application/json; charset=utf-8",
-                dataType: "json",
-                success: function (response) {
-                    var data = response.data;
-                    var len = data.length;
-                    for( var i = 0; i<len; i++){
-                        var id = data[i]['id'];
-                        var name = data[i]['name'];
-                        $(".p_type").append("<option value='"+id+"'>"+name+"</option>");
-                    }
-
-                },
-                failure: function (msg) {
-                    alert('an error occured');
-                }
-            });
-        });
         $(document).ready(function(){
             $(".addbut").click(function(){
                 $(".divform").show();
