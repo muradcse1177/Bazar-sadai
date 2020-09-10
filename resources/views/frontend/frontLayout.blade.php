@@ -43,7 +43,14 @@
                 width: 250px;
             }
         }
-
+        .col-lg-1, .col-lg-10, .col-lg-11, .col-lg-12, .col-lg-2, .col-lg-3, .col-lg-4, .col-lg-5, .col-lg-6, .col-lg-7, .col-lg-8, .col-lg-9, .col-md-1, .col-md-10, .col-md-11, .col-md-12, .col-md-2, .col-md-3, .col-md-4, .col-md-5, .col-md-6, .col-md-7, .col-md-8, .col-md-9, .col-sm-1, .col-sm-10, .col-sm-11, .col-sm-12, .col-sm-2, .col-sm-3, .col-sm-4, .col-sm-5, .col-sm-6, .col-sm-7, .col-sm-8, .col-sm-9, .col-xs-1, .col-xs-10, .col-xs-11, .col-xs-12, .col-xs-2, .col-xs-3, .col-xs-4, .col-xs-5, .col-xs-6, .col-xs-7, .col-xs-8, .col-xs-9 {
+            position: relative;
+            min-height: 1px;
+            padding-right: 7px;
+            padding-left: 7px;
+            margin-left: 0px;
+            margin-right: 0px;
+        }
         .word-wrap{
             overflow-wrap: break-word;
         }
@@ -134,6 +141,15 @@
             margin-left: 5px;
             margin-right: 5px;
         }
+        .container {
+            padding-right: 5px;
+            padding-left: 5px;
+            margin-right: auto;
+            margin-left: auto;
+        }
+        .skin-blue .main-header li.user-header {
+            background-color: darkgreen;
+        }
     </style>
     @yield('ExtCss')
 </head>
@@ -157,8 +173,21 @@
                     <ul class="nav navbar-nav">
 
                         @if (Cookie::get('user') == null)
-                        <li><a href="{{ url('login') }}">লগ ইন</a></li>
-                        <li><a href="{{ url('signup') }}">সাইন আপ</a></li>
+                            <li><a href="{{ url('login') }}">লগ ইন</a></li>
+                            <li><a href="{{ url('signup') }}">সাইন আপ</a></li>
+                        @endif
+                        @if (Cookie::get('user') != null)
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-expanded="false">আমার ট্রানজেকশন <span class="caret"></span></a>
+                                <ul class="dropdown-menu" role="menu">
+                                    <li><a href="{{url('myProductOrder')}}">পণ্য ক্রয়</a></li>
+                                    <li><a href="{{url('myAnimalOrder')}}">পশু ক্রয়</a></li>
+                                    <li><a href="{{url('myTicketOrder')}}">টিকেট ক্রয়</a></li>
+                                    <li><a href="{{url('myDrAppointment')}}">ডাক্তার এপয়েনমেনট</a></li>
+                                    <li><a href="{{url('myTherapyAppointment')}}">থেরাপি এপয়েনমেনট</a></li>
+                                    <li><a href="{{url('myDiagnosticAppointment')}}">ডায়াগনস্টিক এপয়েনমেনট</a></li>
+                                </ul>
+                            </li>
                         @endif
                         <li><a href="#" data-toggle="modal" data-target="#aboutus">আমাদের সম্পর্কে</a></li>
                         <li><a href="#" data-toggle="modal" data-target="#contactus">যোগাযোগ করুন</a></li>

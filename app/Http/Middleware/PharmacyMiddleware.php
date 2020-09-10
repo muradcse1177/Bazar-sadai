@@ -19,8 +19,6 @@ class PharmacyMiddleware
         if(Cookie::get('user_type') == 15){
             return $next($request);
         }
-        else{
-            return redirect()->to('login')->with('errorMessage', 'আপনার অনুমতি নেই।');
-        }
+        return redirect()->to('homepage');
     }
 }

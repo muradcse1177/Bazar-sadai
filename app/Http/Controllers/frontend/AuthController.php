@@ -33,19 +33,27 @@ class AuthController extends Controller
                         Cookie::queue('user_type', $rows->user_type, time()+31556926 ,'/');
                         Cookie::queue('user_photo', $rows->photo, time()+31556926 ,'/');
                         if($role==3){
-                            Cookie::queue('frontRole', $role, time()+31556926 ,'/');
+                            Cookie::queue('front', $rows->id, time()+31556926 ,'/');
                             return redirect()->to('cart_view');
                         }
                         elseif($role==15){
+                            Cookie::queue('admin', $rows->id, time()+31556926 ,'/');
                             return redirect()->to('myMedicineSale');
                         }
-                        elseif($role==4 || $role==5 || $role==6 || $role==13){
-                            Cookie::queue('frontRole', $role, time()+31556926 ,'/');
+                        elseif($role==3 || $role==4 || $role==5 || $role==13){
                             return redirect()->to('profile');
                         }
-                        else{
-                            Cookie::queue('backRole', $role, time()+31556926 ,'/');
-                            return view('backend.dashboard');
+                        elseif($role==1 || $role==2 || $role==8){
+                            Cookie::queue('admin', $rows->id, time()+31556926 ,'/');
+                            return redirect()->to('dashboard');
+                        }
+                        elseif ($role==12){
+                            Cookie::queue('admin', $rows->id, time()+31556926 ,'/');
+                            return redirect()->to('product');
+                        }
+                        elseif ($role==11){
+                            Cookie::queue('admin', $rows->id, time()+31556926 ,'/');
+                            return redirect()->to('accounting');
                         }
                     }
                     else{
@@ -190,16 +198,16 @@ class AuthController extends Controller
         }
     }
     public function logout(){
-        Cookie::queue(Cookie::forget('user'));
-        Cookie::queue(Cookie::forget('user_id'));
-        Cookie::queue(Cookie::forget('user_name'));
-        Cookie::queue(Cookie::forget('user_type'));
-        Cookie::queue(Cookie::forget('user_photo'));
-        Cookie::queue(Cookie::forget('frontRole'));
-        Cookie::queue(Cookie::forget('backRole'));
+        Cookie::queue(Cookie::forget('user','/'));
+        Cookie::queue(Cookie::forget('user_id','/'));
+        Cookie::queue(Cookie::forget('user_name','/'));
+        Cookie::queue(Cookie::forget('user_type','/'));
+        Cookie::queue(Cookie::forget('user_photo','/'));
+        Cookie::queue(Cookie::forget('admin','/'));
+        Cookie::queue(Cookie::forget('front','/'));
         session()->forget('user_info');
         session()->flush();
-        return redirect()->to('/');
+        return redirect()->to('homepage');
     }
     public function profile(){
         try{

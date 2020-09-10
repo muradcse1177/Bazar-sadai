@@ -244,9 +244,23 @@
             </div>
         </div>
         <div class="col-md-12">
-            <div class="box">
+            <div class="box box-primary">
                 <div class="box-header with-border">
                     <h3 class="box-title">ইউজার লিস্ট </h3>
+                    {{ Form::open(array('url' => 'selectUserFromUserPanel',  'method' => 'post')) }}
+                    {{ csrf_field() }}
+                    <div class="pull-right">
+                        <span>
+                            <select class="form type" name="userType" required>
+                                <option value="" selected>ইউজার নির্বাচন করুন</option>
+                                <option value="All">সকল ইউজার</option>
+                            </select> &nbsp;
+                            <button type="submit" rel="tooltip"  class=" pull-right" style="height: 23px; text-align: center; background-color: darkgreen; color: white" >
+                                <i class="fa fa-arrow-right"></i>
+                            </button>
+                        </span>
+                    </div>
+                    {{ Form::close() }}
                 </div>
                 <!-- /.box-header -->
                 <div class="box-body table-responsive">

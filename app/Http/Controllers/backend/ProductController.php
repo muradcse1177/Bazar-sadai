@@ -209,13 +209,36 @@ class ProductController extends Controller
         try{
 
             $rows = DB::table('products')->where('status', 1)
-                ->orderBy('id', 'DESC')->Paginate(10);
+                ->orderBy('id', 'DESC')->Paginate(20);
             return view('backend.product', ['products' => $rows]);
         }
         catch(\Illuminate\Database\QueryException $ex){
             return back()->with('errorMessage', $ex->getMessage());
         }
     }
+    public function productSearchFromAdmin(Request $request){
+        try{
+            if($request->proSearch == null){
+                $rows = DB::table('products')
+                    ->where('status', 1)
+                    ->orderBy('id', 'DESC')
+                    ->Paginate(20);
+            }
+            else{
+                $rows = DB::table('products')
+                    ->where('status', 1)
+                    ->where('name', 'LIKE','%'.$request->proSearch.'%')
+                    ->orderBy('id', 'DESC')
+                    ->Paginate(20);
+            }
+
+            return view('backend.product', ['products' => $rows, "key"=>$request->proSearch]);
+        }
+        catch(\Illuminate\Database\QueryException $ex){
+            return back()->with('errorMessage', $ex->getMessage());
+        }
+    }
+
     public function getAllCategory(Request $request){
         try{
             $rows = DB::table('categories')
@@ -473,6 +496,30 @@ class ProductController extends Controller
             $rows = DB::table('medicine_lists')->where('status', 1)
                 ->orderBy('name')->Paginate(20);
             return view('backend.allMedicineList', ['allMedicineLists' => $rows]);
+        }
+        catch(\Illuminate\Database\QueryException $ex){
+            return back()->with('errorMessage', $ex->getMessage());
+        }
+    }
+    public function medicineSearchFromAdmin(Request $request){
+        try{
+            if($request->proSearch == null){
+                $rows = DB::table('medicine_lists')
+                    ->where('status', 1)
+                    ->orderBy('name')
+                    ->Paginate(20);
+                return view('backend.allMedicineList', ['allMedicineLists' => $rows]);
+            }
+            else{
+                $rows = DB::table('medicine_lists')
+                    ->where('status', 1)
+                    ->where('name', 'LIKE','%'.$request->proSearch.'%')
+                    ->orwhere('genre', 'LIKE','%'.$request->proSearch.'%')
+                    ->orwhere('company', 'LIKE','%'.$request->proSearch.'%')
+                    ->orderBy('name')
+                    ->Paginate(20);
+                return view('backend.allMedicineList', ['allMedicineLists' => $rows,"key"=>$request->proSearch]);
+            }
         }
         catch(\Illuminate\Database\QueryException $ex){
             return back()->with('errorMessage', $ex->getMessage());

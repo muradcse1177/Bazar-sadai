@@ -935,35 +935,4 @@ class MedicalServiceController extends Controller
         }
 
     }
-    public function doctorAppointmentReport(){
-        $rows = DB::table('dr_apportionment')
-            ->select('*','dr_apportionment.id as a_id','a.phone as dr_phone','b.phone as p_phone','a.name as dr_name')
-            ->join('users as a','a.id','=','dr_apportionment.dr_id')
-            ->join('users as b','b.id','=','dr_apportionment.user_id')
-            ->paginate('20');
-        //dd($rows);
-        return view('backend.doctorAppointmentReport',['drReports' => $rows]);
-    }
-    public function therapyAppointmentReport(){
-        $rows = DB::table('therapy_appointment')
-            ->select('*')
-            ->join('users','users.id','=','therapy_appointment.user_id')
-            ->join('therapyfees as a','a.id','=','therapy_appointment.therapy_fees_id')
-            ->join('therapy_center','therapy_center.id','=','a.therapy_center_id')
-            ->join('therapy_services','therapy_services.id','=','a.therapy_name_id')
-            ->paginate('20');
-        //dd($rows);
-        return view('backend.therapyAppointmentReport',['therapyReports' => $rows]);
-    }
-    public function diagnosticAppointmentReport(){
-        $rows = DB::table('diagonostic_appointment')
-            ->select('*')
-            ->join('users','users.id','=','diagonostic_appointment.user_id')
-            ->join('diagnostic_fees as a','a.id','=','diagonostic_appointment.diagnostic_fees_id')
-            ->join('diagnostic_center','diagnostic_center.id','=','a.diagnostic_center_id')
-            ->join('diagnostic_test','diagnostic_test.id','=','a.diagnostic_test_id')
-            ->paginate('20');
-        //dd($rows);
-        return view('backend.diagnosticAppointmentReport',['diagnosticReports' => $rows]);
-    }
 }

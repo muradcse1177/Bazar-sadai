@@ -26,6 +26,12 @@
     .pProduct{
         margin-bottom:2px;
     }
+    .container {
+        padding-right: 15px;
+        padding-left: 15px;
+        margin-right: auto;
+        margin-left: auto;
+    }
 </style>
 @endsection
 @section('content')

@@ -79,6 +79,17 @@
             <div class="box">
                 <div class="box-header with-border">
                     <h3 class="box-title">পন্য  লিস্ট </h3>
+                    {{ Form::open(array('url' => 'productSearchFromAdmin',  'method' => 'get')) }}
+                    {{ csrf_field() }}
+                    <div class="pull-right">
+                        <span>
+                            <input type="text" name="proSearch" size="9" value="<?php if(isset($key)) echo $key;?>"> &nbsp;
+                            <button type="submit" rel="tooltip"  class=" pull-right" style="height: 25px; text-align: center; background-color: darkgreen; color: white" >
+                                <i class="fa fa-arrow-right"></i>
+                            </button>
+                        </span>
+                    </div>
+                    {{ Form::close() }}
                 </div>
                 <!-- /.box-header -->
                 <div class="box-body table-responsive">

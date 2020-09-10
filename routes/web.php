@@ -15,8 +15,7 @@ use Illuminate\Support\Facades\Session;
 |
 */
 Route::group(['middleware' => ['pharmacyAuth']], function () {
-    //Pharmacy
-    Route::post('/', 'backend\PharmacyController@myMedicineSale');
+    Route::get('/', 'backend\PharmacyController@myMedicineSale');
     Route::get('medicineSelfManagement', 'backend\PharmacyController@medicineSelfManagement');
     Route::get('searchMedicineBackend', 'backend\PharmacyController@searchMedicineBackend');
     Route::get('medicineSelfName', 'backend\PharmacyController@medicineSelfName');
@@ -42,252 +41,252 @@ Route::group(['middleware' => ['pharmacyAuth']], function () {
     Route::get('myMedicineSalesReport', 'backend\PharmacyController@myMedicineSalesReport');
     Route::post('getSaleReportByDate', 'backend\PharmacyController@getSaleReportByDate');
 });
-
-Route::group(['middleware' => ['userAuth']], function () {
-
-    if(Cookie::get('backRole') != null) {
-
-//Division
-            Route::get('/division', 'backend\AddressController@selectDivision');
-            Route::post('/insertDivision', 'backend\AddressController@insertDivision');
-            Route::post('getDivisionList', 'backend\AddressController@getDivisionList');
-            Route::post('deleteDivision', 'backend\AddressController@deletetDivision');
+Route::group(['middleware' => ['adminUser']], function () {
+    Route::get('/division', 'backend\AddressController@selectDivision');
+    Route::post('/insertDivision', 'backend\AddressController@insertDivision');
+    Route::post('getDivisionList', 'backend\AddressController@getDivisionList');
+    Route::post('deleteDivision', 'backend\AddressController@deletetDivision');
 //District
-            Route::get('district', 'backend\AddressController@selectDistrict');
-            Route::post('/insertDistrict', 'backend\AddressController@insertDistrict');
-            Route::post('getDistrictList', 'backend\AddressController@getDistrictList');
-            Route::post('deleteDistrict', 'backend\AddressController@deleteDistrict');
+    Route::get('district', 'backend\AddressController@selectDistrict');
+    Route::post('/insertDistrict', 'backend\AddressController@insertDistrict');
+    Route::post('getDistrictList', 'backend\AddressController@getDistrictList');
+    Route::post('deleteDistrict', 'backend\AddressController@deleteDistrict');
 //Upzilla
-            Route::get('upazilla', 'backend\AddressController@selectUpzilla');
-            Route::post('insertUpazilla', 'backend\AddressController@insertUpazilla');
-            Route::post('getUpazillaList', 'backend\AddressController@getUpazillaList');
-            Route::post('deleteUpazilla', 'backend\AddressController@deleteUpazilla');
+    Route::get('upazilla', 'backend\AddressController@selectUpzilla');
+    Route::post('insertUpazilla', 'backend\AddressController@insertUpazilla');
+    Route::post('getUpazillaList', 'backend\AddressController@getUpazillaList');
+    Route::post('deleteUpazilla', 'backend\AddressController@deleteUpazilla');
 //union
-            Route::get('union', 'backend\AddressController@selectUnion');
-            Route::get('getUpazillaListAll', 'backend\AddressController@getUpazillaListAll');
-            Route::post('insertUnion', 'backend\AddressController@insertUnion');
-            Route::post('getUnionList', 'backend\AddressController@getUnionList');
-            Route::post('deleteUnion', 'backend\AddressController@deleteUnion');
+    Route::get('union', 'backend\AddressController@selectUnion');
+    Route::get('getUpazillaListAll', 'backend\AddressController@getUpazillaListAll');
+    Route::post('insertUnion', 'backend\AddressController@insertUnion');
+    Route::post('getUnionList', 'backend\AddressController@getUnionList');
+    Route::post('deleteUnion', 'backend\AddressController@deleteUnion');
 //Ward
-            Route::get('ward', 'backend\AddressController@selectWard');
-            Route::post('insertWard', 'backend\AddressController@insertWard');
-            Route::post('getWardList', 'backend\AddressController@getWardList');
-            Route::post('deleteWard', 'backend\AddressController@deleteWard');
+    Route::get('ward', 'backend\AddressController@selectWard');
+    Route::post('insertWard', 'backend\AddressController@insertWard');
+    Route::post('getWardList', 'backend\AddressController@getWardList');
+    Route::post('deleteWard', 'backend\AddressController@deleteWard');
 //City
-            Route::get('city', 'backend\AddressController@selectCity');
-            Route::post('insertCity', 'backend\AddressController@insertCity');
-            Route::post('getCityList', 'backend\AddressController@getCityList');
-            Route::post('deleteCity', 'backend\AddressController@deleteCity');
+    Route::get('city', 'backend\AddressController@selectCity');
+    Route::post('insertCity', 'backend\AddressController@insertCity');
+    Route::post('getCityList', 'backend\AddressController@getCityList');
+    Route::post('deleteCity', 'backend\AddressController@deleteCity');
 //City-Corporation
-            Route::get('city_corporation', 'backend\AddressController@selectCity_corporation');
-            Route::post('getCityCorporationList', 'backend\AddressController@getCityCorporationList');
-            Route::post('insertCitycorporation', 'backend\AddressController@insertCitycorporation');
-            Route::post('deleteCityCorporation', 'backend\AddressController@deleteCityCorporation');
+    Route::get('city_corporation', 'backend\AddressController@selectCity_corporation');
+    Route::post('getCityCorporationList', 'backend\AddressController@getCityCorporationList');
+    Route::post('insertCitycorporation', 'backend\AddressController@insertCitycorporation');
+    Route::post('deleteCityCorporation', 'backend\AddressController@deleteCityCorporation');
 //Thana
-            Route::get('thana', 'backend\AddressController@selectThana');
-            Route::get('getCityCorporationListAll', 'backend\AddressController@getCityCorporationListAll');
-            Route::post('insertThana', 'backend\AddressController@insertThana');
-            Route::post('getThanaList', 'backend\AddressController@getThanaList');
-            Route::post('deleteThana', 'backend\AddressController@deleteThana');
+    Route::get('thana', 'backend\AddressController@selectThana');
+    Route::get('getCityCorporationListAll', 'backend\AddressController@getCityCorporationListAll');
+    Route::post('insertThana', 'backend\AddressController@insertThana');
+    Route::post('getThanaList', 'backend\AddressController@getThanaList');
+    Route::post('deleteThana', 'backend\AddressController@deleteThana');
 //City Ward
-            Route::get('c_ward', 'backend\AddressController@selectC_ward');
-            Route::post('insertC_Ward', 'backend\AddressController@insertC_Ward');
-            Route::post('getC_WardList', 'backend\AddressController@getC_WardList');
-            Route::post('deleteC_ward', 'backend\AddressController@deleteC_ward');
+    Route::get('c_ward', 'backend\AddressController@selectC_ward');
+    Route::post('insertC_Ward', 'backend\AddressController@insertC_Ward');
+    Route::post('getC_WardList', 'backend\AddressController@getC_WardList');
+    Route::post('deleteC_ward', 'backend\AddressController@deleteC_ward');
 //User
-            Route::get('user_type', 'backend\UserController@selectUser_type');
-            Route::post('insertUserType', 'backend\UserController@insertUserType');
-            Route::get('user', 'backend\UserController@selectUser');
-            Route::get('getAllUserType', 'backend\UserController@getAllUserType');
-            Route::post('insertUser', 'backend\UserController@insertUser');
-            Route::post('getUserListByID', 'backend\UserController@getUserListByID');
-            Route::post('deleteUser', 'backend\UserController@deleteUser');
-            Route::get('about_us', 'backend\UserController@about_us');
-            Route::post('insertAboutUs', 'backend\UserController@insertAboutUs');
-            Route::post('getAboutUS', 'backend\UserController@getAboutUS');
-            Route::get('contact_us ', 'backend\UserController@contact_us');
-            Route::post('getContactUs ', 'backend\UserController@getContactUs');
-            Route::get('getAllMedDept ', 'backend\UserController@getAllMedDept');
-            Route::get('getHospitalListAll ', 'backend\UserController@getHospitalListAll');
+    Route::get('user_type', 'backend\UserController@selectUser_type');
+    Route::post('insertUserType', 'backend\UserController@insertUserType');
+    Route::get('user', 'backend\UserController@selectUser');
+    Route::post('selectUserFromUserPanel', 'backend\UserController@selectUserFromUserPanel');
+    Route::get('getAllUserType', 'backend\UserController@getAllUserType');
+    Route::post('insertUser', 'backend\UserController@insertUser');
+    Route::post('getUserListByID', 'backend\UserController@getUserListByID');
+    Route::post('deleteUser', 'backend\UserController@deleteUser');
+    Route::get('about_us', 'backend\UserController@about_us');
+    Route::post('insertAboutUs', 'backend\UserController@insertAboutUs');
+    Route::post('getAboutUS', 'backend\UserController@getAboutUS');
+    Route::get('contact_us ', 'backend\UserController@contact_us');
+    Route::post('getContactUs ', 'backend\UserController@getContactUs');
+    Route::get('getAllMedDept ', 'backend\UserController@getAllMedDept');
+    Route::get('getHospitalListAll ', 'backend\UserController@getHospitalListAll');
 
 //Login
-            Route::get('dashboard', function () {
-                return view('backend.dashboard');
-            });
+    Route::get('dashboard ', 'backend\UserController@dashboard');
+    Route::get('/', 'backend\UserController@dashboard');
 //Product & Service
-            Route::get('category', 'backend\ProductController@selectCategory');
-            Route::post('insertCategory', 'backend\ProductController@insertCategory');
-            Route::post('getCategoryList', 'backend\ProductController@getCategoryList');
-            Route::post('deleteCategory', 'backend\ProductController@deleteCategory');
-            Route::get('subcategory', 'backend\ProductController@selectSubCategory');
-            Route::get('getCategoryListAll', 'backend\ProductController@getCategoryListAll');
-            Route::post('insertSubcategory', 'backend\ProductController@insertSubcategory');
-            Route::post('getSubCategoryList', 'backend\ProductController@getSubCategoryList');
-            Route::post('deleteSubCategory', 'backend\ProductController@deleteSubCategory');
-            Route::get('product', 'backend\ProductController@selectProduct');
-            Route::get('getAllCategory', 'backend\ProductController@getAllCategory');
-            Route::get('getSubCategoryListAll', 'backend\ProductController@getSubCategoryListAll');
-            Route::post('insertProducts', 'backend\ProductController@insertProducts');
-            Route::post('getProductList', 'backend\ProductController@getProductList');
-            Route::post('deleteProduct', 'backend\ProductController@deleteProduct');
-            Route::get('delivery_charge', 'backend\ProductController@delivery_charge');
-            Route::post('getDeliveryCharge', 'backend\ProductController@getDeliveryCharge');
-            Route::post('insertDeliveryCharge', 'backend\ProductController@insertDeliveryCharge');
-            Route::get('dealerProductManagement', 'backend\ProductController@dealerProductManagement');
-            Route::post('changeProductPrice', 'backend\ProductController@changeProductPrice');
-            Route::get('compareDealerProduct', 'backend\ProductController@compareDealerProduct');
-            Route::get('allMedicineList', 'backend\ProductController@allMedicineList');
+    Route::get('category', 'backend\ProductController@selectCategory');
+    Route::post('insertCategory', 'backend\ProductController@insertCategory');
+    Route::post('getCategoryList', 'backend\ProductController@getCategoryList');
+    Route::post('deleteCategory', 'backend\ProductController@deleteCategory');
+    Route::get('subcategory', 'backend\ProductController@selectSubCategory');
+    Route::get('getCategoryListAll', 'backend\ProductController@getCategoryListAll');
+    Route::post('insertSubcategory', 'backend\ProductController@insertSubcategory');
+    Route::post('getSubCategoryList', 'backend\ProductController@getSubCategoryList');
+    Route::post('deleteSubCategory', 'backend\ProductController@deleteSubCategory');
+    Route::get('product', 'backend\ProductController@selectProduct');
+    Route::get('productSearchFromAdmin', 'backend\ProductController@productSearchFromAdmin');
+    Route::get('medicineSearchFromAdmin', 'backend\ProductController@medicineSearchFromAdmin');
+    Route::get('getAllCategory', 'backend\ProductController@getAllCategory');
+    Route::get('getSubCategoryListAll', 'backend\ProductController@getSubCategoryListAll');
+    Route::post('insertProducts', 'backend\ProductController@insertProducts');
+    Route::post('getProductList', 'backend\ProductController@getProductList');
+    Route::post('deleteProduct', 'backend\ProductController@deleteProduct');
+    Route::get('delivery_charge', 'backend\ProductController@delivery_charge');
+    Route::post('getDeliveryCharge', 'backend\ProductController@getDeliveryCharge');
+    Route::post('insertDeliveryCharge', 'backend\ProductController@insertDeliveryCharge');
+    Route::get('dealerProductManagement', 'backend\ProductController@dealerProductManagement');
+    Route::post('changeProductPrice', 'backend\ProductController@changeProductPrice');
+    Route::get('compareDealerProduct', 'backend\ProductController@compareDealerProduct');
+    Route::get('allMedicineList', 'backend\ProductController@allMedicineList');
+    Route::get('medicineSearchFromAdmin', 'backend\ProductController@medicineSearchFromAdmin');
+    Route::post('getProductSalesOrderListByDate', 'backend\ReportController@getProductSalesOrderListByDate');
 //Report
-            Route::get('salesReport', 'backend\ReportController@salesReport');
-            Route::get('animalSalesReport', 'backend\ReportController@animalSalesReport');
-            Route::get('ticketSalesReport', 'backend\ReportController@ticketSalesReport');
-            Route::get('doctorAppointmentReport', 'backend\MedicalServiceController@doctorAppointmentReport');
-            Route::get('therapyAppointmentReport', 'backend\MedicalServiceController@therapyAppointmentReport');
-            Route::get('diagnosticAppointmentReport', 'backend\MedicalServiceController@diagnosticAppointmentReport');
-            Route::get('medicineOrderReportAdmin', 'backend\PharmacyController@medicineOrderReportAdmin');
+    Route::get('salesReport', 'backend\ReportController@salesReport');
+    Route::get('animalSalesReport', 'backend\ReportController@animalSalesReport');
+    Route::post('getAnimalSalesOrderListByDate', 'backend\ReportController@getAnimalSalesOrderListByDate');
+    Route::get('ticketSalesReport', 'backend\ReportController@ticketSalesReport');
+    Route::post('getTicketSalesOrderListByDate', 'backend\ReportController@getTicketSalesOrderListByDate');
+    Route::get('doctorAppointmentReport', 'backend\ReportController@doctorAppointmentReport');
+    Route::post('getDrAppOrderListByDate', 'backend\ReportController@getDrAppOrderListByDate');
+    Route::get('therapyAppointmentReport', 'backend\ReportController@therapyAppointmentReport');
+    Route::post('getTherapyAppOrderListByDate', 'backend\ReportController@getTherapyAppOrderListByDate');
+    Route::get('diagnosticAppointmentReport', 'backend\ReportController@diagnosticAppointmentReport');
+    Route::post('getDiagAppOrderListByDate', 'backend\ReportController@getDiagAppOrderListByDate');
+    Route::get('medicineOrderReportAdmin', 'backend\PharmacyController@medicineOrderReportAdmin');
 //Accounting
-            Route::get('accounting', 'backend\ReportController@accounting');
-            Route::post('insertAccounting', 'backend\ReportController@insertAccounting');
-            Route::post('getAccountingReportByDate', 'backend\ReportController@getAccountingReportByDate');
-            Route::post('getAccountingListById', 'backend\ReportController@getAccountingListById');
+    Route::get('accounting', 'backend\ReportController@accounting');
+    Route::post('insertAccounting', 'backend\ReportController@insertAccounting');
+    Route::post('getAccountingReportByDate', 'backend\ReportController@getAccountingReportByDate');
+    Route::post('getAccountingListById', 'backend\ReportController@getAccountingListById');
 
-            Route::get('login', function () {
-                return view('backend.dashboard');
-            });
-            Route::get('/', function () {
-                return view('backend.dashboard');
-            });
 //Transport Services
-            Route::get('ticketRoute', 'backend\TransportController@ticketRoute');
-            Route::get('getAllTransportList', 'backend\TransportController@getAllTransportList');
-            Route::get('getTransportTypeList', 'backend\TransportController@getTransportTypeList');
-            Route::post('insertTicketRoute', 'backend\TransportController@insertTicketRoute');
-            Route::get('coachPage', 'backend\TransportController@coachPage');
-            Route::post('insertCoach', 'backend\TransportController@insertCoach');
-            Route::post('getCoachList', 'backend\TransportController@getCoachList');
-            Route::post('deleteCoach', 'backend\TransportController@deleteCoach');
-            Route::get('getCoachListById', 'backend\TransportController@getCoachListById');
-            Route::post('getTicketRouteList', 'backend\TransportController@getTicketRouteList');
-            Route::post('deleteTransportsTickets', 'backend\TransportController@deleteTransportsTickets');
+    Route::get('ticketRoute', 'backend\TransportController@ticketRoute');
+    Route::get('getAllTransportList', 'backend\TransportController@getAllTransportList');
+    Route::get('getTransportTypeList', 'backend\TransportController@getTransportTypeList');
+    Route::post('insertTicketRoute', 'backend\TransportController@insertTicketRoute');
+    Route::get('coachPage', 'backend\TransportController@coachPage');
+    Route::post('insertCoach', 'backend\TransportController@insertCoach');
+    Route::post('getCoachList', 'backend\TransportController@getCoachList');
+    Route::post('deleteCoach', 'backend\TransportController@deleteCoach');
+    Route::get('getCoachListById', 'backend\TransportController@getCoachListById');
+    Route::post('getTicketRouteList', 'backend\TransportController@getTicketRouteList');
+    Route::post('deleteTransportsTickets', 'backend\TransportController@deleteTransportsTickets');
 
 //Medical Services
-            Route::get('departmentList', 'backend\MedicalServiceController@departmentList');
-            Route::post('insertMedDepartment', 'backend\MedicalServiceController@insertMedDepartment');
-            Route::post('departmentLists', 'backend\MedicalServiceController@departmentLists');
-            Route::post('deleteMedDepartment', 'backend\MedicalServiceController@deleteMedDepartment');
-            Route::get('hospitalList', 'backend\MedicalServiceController@hospitalList');
-            Route::get('getAllMedDepartment', 'backend\MedicalServiceController@getAllMedDepartment');
-            Route::post('insertHospital', 'backend\MedicalServiceController@insertHospital');
-            Route::post('hospitalListsById', 'backend\MedicalServiceController@hospitalListsById');
-            Route::post('deleteHospital', 'backend\MedicalServiceController@deleteHospital');
-            Route::get('doctorList', 'backend\MedicalServiceController@doctorList');
-            Route::get('getHospitalListAll', 'backend\MedicalServiceController@getHospitalListAll');
-            Route::get('privateChamberList', 'backend\MedicalServiceController@privateChamberList');
-            Route::get('getDoctorListAll', 'backend\MedicalServiceController@getDoctorListAll');
-            Route::post('insertPrivateChamber', 'backend\MedicalServiceController@insertPrivateChamber');
-            Route::post('chamberListsById', 'backend\MedicalServiceController@chamberListsById');
-            Route::post('deleteChamber', 'backend\MedicalServiceController@deleteChamber');
-            Route::get('therapyServiceList', 'backend\MedicalServiceController@therapyServiceList');
-            Route::post('insertTherapyService', 'backend\MedicalServiceController@insertTherapyService');
-            Route::post('therapyListsById', 'backend\MedicalServiceController@therapyListsById');
-            Route::post('deleteTherapyService', 'backend\MedicalServiceController@deleteTherapyService');
-            Route::get('therapyCenterList', 'backend\MedicalServiceController@therapyCenterList');
-            Route::post('insertTherapyCenter', 'backend\MedicalServiceController@insertTherapyCenter');
-            Route::get('getAllTherapyServiceList', 'backend\MedicalServiceController@getAllTherapyServiceList');
-            Route::post('therapyCenterListsById', 'backend\MedicalServiceController@therapyCenterListsById');
-            Route::post('deleteTherapyCenter', 'backend\MedicalServiceController@deleteTherapyCenter');
-            Route::get('therapyFees', 'backend\MedicalServiceController@therapyFees');
-            Route::get('getTherapyCenterById', 'backend\MedicalServiceController@getTherapyCenterById');
-            Route::post('insertTherapyFees', 'backend\MedicalServiceController@insertTherapyFees');
-            Route::post('therapyFeesListsById', 'backend\MedicalServiceController@therapyFeesListsById');
-            Route::post('deleteTherapyFees', 'backend\MedicalServiceController@deleteTherapyFees');
-            Route::get('diagnosticTestList', 'backend\MedicalServiceController@diagnosticTestList');
-            Route::post('insertDiagnosticTest', 'backend\MedicalServiceController@insertDiagnosticTest');
-            Route::post('diagnosticListById', 'backend\MedicalServiceController@diagnosticListById');
-            Route::post('deleteDiagnosticTest', 'backend\MedicalServiceController@deleteDiagnosticTest');
-            Route::get('getAllDiagnosticTest', 'backend\MedicalServiceController@getAllDiagnosticTest');
-            Route::get('diagnosticCenterList', 'backend\MedicalServiceController@diagnosticCenterList');
-            Route::post('insertDiagnosticCenter', 'backend\MedicalServiceController@insertDiagnosticCenter');
-            Route::post('diagnosticCenterListsById', 'backend\MedicalServiceController@diagnosticCenterListsById');
-            Route::get('diagnosticFees', 'backend\MedicalServiceController@diagnosticFees');
-            Route::get('getDiagnosticCenterById', 'backend\MedicalServiceController@getDiagnosticCenterById');
-            Route::post('insertDiagnosticFees', 'backend\MedicalServiceController@insertDiagnosticFees');
-            Route::post('diagnosticFeesListsById', 'backend\MedicalServiceController@diagnosticFeesListsById');
-            Route::post('deleteDiagnosticFees', 'backend\MedicalServiceController@deleteDiagnosticFees');
- //Pharmacy
-            Route::get('medicineCompanyEmail', 'backend\PharmacyController@medicineCompanyEmail');
-            Route::get('getAllMedicineCompany', 'backend\PharmacyController@getAllMedicineCompany');
-            Route::post('insertMedicineCompanyEmail', 'backend\PharmacyController@insertMedicineCompanyEmail');
-            Route::post('getMedicineCompanyEmailById', 'backend\PharmacyController@getMedicineCompanyEmailById');
-            Route::post('deleteMedicineCompanyEmail', 'backend\PharmacyController@deleteMedicineCompanyEmail');
-            Route::post('getAdminMedicineOrderById', 'backend\PharmacyController@getAdminMedicineOrderById');
-            Route::post('getOrderListByDateAdmin', 'backend\PharmacyController@getOrderListByDateAdmin');
+    Route::get('departmentList', 'backend\MedicalServiceController@departmentList');
+    Route::post('insertMedDepartment', 'backend\MedicalServiceController@insertMedDepartment');
+    Route::post('departmentLists', 'backend\MedicalServiceController@departmentLists');
+    Route::post('deleteMedDepartment', 'backend\MedicalServiceController@deleteMedDepartment');
+    Route::get('hospitalList', 'backend\MedicalServiceController@hospitalList');
+    Route::get('getAllMedDepartment', 'backend\MedicalServiceController@getAllMedDepartment');
+    Route::post('insertHospital', 'backend\MedicalServiceController@insertHospital');
+    Route::post('hospitalListsById', 'backend\MedicalServiceController@hospitalListsById');
+    Route::post('deleteHospital', 'backend\MedicalServiceController@deleteHospital');
+    Route::get('doctorList', 'backend\MedicalServiceController@doctorList');
+    Route::get('getHospitalListAll', 'backend\MedicalServiceController@getHospitalListAll');
+    Route::get('privateChamberList', 'backend\MedicalServiceController@privateChamberList');
+    Route::get('getDoctorListAll', 'backend\MedicalServiceController@getDoctorListAll');
+    Route::post('insertPrivateChamber', 'backend\MedicalServiceController@insertPrivateChamber');
+    Route::post('chamberListsById', 'backend\MedicalServiceController@chamberListsById');
+    Route::post('deleteChamber', 'backend\MedicalServiceController@deleteChamber');
+    Route::get('therapyServiceList', 'backend\MedicalServiceController@therapyServiceList');
+    Route::post('insertTherapyService', 'backend\MedicalServiceController@insertTherapyService');
+    Route::post('therapyListsById', 'backend\MedicalServiceController@therapyListsById');
+    Route::post('deleteTherapyService', 'backend\MedicalServiceController@deleteTherapyService');
+    Route::get('therapyCenterList', 'backend\MedicalServiceController@therapyCenterList');
+    Route::post('insertTherapyCenter', 'backend\MedicalServiceController@insertTherapyCenter');
+    Route::get('getAllTherapyServiceList', 'backend\MedicalServiceController@getAllTherapyServiceList');
+    Route::post('therapyCenterListsById', 'backend\MedicalServiceController@therapyCenterListsById');
+    Route::post('deleteTherapyCenter', 'backend\MedicalServiceController@deleteTherapyCenter');
+    Route::get('therapyFees', 'backend\MedicalServiceController@therapyFees');
+    Route::get('getTherapyCenterById', 'backend\MedicalServiceController@getTherapyCenterById');
+    Route::post('insertTherapyFees', 'backend\MedicalServiceController@insertTherapyFees');
+    Route::post('therapyFeesListsById', 'backend\MedicalServiceController@therapyFeesListsById');
+    Route::post('deleteTherapyFees', 'backend\MedicalServiceController@deleteTherapyFees');
+    Route::get('diagnosticTestList', 'backend\MedicalServiceController@diagnosticTestList');
+    Route::post('insertDiagnosticTest', 'backend\MedicalServiceController@insertDiagnosticTest');
+    Route::post('diagnosticListById', 'backend\MedicalServiceController@diagnosticListById');
+    Route::post('deleteDiagnosticTest', 'backend\MedicalServiceController@deleteDiagnosticTest');
+    Route::get('getAllDiagnosticTest', 'backend\MedicalServiceController@getAllDiagnosticTest');
+    Route::get('diagnosticCenterList', 'backend\MedicalServiceController@diagnosticCenterList');
+    Route::post('insertDiagnosticCenter', 'backend\MedicalServiceController@insertDiagnosticCenter');
+    Route::post('diagnosticCenterListsById', 'backend\MedicalServiceController@diagnosticCenterListsById');
+    Route::get('diagnosticFees', 'backend\MedicalServiceController@diagnosticFees');
+    Route::get('getDiagnosticCenterById', 'backend\MedicalServiceController@getDiagnosticCenterById');
+    Route::post('insertDiagnosticFees', 'backend\MedicalServiceController@insertDiagnosticFees');
+    Route::post('diagnosticFeesListsById', 'backend\MedicalServiceController@diagnosticFeesListsById');
+    Route::post('deleteDiagnosticFees', 'backend\MedicalServiceController@deleteDiagnosticFees');
+    //Pharmacy
+    Route::get('medicineCompanyEmail', 'backend\PharmacyController@medicineCompanyEmail');
+    Route::get('getAllMedicineCompany', 'backend\PharmacyController@getAllMedicineCompany');
+    Route::post('insertMedicineCompanyEmail', 'backend\PharmacyController@insertMedicineCompanyEmail');
+    Route::post('getMedicineCompanyEmailById', 'backend\PharmacyController@getMedicineCompanyEmailById');
+    Route::post('deleteMedicineCompanyEmail', 'backend\PharmacyController@deleteMedicineCompanyEmail');
+    Route::post('getAdminMedicineOrderById', 'backend\PharmacyController@getAdminMedicineOrderById');
+    Route::post('getOrderListByDateAdmin', 'backend\PharmacyController@getOrderListByDateAdmin');
 
 //Home Asistance Services
-        //Cooking
-            Route::get('cookingPage', 'backend\HomeAssistantController@cookingPage');
-            Route::post('insertCooking', 'backend\HomeAssistantController@insertCooking');
-            Route::post('getCookingList', 'backend\HomeAssistantController@getCookingList');
-            Route::post('deleteCooking', 'backend\HomeAssistantController@deleteCooking');
+    //Cooking
+    Route::get('cookingPage', 'backend\HomeAssistantController@cookingPage');
+    Route::post('insertCooking', 'backend\HomeAssistantController@insertCooking');
+    Route::post('getCookingList', 'backend\HomeAssistantController@getCookingList');
+    Route::post('deleteCooking', 'backend\HomeAssistantController@deleteCooking');
 
-        //Parlour
-            Route::get('parlorService', 'backend\HomeAssistantController@parlorService');
-            Route::get('getAllParlorType', 'backend\HomeAssistantController@getAllParlorType');
-            Route::post('insertParlourService', 'backend\HomeAssistantController@insertParlourService');
-            Route::post('getParlorServiceById', 'backend\HomeAssistantController@getParlorServiceById');
-            Route::post('deleteParlorService', 'backend\HomeAssistantController@deleteParlorService');
-        //ClothWashing
-            Route::get('clothWashing', 'backend\HomeAssistantController@clothWashing');
-            Route::post('insertCloth', 'backend\HomeAssistantController@insertCloth');
-            Route::post('getClothById', 'backend\HomeAssistantController@getClothById');
-            Route::post('deleteCloth', 'backend\HomeAssistantController@deleteCloth');
-            Route::post('roomCleaning', 'backend\HomeAssistantController@roomCleaning');
-        //Room Cleaning
-            Route::get('roomCleaning', 'backend\HomeAssistantController@roomCleaning');
-            Route::post('insertRoomCleaning', 'backend\HomeAssistantController@insertRoomCleaning');
-            Route::post('getRoomCleaningById', 'backend\HomeAssistantController@getRoomCleaningById');
-            Route::post('deleteRoomCleaning', 'backend\HomeAssistantController@deleteRoomCleaning');
-        //Child care & Helping Hand
-            Route::get('childCaring', 'backend\HomeAssistantController@childCaring');
-            Route::post('insertChildCaring', 'backend\HomeAssistantController@insertChildCaring');
-            Route::post('getChildCaringById', 'backend\HomeAssistantController@getChildCaringById');
-            Route::post('deleteChildCaring', 'backend\HomeAssistantController@deleteChildCaring');
-        //GuardList
-            Route::get('guardSetting', 'backend\HomeAssistantController@guardSetting');
-            Route::post('insertGuardSetting', 'backend\HomeAssistantController@insertGuardSetting');
-            Route::post('getGuardSettingById', 'backend\HomeAssistantController@getGuardSettingById');
-            Route::post('deleteGuardSetting', 'backend\HomeAssistantController@deleteGuardSetting');
-        //Various Servicing
-            Route::get('variousServicing', 'backend\HomeAssistantController@variousServicing');
-            Route::post('insertVariousServicing', 'backend\HomeAssistantController@insertVariousServicing');
-            Route::post('getVariousServiceById', 'backend\HomeAssistantController@getVariousServiceById');
-            Route::post('deleteVariousService', 'backend\HomeAssistantController@deleteVariousService');
-        }
+    //Parlour
+    Route::get('parlorService', 'backend\HomeAssistantController@parlorService');
+    Route::get('getAllParlorType', 'backend\HomeAssistantController@getAllParlorType');
+    Route::post('insertParlourService', 'backend\HomeAssistantController@insertParlourService');
+    Route::post('getParlorServiceById', 'backend\HomeAssistantController@getParlorServiceById');
+    Route::post('deleteParlorService', 'backend\HomeAssistantController@deleteParlorService');
+    //ClothWashing
+    Route::get('clothWashing', 'backend\HomeAssistantController@clothWashing');
+    Route::post('insertCloth', 'backend\HomeAssistantController@insertCloth');
+    Route::post('getClothById', 'backend\HomeAssistantController@getClothById');
+    Route::post('deleteCloth', 'backend\HomeAssistantController@deleteCloth');
+    Route::post('roomCleaning', 'backend\HomeAssistantController@roomCleaning');
+    //Room Cleaning
+    Route::get('roomCleaning', 'backend\HomeAssistantController@roomCleaning');
+    Route::post('insertRoomCleaning', 'backend\HomeAssistantController@insertRoomCleaning');
+    Route::post('getRoomCleaningById', 'backend\HomeAssistantController@getRoomCleaningById');
+    Route::post('deleteRoomCleaning', 'backend\HomeAssistantController@deleteRoomCleaning');
+    //Child care & Helping Hand
+    Route::get('childCaring', 'backend\HomeAssistantController@childCaring');
+    Route::post('insertChildCaring', 'backend\HomeAssistantController@insertChildCaring');
+    Route::post('getChildCaringById', 'backend\HomeAssistantController@getChildCaringById');
+    Route::post('deleteChildCaring', 'backend\HomeAssistantController@deleteChildCaring');
+    //GuardList
+    Route::get('guardSetting', 'backend\HomeAssistantController@guardSetting');
+    Route::post('insertGuardSetting', 'backend\HomeAssistantController@insertGuardSetting');
+    Route::post('getGuardSettingById', 'backend\HomeAssistantController@getGuardSettingById');
+    Route::post('deleteGuardSetting', 'backend\HomeAssistantController@deleteGuardSetting');
+    //Various Servicing
+    Route::get('variousServicing', 'backend\HomeAssistantController@variousServicing');
+    Route::post('insertVariousServicing', 'backend\HomeAssistantController@insertVariousServicing');
+    Route::post('getVariousServiceById', 'backend\HomeAssistantController@getVariousServiceById');
+    Route::post('deleteVariousService', 'backend\HomeAssistantController@deleteVariousService');
 });
-//Login
-    if(Cookie::get('frontRole') != null) {
-        Route::get('login', 'frontend\AuthController@profile');
-        Route::get('/', 'frontend\FrontController@homepageManager');
-        Route::get('profile', 'frontend\AuthController@profile');
-        Route::post('getUserList', 'backend\UserController@getUserList');
-        Route::post('insertUser', 'backend\UserController@insertUser');
-        Route::get('cart_view', 'frontend\FrontController@cart_view');
-    }
-    if(Cookie::get('frontRole') == null && Cookie::get('backRole') != null) {
-        Route::get('login', function () {
-            return view('frontend.login');
-        });
-    }
-    if(Cookie::get('frontRole') == null && Cookie::get('backRole') == null) {
-        Route::get('login', function () {
-            return view('frontend.login');
-        });
-        Route::get('/', 'frontend\FrontController@homepageManager');
-    }
-//Signup
+Route::group(['middleware' => ['buyer']], function () {
+    Route::get('profile', 'frontend\AuthController@profile');
+    Route::post('getUserListByIdProfile', 'backend\UserController@getUserListByID');
+    Route::get('myProductOrder', 'backend\UserController@myProductOrder');
+    Route::get('myAnimalOrder', 'backend\UserController@myAnimalOrder');
+    Route::get('myTicketOrder', 'backend\UserController@myTicketOrder');
+    Route::get('myDrAppointment', 'backend\UserController@myDrAppointment');
+    Route::get('myTherapyAppointment', 'backend\UserController@myTherapyAppointment');
+    Route::get('myDiagnosticAppointment', 'backend\UserController@myDiagnosticAppointment');
+});
+
+    //Signup
     Route::get('signup', function () {
         return view('frontend.signup');
     });
+    Route::get('login', function () {
+        return view('frontend.login');
+    });
+    if(Cookie::get('admin') == null){
+        Route::get('/', 'frontend\FrontController@homepageManager');
+    }
+
+    Route::post('getUserList', 'backend\UserController@getUserList');
+    Route::post('insertUser', 'backend\UserController@insertUser');
+    Route::get('cart_view', 'frontend\FrontController@cart_view');
+
+    Route::get('homepageManager', 'frontend\FrontController@homepageManager');
     Route::get('getAllUserTypeSignUp' , 'frontend\AuthController@getAllUserTypeSignUp');
     Route::post('insertNewUser' , 'frontend\AuthController@insertNewUser');
     Route::get('getAllDivision' , 'backend\AddressController@getAllDivision');
@@ -300,7 +299,7 @@ Route::group(['middleware' => ['userAuth']], function () {
     Route::get('getThanaListAll' , 'backend\AddressController@getThanaListAll');
     Route::get('getC_wardListAll' , 'backend\UserController@getC_wardListAll');
     Route::post('verifyUser' , 'frontend\AuthController@verifyUsers');
-//FrontRoute
+    //FrontRoute
     Route::get('homepage' , 'frontend\FrontController@homepageManager');
     Route::get('logout' , 'frontend\AuthController@logout');
     Route::get('product/{id}', 'frontend\FrontController@getProductByCatId');

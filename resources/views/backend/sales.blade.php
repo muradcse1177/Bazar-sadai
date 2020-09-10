@@ -21,9 +21,32 @@
     @endif
 
     <div class="row">
-
         <div class="col-md-12">
-            <div class="box">
+            <!-- general form elements -->
+            <div class="box box-primary">
+                <div class="divform">
+                    {{ Form::open(array('url' => 'getProductSalesOrderListByDate',  'method' => 'post')) }}
+                    {{ csrf_field() }}
+                    <div class="box-body">
+                        <div class="form-group">
+                            <label for="">ফ্রম ডেট</label>
+                            <input type="text" class="form-control from_date" id="from_date"  name="from_date" placeholder="ফ্রম ডেট লিখুন" required value="@if(isset($from_date)){{$from_date}} @endif">
+                        </div>
+                        <div class="form-group">
+                            <label for="">টু ডেট</label>
+                            <input type="text" class="form-control to_date" id="to_date"  name="to_date" placeholder="টু ডেট লিখুন" required value="@if(isset($to_date)){{$to_date}} @endif">
+                        </div>
+                    </div>
+                    <div class="box-footer">
+                        <input type="hidden" name="id" id="id" class="id">
+                        <button type="submit" class="btn btn-primary">সাবমিট</button>
+                    </div>
+                    {{ Form::close() }}
+                </div>
+            </div>
+        </div>
+        <div class="col-md-12">
+            <div class="box box-primary">
                 <div class="box-header with-border">
                     <h3 class="box-title">বিক্রয় রিপোর্ট</h3>
                 </div>
@@ -31,7 +54,6 @@
                 <div class="box-body table-responsive">
                     <table class="table table-bordered">
                         <tr>
-                            <th class="hidden"></th>
                             <th>তারিখ</th>
                             <th>ক্রেতার নাম</th>
                             <th>ঠিকানা</th>
@@ -41,94 +63,24 @@
                             <th>অবস্থা</th>
                             <th>বিস্তারিত</th>
                         </tr>
-                        <?php
-                             function en2bn($number) {
-                                $replace_array= array("১", "২", "৩", "৪", "৫", "৬", "৭", "৮", "৯", "০");
-                                $search_array= array("1", "2", "3", "4", "5", "6", "7", "8", "9", "0");
-                                $bn_number = str_replace($search_array, $replace_array, $number);
-                                return $bn_number;
-                             }
-                            use Illuminate\Support\Facades\DB;
-                            $stmt = DB::table('delivery_charges')
-                                ->where('purpose_id', 1)
-                                ->first();
-                            $delivery_charge = $stmt->charge;
-                            $id = Cookie::get('user_id');
-                            $stmt= DB::table('v_assign')
-                                ->select('*','v_assign.id AS salesid','v_assign.v_id AS v_id')
-                                ->leftJoin('users', 'users.id', '=', 'v_assign.user_id')
-                                ->orderBy('v_assign.sales_date','Desc')
-                                ->get();
-                            //dd($stmt);
-
-                            foreach($stmt as $row){
-                                $dealer = DB::table('users')
-                                    ->where('add_part1',$row->add_part1)
-                                    ->where('add_part2',$row->add_part2)
-                                    ->where('add_part3',$row->add_part3)
-                                    ->where('address_type',$row->address_type)
-                                    ->where('user_type',7)
-                                    ->first();
-                                if(isset($dealer->id))
-                                    $dealer_id= $dealer->id;
-                                else
-                                    $dealer_id= "";
-                                $stmt2= DB::table('details')
-                                    ->join('products', 'products.id', '=', 'details.product_id')
-                                    ->join('product_assign','product_assign.product_id', '=','products.id')
-                                    ->where('product_assign.dealer_id',$dealer_id)
-                                    ->where('details.sales_id', $row->salesid)
-                                    ->orderBy('products.id','Asc')
-                                    ->get();
-                               // dd($stmt2);
-
-                                $total = 0;
-                                foreach($stmt2 as $details){
-                                    if($details->quantity >101) {
-                                        $quantity = $details->quantity/1000;
-                                    }
-                                    else{
-                                        $quantity = $details->quantity;
-                                    }
-                                    $subtotal = $details->edit_price*$quantity;
-                                    $total += $subtotal;
-                                }
-                                //print_r($total); echo '<br>';
-                                $row1 = DB::table('users')
-                                    ->where('id', $row->v_id)
-                                    ->get();
-                                $volunteer = DB::table('users')
-                                    ->where('id', $row->v_id)
-                                    ->first();
-                                if( $row1->count()>0 ) {
-                                    $name =  $volunteer->name;
-                                    $v_id= "profile.php?id=". $volunteer->id;
-                                }
-                                else {
-                                    $name =  "Not Assigned" ;
-                                    $v_id=" ";
-                                }
-                                if($row->v_status==0) $status = "Processing";
-                                if($row->v_status==2) $status = "Assigned";
-                                if($row->v_status==3) $status = "On the service";
-                                if($row->v_status==4) $status = "Delivered";
-                                echo "
-                                  <tr>
-                                    <td class='hidden'></td>
-                                    <td>".date('M d, Y', strtotime($row->sales_date))."</td>
-                                    <td>".$row->name."</td>
-                                    <td>".$row->address."</td>
-                                    <td>".$row->pay_id."</td>
-                                    <td> ".en2bn(number_format($total+$delivery_charge , 2))."</td>
-                                    <td><center><a href='". $v_id."'><button type='button' class='btn btn-success btn-sm btn-flat'>".$name." </button></a></center></td>
-                                    <td><button type='button' class='btn btn-danger btn-sm btn-flat u_search' data-id='".$row->user_id."'>".$status." </button></td>
-                                    <td><button type='button' class='btn btn-info btn-sm btn-flat transact' data-id='".$row->salesid."'><i class='fa fa-search'></i> বিস্তারিত</button></td>
-                                  </tr>
-                                ";
-
-                        }
-                        ?>
+                        @foreach($orders as $order)
+                          <tr>
+                            <td>{{$order['sales_date']}}</td>
+                            <td>{{$order['name']}}</td>
+                            <td>{{$order['address']}}</td>
+                            <td>{{$order['pay_id']}}</td>
+                            <td> {{$order['amount']}}</td>
+                            <td><a href='{{$order['v_id']}}'><button type='button' class='btn btn-success btn-sm btn-flat'>{{$order['v_name']}} </button></a></td>
+                            <td><button type='button' class='btn btn-danger btn-sm btn-flat u_search' data-id='{{$order['user_id']}}'>{{$order['status']}} </button></td>
+                            <td><button type='button' class='btn btn-info btn-sm btn-flat transact' data-id='{{$order['sales_id']}}'><i class='fa fa-search'></i> বিস্তারিত</button></td>
+                          </tr>
+                        @endforeach
+                        <tr>
+                            <td colspan="4" style="text-align: right"><b>মোটঃ</b></td>
+                            <td><b>{{$sum}}</b></td>
+                        </tr>
                     </table>
+                    {{ $orders->links() }}
                 </div>
             </div>
 
@@ -175,6 +127,18 @@
 @endsection
 @section('js')
     <script>
+        $( function() {
+            $('#from_date').datepicker({
+                autoclose: true,
+                dateFormat: "yy-m-dd",
+            })
+        } );
+        $( function() {
+            $('#to_date').datepicker({
+                autoclose: true,
+                dateFormat: "yy-m-dd",
+            })
+        } );
         $(function(){
             $(document).on('click', '.transact', function(e){
                 e.preventDefault();
