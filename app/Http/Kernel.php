@@ -66,5 +66,8 @@ class Kernel extends HttpKernel
         'pharmacyAuth' => \App\Http\Middleware\PharmacyMiddleware::class,
         'adminUser' => \App\Http\Middleware\adminUser::class,
         'buyer' => \App\Http\Middleware\buyer::class,
+        'deliveryMan' => \App\Http\Middleware\deliveryman::class,
+        'seller' => \App\Http\Middleware\seller::class,
+        'dealer' => \App\Http\Middleware\dealer::class,
     ];
 }

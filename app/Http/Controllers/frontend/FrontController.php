@@ -630,6 +630,7 @@ class FrontController extends Controller
     }
     public function sales(Request $request){
         try{
+            //dd($request);
             $set='123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
             $code=substr(str_shuffle($set), 0, 12);
             $payid = $code;
@@ -672,6 +673,7 @@ class FrontController extends Controller
                                 'quantity' => $d_row->quantity
                             ]);
                         }
+                        DB::table('donate_carts')->where('user_id',  Cookie::get('user_id'))->delete();
                     }
                 }
                 $product_cart = DB::table('carts')
@@ -855,8 +857,10 @@ class FrontController extends Controller
     }
     public function buySale($id){
         try{
-            $products = DB::table('sale_products')
-                ->where('sale_status', 1)->get();
+            $products = DB::table('seller_product')
+                ->where('status', 'Active')
+                ->where('amount','>', 0)
+                ->get();
             //dd($products);
 
             //dd($product);
@@ -923,7 +927,7 @@ class FrontController extends Controller
     }
     public function getSaleProductsDetails(Request $request){
         try{
-            $rows = DB::table('sale_products')
+            $rows = DB::table('seller_product')
                 ->where('id', $request->id)
                 ->first();
             return response()->json(array('data'=>$rows));
@@ -939,6 +943,18 @@ class FrontController extends Controller
                 ->where('id', $id)
                 ->first();
             return view('frontend.animalSaleView', ['products' => $rows, 'id' =>$id]);
+        }
+        catch(\Illuminate\Database\QueryException $ex){
+            return back()->with('errorMessage', $ex->getMessage());
+        }
+    }
+    public function productSaleView($id){
+        try{
+
+            $rows = DB::table('seller_product')
+                ->where('id', $id)
+                ->first();
+            return view('frontend.productSaleView', ['products' => $rows, 'id' =>$id]);
         }
         catch(\Illuminate\Database\QueryException $ex){
             return back()->with('errorMessage', $ex->getMessage());
@@ -968,6 +984,42 @@ class FrontController extends Controller
                     ]);
                 if ($upresult) {
                     return redirect()->to('profile')->with('successMessage', 'সফল্ভাবে সম্পন্ন্য হয়েছে। দ্রুত আপনার সাথে যোগাযোগ করা হবে।');
+                }
+                else{
+                    return back()->with('errorMessage', 'আবার চেষ্টা করুন।');
+                }
+
+            } else {
+                return back()->with('errorMessage', 'আবার চেষ্টা করুন।');
+            }
+        }
+        catch(\Illuminate\Database\QueryException $ex){
+            return back()->with('errorMessage', $ex->getMessage());
+        }
+    }
+    public function productSales($id){
+        try{
+            $rows = DB::table('seller_product')
+                ->where('id', $id)
+                ->first();
+            $set='123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+            $code=substr(str_shuffle($set), 0, 12);
+            $result = DB::table('product_sales')->insert([
+                'seller_id' => $rows->seller_id,
+                'buyer_id' =>  Cookie::get('user_id'),
+                'product_id' => $rows->id,
+                'date' =>date("Y-m-d"),
+                'pay_id' => $code,
+            ]);
+
+            if ($result) {
+                $upresult =DB::table('seller_product')
+                    ->where('id', $rows->id)
+                    ->update([
+                        'amount' => $rows->amount-1,
+                    ]);
+                if ($upresult) {
+                    return redirect()->to('myVariousProductOrder')->with('successMessage', 'সফল্ভাবে সম্পন্ন্য হয়েছে। দ্রুত আপনার সাথে যোগাযোগ করা হবে।');
                 }
                 else{
                     return back()->with('errorMessage', 'আবার চেষ্টা করুন।');
@@ -1408,6 +1460,15 @@ class FrontController extends Controller
         else{
             return response()->json(array('data'=>'not ok'));
         }
+    }
+
+    public function forHumanity(){
+        $rows = DB::table('donation_details')
+            ->select('products.cat_id','products.unit','products.name', DB::raw('SUM(donation_details.quantity) AS quantity'))
+            ->join('products','products.id','=','donation_details.product_id')
+            ->groupBy('products.name','products.unit','products.cat_id')
+            ->get();
+        return view('frontend.forHumanity',['products' => $rows]);
     }
 
 

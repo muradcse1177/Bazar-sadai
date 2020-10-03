@@ -103,13 +103,6 @@
         </center>
         <?php
             }
-            else{ ?>
-                <center>
-                    <button class='btn allButton withPick'> ছবিসহ দেখুন</button>
-                    <button style="display: none;" class='btn allButton withoutPick'> ছবি বাদে দেখুন</button>
-                </center>
-        <?php
-           }
         ?>
         <?php
 

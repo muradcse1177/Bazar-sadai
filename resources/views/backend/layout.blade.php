@@ -212,6 +212,32 @@
                 @if(Cookie::get('user_type') != 12)
                 <li class="header">রিপোর্ট</li>
                 @endif
+                @if(Cookie::get('user_type') == 4)
+                    <li class="@yield('mySaleProduct')">
+                        <a href ="{{ url('mySaleProduct') }}" >
+                            <i class="fa fa-shopping-cart"></i> <span>আমার বিক্রয়</span>
+                        </a>
+                    </li>
+                        <li class="@yield('sellerForm')">
+                        <a href ="{{ url('sellerForm') }}" >
+                            <i class="fa fa-shopping-cart"></i> <span>আমার পণ্য</span>
+                        </a>
+                    </li>
+                @endif
+                @if(Cookie::get('user_type') == 5)
+                    <li class="@yield('deliveryProfile')">
+                        <a href ="{{ url('deliveryProfile') }}" >
+                            <i class="fa fa-book"></i> <span>আমার ডেলিভারি</span>
+                        </a>
+                    </li>
+                @endif
+                    @if(Cookie::get('user_type') == 7)
+                    <li class="@yield('dealerProfile')">
+                        <a href ="{{ url('dealerProfile') }}" >
+                            <i class="fa fa-book"></i> <span>আমার পণ্য</span>
+                        </a>
+                    </li>
+                @endif
                 @if(Cookie::get('user_type') == 15)
                     <li class="@yield('myMedicineSelf')">
                         <a href ="{{ url('myMedicineSelf') }}" >
@@ -322,6 +348,11 @@
                         <i class="fa fa-shopping-bag"></i> <span>মেডিসিন অর্ডার  রিপোর্ট</span>
                     </a>
                 </li>
+                <li class="@yield('donationReportBackend')">
+                    <a href="{{ url('donationReportBackend') }}">
+                        <i class="fa fa-medkit"></i> <span>ডোনেশন রিপোর্ট</span>
+                    </a>
+                </li>
                 @endif
                 <li class="header">ব্যবস্থাপনা</li>
                 @if(Cookie::get('user_type') == 15)
@@ -427,16 +458,6 @@
                     <li class="@yield('deliveryLiAdd')">
                         <a href ="{{ url('delivery_charge') }}" >
                             <i class="fa fa-delicious"></i> <span> পণ্য ডেলিভারি চার্জ</span>
-                        </a>
-                    </li>
-                    <li class="@yield('dpmtLiAdd')">
-                        <a href ="{{ url('dealerProductManagement') }}" >
-                            <i class="fa fa-product-hunt"></i> <span> ডিলার পন্য ব্যবস্থাপনা</span>
-                        </a>
-                    </li>
-                    <li class="@yield('cdpLiAdd')">
-                        <a href ="{{ url('compareDealerProduct') }}" >
-                            <i class="fa fa-compass"></i> <span> ডিলার পন্য তুলনা</span>
                         </a>
                     </li>
                     <li class="treeview  @yield('serviceMainLi')">
@@ -588,16 +609,6 @@
                         <li class="@yield('deliveryLiAdd')">
                             <a href ="{{ url('delivery_charge') }}" >
                                 <i class="fa fa-delicious"></i> <span> পণ্য ডেলিভারি চার্জ</span>
-                            </a>
-                        </li>
-                        <li class="@yield('dpmtLiAdd')">
-                            <a href ="{{ url('dealerProductManagement') }}" >
-                                <i class="fa fa-product-hunt"></i> <span> ডিলার পন্য ব্যবস্থাপনা</span>
-                            </a>
-                        </li>
-                        <li class="@yield('cdpLiAdd')">
-                            <a href ="{{ url('compareDealerProduct') }}" >
-                                <i class="fa fa-compass"></i> <span> ডিলার পন্য তুলনা</span>
                             </a>
                         </li>
                         <li class="treeview  @yield('serviceMainLi')">

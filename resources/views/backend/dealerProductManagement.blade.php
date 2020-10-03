@@ -27,6 +27,17 @@
             <div class="box">
                 <div class="box-header with-border">
                     <h3 class="box-title">পন্য  লিস্ট </h3>
+                    {{ Form::open(array('url' => 'productSearchFromDealer',  'method' => 'get')) }}
+                    {{ csrf_field() }}
+                    <div class="pull-right">
+                        <span>
+                            <input type="text" name="proSearch" size="9" value="<?php if(isset($key)) echo $key;?>" placeholder="search"> &nbsp;
+                            <button type="submit" rel="tooltip"  class=" pull-right" style="height: 25px; text-align: center; background-color: darkgreen; color: white" >
+                                <i class="fa fa-arrow-right"></i>
+                            </button>
+                        </span>
+                    </div>
+                    {{ Form::close() }}
                 </div>
                 <!-- /.box-header -->
                 <div class="box-body table-responsive">
@@ -58,20 +69,11 @@
                                     @endif
                                 </td>
                                 <td> {{$product->name}} </td>
-                                <?php
-                                if (strpos($product->price, '৳') !== false) {
-                                    $priceArr = explode("৳",$product->price);
-                                    $price = (int)$priceArr[1];
-                                }
-                                else{
-                                    $price=$product->price;
-                                }
-                                ?>
-                                <td> {{$price}} </td>
+                                <td> {{$product->edit_price}} </td>
                                 <td> {{$product->unit}} </td>
                                 <td> {{$product->company}} </td>
                                 <td class="td-actions text-center">
-                                    <button type="button" rel="tooltip" class="btn btn-success edit" data-id="{{$product->id}}">
+                                    <button type="button" rel="tooltip" class="btn btn-success edit" data-id="{{$product->product_id}}">
                                         <i class="fa fa-edit"></i>
                                     </button>
                                 </td>
@@ -130,7 +132,7 @@
         function getRow(id){
             $.ajax({
                 type: 'POST',
-                url: 'getProductList',
+                url: 'getProductListDealer',
                 data: {
                     "_token": "{{ csrf_token() }}",
                     "id": id
@@ -140,7 +142,7 @@
                     var data = response.data;
                     console.log(data);
                     $('.id').val(data.id);
-                    $('.price').val(data.price);
+                    $('.price').val(data.edit_price);
 
                 }
             });

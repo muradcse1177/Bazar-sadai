@@ -400,4 +400,26 @@ class ReportController extends Controller
         return view('backend.diagnosticAppointmentReport',['diagnosticReports' => $rows,'from_date'=>$request->from_date,'to_date'=>$request->to_date]);
     }
 
+    public function donationReportBackend(){
+        $rows = DB::table('donation_details')
+            ->select('*','products.name as p_name')
+            ->join('products','products.id','=','donation_details.product_id')
+            ->join('v_assign','donation_details.sales_id','=','v_assign.id')
+            ->join('users','users.id','=','v_assign.user_id')
+            ->paginate(20);
+        //dd($rows);
+        return view('backend.donationReportBackend',['products' => $rows]);
+    }
+    public function donationListByDate(Request $request){
+        $rows = DB::table('donation_details')
+            ->select('*','products.name as p_name')
+            ->join('products','products.id','=','donation_details.product_id')
+            ->join('v_assign','donation_details.sales_id','=','v_assign.id')
+            ->join('users','users.id','=','v_assign.user_id')
+            ->whereBetween('v_assign.sales_date',array($request->from_date,$request->to_date))
+            ->paginate(20);
+        //dd($rows);
+        return view('backend.donationReportBackend',['products' => $rows],['diagnosticReports' => $rows,'from_date'=>$request->from_date,'to_date'=>$request->to_date]);
+    }
+
 }

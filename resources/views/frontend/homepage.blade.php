@@ -55,6 +55,17 @@
                     </div>
                 </div>
             </a>
+            <a href='{{ URL::to('forHumanity') }}'>
+                <div class='col-sm-4'>
+                    <div class='box box-solid'>
+                        <div class='box-body prod-body'>
+                            <div class="alert boxBody">
+                                <center><strong>মানুষ মানুষের জন্য</strong></center>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </a>
         </div>
     </div>
 @endsection

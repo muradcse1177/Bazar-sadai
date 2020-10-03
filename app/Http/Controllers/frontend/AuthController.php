@@ -32,28 +32,38 @@ class AuthController extends Controller
                         Cookie::queue('user_name', $rows->name, time()+31556926 ,'/');
                         Cookie::queue('user_type', $rows->user_type, time()+31556926 ,'/');
                         Cookie::queue('user_photo', $rows->photo, time()+31556926 ,'/');
-                        if($role==3){
-                            Cookie::queue('front', $rows->id, time()+31556926 ,'/');
-                            return redirect()->to('cart_view');
-                        }
-                        elseif($role==15){
-                            Cookie::queue('admin', $rows->id, time()+31556926 ,'/');
-                            return redirect()->to('myMedicineSale');
-                        }
-                        elseif($role==3 || $role==4 || $role==5 || $role==13){
-                            return redirect()->to('profile');
-                        }
-                        elseif($role==1 || $role==2 || $role==8){
+
+                        if($role==1 || $role==2 || $role==8){
                             Cookie::queue('admin', $rows->id, time()+31556926 ,'/');
                             return redirect()->to('dashboard');
                         }
+                        elseif($role==3){
+                            Cookie::queue('buyer', $rows->id, time()+31556926 ,'/');
+                            return redirect()->to('cart_view');
+                        }
+                        elseif($role==4){
+                            Cookie::queue('seller', $rows->id, time()+31556926 ,'/');
+                            return redirect()->to('sellerForm');
+                        }
+                        elseif($role==5){
+                            Cookie::queue('delivery', $rows->id, time()+31556926 ,'/');
+                            return redirect()->to('deliveryProfile');
+                        }
+                        elseif($role==7){
+                            Cookie::queue('dealer', $rows->id, time()+31556926 ,'/');
+                            return redirect()->to('dealerProfile');
+                        }
                         elseif ($role==12){
-                            Cookie::queue('admin', $rows->id, time()+31556926 ,'/');
+                            Cookie::queue('dataOperator', $rows->id, time()+31556926 ,'/');
                             return redirect()->to('product');
                         }
                         elseif ($role==11){
-                            Cookie::queue('admin', $rows->id, time()+31556926 ,'/');
+                            Cookie::queue('accounting', $rows->id, time()+31556926 ,'/');
                             return redirect()->to('accounting');
+                        }
+                        elseif($role==15){
+                            Cookie::queue('pharmacy', $rows->id, time()+31556926 ,'/');
+                            return redirect()->to('myMedicineSale');
                         }
                     }
                     else{
@@ -70,6 +80,24 @@ class AuthController extends Controller
         catch(\Illuminate\Database\QueryException $ex){
             return back()->with('errorMessage', $ex->getMessage());
         }
+    }
+    public function logout(){
+        Cookie::queue(Cookie::forget('user','/'));
+        Cookie::queue(Cookie::forget('user_id','/'));
+        Cookie::queue(Cookie::forget('user_name','/'));
+        Cookie::queue(Cookie::forget('user_type','/'));
+        Cookie::queue(Cookie::forget('user_photo','/'));
+        Cookie::queue(Cookie::forget('admin','/'));
+        Cookie::queue(Cookie::forget('buyer','/'));
+        Cookie::queue(Cookie::forget('delivery','/'));
+        Cookie::queue(Cookie::forget('dataOperator','/'));
+        Cookie::queue(Cookie::forget('accounting','/'));
+        Cookie::queue(Cookie::forget('pharmacy','/'));
+        Cookie::queue(Cookie::forget('seller','/'));
+        Cookie::queue(Cookie::forget('dealer','/'));
+        session()->forget('user_info');
+        session()->flush();
+        return redirect()->to('homepage');
     }
     public function getAllUserTypeSignUp(Request $request){
         try{
@@ -197,23 +225,9 @@ class AuthController extends Controller
             return back()->with('errorMessage', $ex->getMessage());
         }
     }
-    public function logout(){
-        Cookie::queue(Cookie::forget('user','/'));
-        Cookie::queue(Cookie::forget('user_id','/'));
-        Cookie::queue(Cookie::forget('user_name','/'));
-        Cookie::queue(Cookie::forget('user_type','/'));
-        Cookie::queue(Cookie::forget('user_photo','/'));
-        Cookie::queue(Cookie::forget('admin','/'));
-        Cookie::queue(Cookie::forget('front','/'));
-        session()->forget('user_info');
-        session()->flush();
-        return redirect()->to('homepage');
-    }
     public function profile(){
         try{
             if(Cookie::get('user_id')) {
-                $output = '';
-                $buyer_sold_lst="";
                 $id = Cookie::get('user_id');
                 $user_info = DB::table('users')
                     ->select('user_type.name as desig', 'users.*')
@@ -230,26 +244,6 @@ class AuthController extends Controller
                         ->where('animal_sales.buyer_id', $id)
                         ->where('sale_products.sale_status', 0)
                         ->get();
-                }
-                $users['animal_buy_info'] = $buyer_sold_lst;
-                if(Cookie::get('user_type') ==4) {
-                    $user_sale_info = DB::table('sale_products')
-                        ->select('*','sale_products.id as salePID', 'sale_products.name as salName', 'sale_products.photo as salPPhoto')
-                        ->join('users', 'users.id', '=', 'sale_products.seller_id')
-                        ->where('sale_products.seller_id', $id)
-                        ->where('sale_products.sale_status', 1)
-                        ->get();
-                    $user_sold_lst = DB::table('sale_products')
-                        ->select('*','sale_products.id as salePID', 'sale_products.name as salName', 'sale_products.photo as salPPhoto')
-                        ->join('animal_sales', 'sale_products.id', '=', 'animal_sales.product_id')
-                        ->join('users', 'users.id', '=', 'animal_sales.buyer_id')
-                        ->where('sale_products.seller_id', $id)
-                        ->where('sale_products.sale_status', 0)
-                        ->get();
-                    //dd($user_sold_lst);
-
-                    return view('frontend.profile', ['users' => $users,'user_sale_info' => $user_sale_info,
-                        'user_sold_lst' => $user_sold_lst]);
                 }
                 return view('frontend.profile', ['users' => $users]);
             }

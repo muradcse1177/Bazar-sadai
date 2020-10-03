@@ -563,7 +563,7 @@ class UserController extends Controller
             $id = Cookie::get('user_id');
             $stmt= DB::table('v_assign')
                 ->select('*','v_assign.id AS salesid','v_assign.v_id AS v_id')
-                ->leftJoin('users', 'users.id', '=', 'v_assign.user_id')
+                ->join('users as a', 'a.id', '=', 'v_assign.user_id')
                 ->where('user_id',$id)
                 ->orderBy('v_assign.sales_date','Desc')
                 ->get();
@@ -607,10 +607,12 @@ class UserController extends Controller
                     ->first();
                 if ($row1->count() > 0) {
                     $name = $volunteer->name;
+                    $phone = $volunteer->phone;
                     $v_id = "profile.php?id=" . $volunteer->id;
                 } else {
                     $name = "Not Assigned";
                     $v_id = " ";
+                    $phone ="Not Assigned";
                 }
                 if ($row->v_status == 0) $status = "Processing";
                 if ($row->v_status == 2) $status = "Assigned";
@@ -626,6 +628,7 @@ class UserController extends Controller
                 $orderArr[$i]['user_id'] =$row->user_id;
                 $orderArr[$i]['status'] =$status;
                 $orderArr[$i]['sales_id'] =$row->salesid;
+                $orderArr[$i]['deliver_phone'] =$phone;
                 $sum = $sum+$total+$delivery_charge;
                 $i++;
             }
@@ -705,5 +708,118 @@ class UserController extends Controller
         //dd($rows);
         return view('frontend.myDiagnosticAppointment',['diagnosticReports' => $rows]);
     }
+    public function deliveryProfile(Request $request){
+        try{
+            $stmt = DB::table('delivery_charges')
+                ->where('purpose_id', 1)
+                ->first();
+            $delivery_charge = $stmt->charge;
+            $id = Cookie::get('user_id');
+            $stmt= DB::table('v_assign')
+                ->select('*','v_assign.id AS salesid','v_assign.v_id AS v_id')
+                ->join('users', 'users.id', '=', 'v_assign.v_id')
+                ->where('v_assign.v_id',$id)
+                ->orderBy('v_assign.sales_date','desc')
+                ->get();
+            //dd($stmt);
+            $orderArr =array();
+            $i=0;
+            $sum=0;
+            foreach($stmt as $row) {
+                $dealer = DB::table('users')
+                    ->where('add_part1', $row->add_part1)
+                    ->where('add_part2', $row->add_part2)
+                    ->where('add_part3', $row->add_part3)
+                    ->where('address_type', $row->address_type)
+                    ->where('user_type', 7)
+                    ->first();
+                if (isset($dealer->id))
+                    $dealer_id = $dealer->id;
+                else
+                    $dealer_id = "";
+                $stmt2 = DB::table('details')
+                    ->join('products', 'products.id', '=', 'details.product_id')
+                    ->join('product_assign', 'product_assign.product_id', '=', 'products.id')
+                    ->where('product_assign.dealer_id', $dealer_id)
+                    ->where('details.sales_id', $row->salesid)
+                    ->orderBy('products.id', 'Desc')
+                    ->get();
+                $total = 0;
+                foreach ($stmt2 as $details) {
+                    if ($details->quantity > 101) {
+                        $quantity = $details->quantity / 1000;
+                    } else {
+                        $quantity = $details->quantity;
+                    }
+                    $subtotal = $details->edit_price * $quantity;
+                    $total += $subtotal;
+                }
+                $row1 = DB::table('users')
+                    ->where('id', $row->v_id)
+                    ->get();
+                $volunteer = DB::table('users')
+                    ->where('id', $row->v_id)
+                    ->first();
+                $customer = DB::table('users')
+                    ->where('id', $row->user_id)
+                    ->first();
+                if ($row1->count() > 0) {
+                    $name = $volunteer->name;
+                    $v_id = "profile.php?id=" . $volunteer->id;
+                } else {
+                    $name = "Not Assigned";
+                    $v_id = " ";
+                }
+                if ($row->v_status == 0) $status = "Processing";
+                if ($row->v_status == 2) $status = "Assigned";
+                if ($row->v_status == 3) $status = "On the Working";
+                if ($row->v_status == 4) $status = "Delivered";
+                $orderArr[$i]['sales_date'] = $row->sales_date;
+                $orderArr[$i]['name'] = $row->name;
+                $orderArr[$i]['address'] = $row->address;
+                $orderArr[$i]['pay_id'] = $row->pay_id;
+                $orderArr[$i]['amount'] =   $this->en2bn(number_format($total+$delivery_charge , 2)).'/-';
+                $orderArr[$i]['v_id'] =$v_id;
+                $orderArr[$i]['v_name'] =$name;
+                $orderArr[$i]['user_id'] =$row->user_id;
+                $orderArr[$i]['status'] =$status;
+                $orderArr[$i]['sales_id'] =$row->salesid;
+                $orderArr[$i]['phone'] =$customer->phone;
+                $sum = $sum+$total+$delivery_charge;
+                $i++;
+            }
+            $currentPage = LengthAwarePaginator::resolveCurrentPage();
+            $itemCollection = collect($orderArr);
+            $perPage = 10;
+            $currentPageItems = $itemCollection->slice(($currentPage * $perPage) - $perPage, $perPage)->all();
+            $paginatedItems= new LengthAwarePaginator($currentPageItems , count($itemCollection), $perPage);
+            $paginatedItems->setPath($request->url());
 
+            $id = Cookie::get('user_id');
+            $user_info = DB::table('users')
+                ->select('user_type.name as desig', 'users.*')
+                ->join('user_type', 'user_type.id', '=', 'users.user_type')
+                ->where('users.id', $id)
+                ->where('users.status', 1)
+                ->first();
+            $users['info'] = $user_info;
+            return view('backend.deliveryProfile', ['orders' => $paginatedItems,'sum' => $this->en2bn($sum).'/-','users' => $users]);
+        }
+        catch(\Illuminate\Database\QueryException $ex){
+            return back()->with('errorMessage', $ex->getMessage());
+        }
+    }
+    public function myVariousProductOrder(){
+        try{
+            $products = DB::table('product_sales')
+                ->select('*','product_sales.id as ps_id','a.address as ps_address')
+                ->join('seller_product as a','product_sales.product_id','=','a.id')
+                ->where('product_sales.buyer_id', Cookie::get('user_id'))
+                ->paginate(20);
+            return view('frontend.myVariousProductOrder',['orders' => $products]);
+        }
+        catch(\Illuminate\Database\QueryException $ex){
+            return back()->with('errorMessage', $ex->getMessage());
+        }
+    }
 }

@@ -111,24 +111,23 @@
             background-color: darkgreen;
             color: white;
         }
-        .modal {
-            text-align: center;
-            padding: 0!important;
-        }
+        /*.modal {*/
+        /*    text-align: center;*/
+        /*    padding: 0!important;*/
+        /*}*/
+        /*.modal:before {*/
+        /*    content: '';*/
+        /*    display: inline-block;*/
+        /*    height: 100%;*/
+        /*    vertical-align: middle;*/
+        /*    margin-right: -4px;*/
+        /*}*/
 
-        .modal:before {
-            content: '';
-            display: inline-block;
-            height: 100%;
-            vertical-align: middle;
-            margin-right: -4px;
-        }
-
-        .modal-dialog {
-            display: inline-block;
-            text-align: left;
-            vertical-align: middle;
-        }
+        /*.modal-dialog {*/
+        /*    display: inline-block;*/
+        /*    text-align: left;*/
+        /*    vertical-align: middle;*/
+        /*}*/
         .allButton{
             background-color: darkgreen;
             color: white;
@@ -162,7 +161,10 @@
             <div class="container">
 
                 <div class="navbar-header">
-                    <a href="{{ url('homepage') }}" class="navbar-brand"><b>বাজার - সদাই</b></a>
+                    <a href="{{ url('homepage') }}">
+                        <img src="{{url('public/bs.ico')}}" style="background-color:white; width: 42px; height: 40px; margin-top: 5px; margin-bottom: 5px; margin-left: 15px;"  class="pull-left">
+                    </a>
+{{--                    <a href="{{ url('homepage') }}" class="navbar-brand"><b>বাজার - সদাই</b></a>--}}
                     <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse">
                         <i class="fa fa-bars"></i>
                     </button>
@@ -176,7 +178,21 @@
                             <li><a href="{{ url('login') }}">লগ ইন</a></li>
                             <li><a href="{{ url('signup') }}">সাইন আপ</a></li>
                         @endif
-                        @if (Cookie::get('user') != null)
+                        @if(Cookie::get('user_type') == 3)
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-expanded="false">আমার ট্রানজেকশন <span class="caret"></span></a>
+                                <ul class="dropdown-menu" role="menu">
+                                    <li><a href="{{url('myProductOrder')}}">পণ্য ক্রয়</a></li>
+                                    <li><a href="{{url('myVariousProductOrder')}}">হরেক রকম পণ্য ক্রয়</a></li>
+                                    <li><a href="{{url('myAnimalOrder')}}">পশু ক্রয়</a></li>
+                                    <li><a href="{{url('myTicketOrder')}}">টিকেট ক্রয়</a></li>
+                                    <li><a href="{{url('myDrAppointment')}}">ডাক্তার এপয়েনমেনট</a></li>
+                                    <li><a href="{{url('myTherapyAppointment')}}">থেরাপি এপয়েনমেনট</a></li>
+                                    <li><a href="{{url('myDiagnosticAppointment')}}">ডায়াগনস্টিক এপয়েনমেনট</a></li>
+                                </ul>
+                            </li>
+                        @endif
+                        @if(Cookie::get('user_type') == 5)
                             <li class="dropdown">
                                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-expanded="false">আমার ট্রানজেকশন <span class="caret"></span></a>
                                 <ul class="dropdown-menu" role="menu">

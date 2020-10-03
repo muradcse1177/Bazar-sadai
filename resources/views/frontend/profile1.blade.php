@@ -157,7 +157,7 @@
                             </div>
                             <div class="form-group">
                                 <label for="name" >ইউনিট</label>
-                                <input type="text" class="form-control unit" name="unit" placeholder="ইউনিট"  >
+                                <input type="text" class="form-control unit" name="unit" placeholder="ইউনিট" >
                             </div>
                             <div class="form-group">
                                 <label for="type" >ছবি</label>
@@ -191,10 +191,10 @@
                                 @foreach($user_sale_info as $user_sale)
 
                                     <?php
-                                        $Image =url('/')."/public/asset/images/noImage.jpg";
-                                        if(!empty($user_sale->salPPhoto)){
-                                            $Image =url('/').'/'.$user_sale->salPPhoto;
-                                        }
+                                    $Image =url('/')."/public/asset/images/noImage.jpg";
+                                    if(!empty($user_sale->salPPhoto)){
+                                        $Image =url('/').'/'.$user_sale->salPPhoto;
+                                    }
                                     ?>
                                     <tr>
                                         <td>

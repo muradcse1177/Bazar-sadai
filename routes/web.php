@@ -15,7 +15,6 @@ use Illuminate\Support\Facades\Session;
 |
 */
 Route::group(['middleware' => ['pharmacyAuth']], function () {
-    Route::get('/', 'backend\PharmacyController@myMedicineSale');
     Route::get('medicineSelfManagement', 'backend\PharmacyController@medicineSelfManagement');
     Route::get('searchMedicineBackend', 'backend\PharmacyController@searchMedicineBackend');
     Route::get('medicineSelfName', 'backend\PharmacyController@medicineSelfName');
@@ -107,7 +106,6 @@ Route::group(['middleware' => ['adminUser']], function () {
 
 //Login
     Route::get('dashboard ', 'backend\UserController@dashboard');
-    Route::get('/', 'backend\UserController@dashboard');
 //Product & Service
     Route::get('category', 'backend\ProductController@selectCategory');
     Route::post('insertCategory', 'backend\ProductController@insertCategory');
@@ -129,9 +127,6 @@ Route::group(['middleware' => ['adminUser']], function () {
     Route::get('delivery_charge', 'backend\ProductController@delivery_charge');
     Route::post('getDeliveryCharge', 'backend\ProductController@getDeliveryCharge');
     Route::post('insertDeliveryCharge', 'backend\ProductController@insertDeliveryCharge');
-    Route::get('dealerProductManagement', 'backend\ProductController@dealerProductManagement');
-    Route::post('changeProductPrice', 'backend\ProductController@changeProductPrice');
-    Route::get('compareDealerProduct', 'backend\ProductController@compareDealerProduct');
     Route::get('allMedicineList', 'backend\ProductController@allMedicineList');
     Route::get('medicineSearchFromAdmin', 'backend\ProductController@medicineSearchFromAdmin');
     Route::post('getProductSalesOrderListByDate', 'backend\ReportController@getProductSalesOrderListByDate');
@@ -148,6 +143,8 @@ Route::group(['middleware' => ['adminUser']], function () {
     Route::get('diagnosticAppointmentReport', 'backend\ReportController@diagnosticAppointmentReport');
     Route::post('getDiagAppOrderListByDate', 'backend\ReportController@getDiagAppOrderListByDate');
     Route::get('medicineOrderReportAdmin', 'backend\PharmacyController@medicineOrderReportAdmin');
+    Route::get('donationReportBackend', 'backend\ReportController@donationReportBackend');
+    Route::post('donationListByDate', 'backend\ReportController@donationListByDate');
 //Accounting
     Route::get('accounting', 'backend\ReportController@accounting');
     Route::post('insertAccounting', 'backend\ReportController@insertAccounting');
@@ -269,24 +266,70 @@ Route::group(['middleware' => ['buyer']], function () {
     Route::get('myDrAppointment', 'backend\UserController@myDrAppointment');
     Route::get('myTherapyAppointment', 'backend\UserController@myTherapyAppointment');
     Route::get('myDiagnosticAppointment', 'backend\UserController@myDiagnosticAppointment');
+    Route::get('myVariousProductOrder', 'backend\UserController@myVariousProductOrder');
+});
+Route::group(['middleware' => ['deliveryMan']], function () {
+    Route::get('deliveryProfile', 'backend\UserController@deliveryProfile');
+});
+Route::group(['middleware' => ['seller']], function () {
+    Route::get('sellerForm', 'backend\SellerController@sellerForm');
+    Route::post('insertSellerProduct', 'backend\SellerController@insertSellerProduct');
+    Route::post('getSellerProductsById', 'backend\SellerController@getSellerProductsById');
+    Route::post('deleteSellerProduct', 'backend\SellerController@deleteSellerProduct');
+    Route::get('mySaleProduct', 'backend\SellerController@mySaleProduct');
+});
+Route::group(['middleware' => ['seller']], function () {
+    Route::get('sellerForm', 'backend\SellerController@sellerForm');
+    Route::post('insertSellerProduct', 'backend\SellerController@insertSellerProduct');
+    Route::post('getSellerProductsById', 'backend\SellerController@getSellerProductsById');
+    Route::post('deleteSellerProduct', 'backend\SellerController@deleteSellerProduct');
+    Route::get('mySaleProduct', 'backend\SellerController@mySaleProduct');
+});
+Route::group(['middleware' => ['dealer']], function () {
+    Route::get('dealerProfile', 'backend\DealerController@dealerProfile');
+    Route::post('changeProductPrice', 'backend\DealerController@changeProductPrice');
+    Route::post('getProductListDealer', 'backend\DealerController@getProductListDealer');
+    Route::post('getProductListDealer', 'backend\DealerController@getProductListDealer');
+    Route::get('productSearchFromDealer', 'backend\DealerController@productSearchFromDealer');
 });
 
     //Signup
     Route::get('signup', function () {
         return view('frontend.signup');
     });
+    if(Cookie::get('buyer') != null){
+        Route::get('/', 'frontend\FrontController@homepageManager');
+    }
+    elseif(Cookie::get('admin') != null){
+        Route::get('/', 'backend\UserController@dashboard');
+    }
+    elseif(Cookie::get('pharmacy') != null){
+        Route::get('/', 'backend\PharmacyController@myMedicineSale');
+    }
+    elseif(Cookie::get('pharmacy') != null){
+        Route::get('/', 'backend\PharmacyController@myMedicineSale');
+    }
+    elseif(Cookie::get('delivery') != null){
+        Route::get('/', 'backend\UserController@deliveryProfile');
+    }
+    elseif(Cookie::get('seller') != null){
+        Route::get('/', 'backend\SellerController@sellerForm');
+    }
+    elseif(Cookie::get('dealer') != null){
+        Route::get('/', 'backend\DealerController@dealerProfile');
+    }
+    else{
+        Route::get('/', 'frontend\FrontController@homepageManager');
+    }
     Route::get('login', function () {
         return view('frontend.login');
     });
-    if(Cookie::get('admin') == null){
-        Route::get('/', 'frontend\FrontController@homepageManager');
-    }
-
     Route::post('getUserList', 'backend\UserController@getUserList');
     Route::post('insertUser', 'backend\UserController@insertUser');
     Route::get('cart_view', 'frontend\FrontController@cart_view');
 
     Route::get('homepageManager', 'frontend\FrontController@homepageManager');
+    Route::get('forHumanity', 'frontend\FrontController@forHumanity');
     Route::get('getAllUserTypeSignUp' , 'frontend\AuthController@getAllUserTypeSignUp');
     Route::post('insertNewUser' , 'frontend\AuthController@insertNewUser');
     Route::get('getAllDivision' , 'backend\AddressController@getAllDivision');
@@ -320,7 +363,9 @@ Route::group(['middleware' => ['buyer']], function () {
     Route::post('insertSaleProduct', 'frontend\FrontController@insertSaleProduct');
     Route::post('getSaleProductsDetails', 'frontend\FrontController@getSaleProductsDetails');
     Route::get('animalSaleView/{id}', 'frontend\FrontController@animalSaleView');
+    Route::get('productSaleView/{id}', 'frontend\FrontController@productSaleView');
     Route::get('animalSales/{id}', 'frontend\FrontController@animalSales');
+    Route::get('productSales/{id}', 'frontend\FrontController@productSales');
     Route::get('searchProduct', 'frontend\FrontController@searchProduct');
     Route::post('deliveryAddress', 'frontend\FrontController@deliveryAddress');
     Route::get('serviceCategory', 'frontend\FrontController@serviceCategory');
