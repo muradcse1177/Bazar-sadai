@@ -630,50 +630,90 @@ class FrontController extends Controller
     }
     public function sales(Request $request){
         try{
-            //dd($request);
-            $set='123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-            $code=substr(str_shuffle($set), 0, 12);
-            $payid = $code;
+            $status = $request->status;
+            $type = 'daily_sales';
+            $msg = $request->msg;
+            $tx_id = $request->tx_id;
+            $bank_tx_id = $request->bank_tx_id;
+            $amount = $request->amount;
+            $bank_status = $request->bank_status;
+            $sp_code = $request->sp_code;
+            $sp_code_des = $request->sp_code_des;
+            $sp_payment_option = $request->sp_payment_option;
             $date = date('Y-m-d');
-            if(!empty($payid)){
+            if($status){
+                $result = DB::table('payment_info')->insert([
+                    'user_id' => Cookie::get('user_id'),
+                    'status' => $status,
+                    'type' => $type,
+                    'msg' => $msg,
+                    'tx_id' => $tx_id,
+                    'bank_tx_id' => $bank_tx_id,
+                    'amount' => $amount,
+                    'bank_status' => $bank_status,
+                    'sp_code' => $sp_code,
+                    'sp_code_des' => $sp_code_des,
+                    'sp_payment_option' => $sp_payment_option,
+                ]);
+                $user_info = DB::table('users')
+                    ->select('*')
+                    ->where('id', Cookie::get('user_id'))
+                    ->first();
+                $delear = DB::table('users')
+                    ->where('user_type',  7)
+                    ->where('add_part1',  $user_info->add_part1)
+                    ->where('add_part2',  $user_info->add_part2)
+                    ->where('add_part3',  $user_info->add_part3)
+                    ->where('address_type',  $user_info->address_type)
+                    ->where('status',  1)
+                    ->first();
                 $result = DB::table('v_assign')->insert([
                     'user_id' => Cookie::get('user_id'),
-                    'pay_id' => $payid,
+                    'dealer_id' => $delear->id,
+                    'pay_id' => $tx_id,
                     'sales_date' => $date
                 ]);
                 $salesid = DB::getPdo()->lastInsertId();
                 $stmt = DB::table('carts')
-                    ->select('*')
-                    ->join('products', 'products.id', '=', 'carts.product_id')
-                    ->where('carts.user_id', Cookie::get('user_id'))
+                    ->select('*','carts.id AS cartid')
+                    ->leftJoin('products', 'products.id', '=', 'carts.product_id')
+                    ->join('product_assign','product_assign.product_id', '=','products.id')
+                    ->where('carts.user_id',Cookie::get('user_id'))
+                    ->where('product_assign.dealer_id',$delear->id)
+                    ->orderBy('products.id','Asc')
                     ->get();
                 //dd($stmt);
                 foreach($stmt as $row){
                     $result = DB::table('details')->insert([
                         'sales_id' => $salesid,
                         'product_id' => $row->product_id,
-                        'quantity' => $row->quantity
+                        'quantity' => $row->quantity,
+                        'price' => $row->edit_price
                     ]);
                 }
-                if($request->donate == 'want_donate'){
+                if(Session::get('donate')  == 'want_donate'){
                     $d_cart = DB::table('donate_carts')
                         ->select('*')
                         ->where('user_id', Cookie::get('user_id'))
                         ->get();
                     if($d_cart->count()>0){
                         $d_stmt = DB::table('donate_carts')
-                            ->select('*')
-                            ->join('products', 'products.id', '=', 'donate_carts.product_id')
-                            ->where('donate_carts.user_id', Cookie::get('user_id'))
+                            ->select('*','donate_carts.id AS cartid')
+                            ->leftJoin('products', 'products.id', '=', 'donate_carts.product_id')
+                            ->join('product_assign','product_assign.product_id', '=','products.id')
+                            ->where('donate_carts.user_id',Cookie::get('user_id'))
+                            ->where('product_assign.dealer_id',$delear->id)
+                            ->orderBy('products.id','Asc')
                             ->get();
                         foreach($d_stmt as $d_row){
                             $result = DB::table('donation_details')->insert([
                                 'sales_id' => $salesid,
                                 'product_id' => $d_row->product_id,
-                                'quantity' => $d_row->quantity
+                                'quantity' => $d_row->quantity,
                             ]);
                         }
                         DB::table('donate_carts')->where('user_id',  Cookie::get('user_id'))->delete();
+                        session()->forget('donate');
                     }
                 }
                 $product_cart = DB::table('carts')
@@ -682,10 +722,6 @@ class FrontController extends Controller
                     ->first();
                 DB::table('carts')->where('user_id',  Cookie::get('user_id'))->delete();
                 DB::table('donate_carts')->where('user_id',  Cookie::get('user_id'))->delete();
-                $user_info = DB::table('users')
-                    ->select('*')
-                    ->where('id', Cookie::get('user_id'))
-                    ->first();
                 $working_status = 1;
                 if($user_info->address_type == 1) {
                     $ward_info = DB::table('wards')
@@ -843,10 +879,10 @@ class FrontController extends Controller
                     }
                 }
                 if($delivery_man->count()>0){
-                    return redirect()->to('profile')->with('successMessage', 'সফল্ভাবে অর্ডার সম্পন্ন্য হয়েছে। '.$delivery_man[0]->name.' আপনার অর্ডার এর দায়িত্বে আছে। প্রয়োজনে '.$delivery_man[0]->phone.' কল করুন।'  );
+                    return redirect()->to('myProductOrder')->with('successMessage', 'সফল্ভাবে অর্ডার সম্পন্ন্য হয়েছে। '.$delivery_man[0]->name.' আপনার অর্ডার এর দায়িত্বে আছে। প্রয়োজনে '.$delivery_man[0]->phone.' কল করুন।'  );
                 }
                 else{
-                    return redirect()->to('profile')->with('successMessage', 'অর্ডার প্রোসেসিং আছে। ');
+                    return redirect()->to('myProductOrder')->with('successMessage', 'অর্ডার প্রোসেসিং আছে। ');
                 }
 
             }
@@ -1054,7 +1090,7 @@ class FrontController extends Controller
                         ->orWhere('products.genre', 'LIKE','%'.$request->key.'%')
                         ->where('products.status', 1)
                         ->where('product_assign.dealer_id', $dealer->id)
-                        ->orderBy('products.id', 'ASC')->get();
+                        ->orderBy('products.id', 'ASC')->paginate(100);
                     if($dealer_product->count()>0){
                         $dealer_status['status'] = 1;
                         return view('frontend.productPage', ['products' => $dealer_product,'status' =>$dealer_status]);
@@ -1069,7 +1105,7 @@ class FrontController extends Controller
                         ->where('name', 'LIKE','%'.$request->key.'%')
                         ->orWhere('genre', 'LIKE','%'.$request->key.'%')
                         ->where('status', 1)
-                        ->orderBy('id', 'ASC')->get();
+                        ->orderBy('id', 'ASC')->paginate(100);
                     if($dealer_product->count()>0){
                         $dealer_status['status'] = 0;
                         return view('frontend.productPage', ['products' => $dealer_product,'status' =>$dealer_status]);
@@ -1085,7 +1121,7 @@ class FrontController extends Controller
                     ->where('name', 'LIKE','%'.$request->key.'%')
                     ->orWhere('genre', 'LIKE','%'.$request->key.'%')
                     ->where('status', 1)
-                    ->orderBy('id', 'ASC')->get();
+                    ->orderBy('id', 'ASC')->paginate(100);
                 if($dealer_product->count()>0){
                     $dealer_status['status'] = 0;
                     return view('frontend.productPage', ['products' => $dealer_product,'status' =>$dealer_status]);
@@ -1129,7 +1165,7 @@ class FrontController extends Controller
                                 ->where('products.status', 1)
                                 ->where('products.cat_id', 3)
                                 ->where('product_assign.dealer_id', $dealer->id)
-                                ->orderBy('products.id', 'ASC')->get();
+                                ->orderBy('products.id', 'ASC')->paginate(100);
                         }
                         if($generic_name){
                             $dealer_product = DB::table('products')
@@ -1139,7 +1175,7 @@ class FrontController extends Controller
                                 ->where('products.status', 1)
                                 ->where('products.cat_id', 3)
                                 ->where('product_assign.dealer_id', $dealer->id)
-                                ->orderBy('products.id', 'ASC')->get();
+                                ->orderBy('products.id', 'ASC')->paginate(100);
                         }
                         if($company_name){
                             $dealer_product = DB::table('products')
@@ -1149,7 +1185,7 @@ class FrontController extends Controller
                                 ->where('products.status', 1)
                                 ->where('products.cat_id', 3)
                                 ->where('product_assign.dealer_id', $dealer->id)
-                                ->orderBy('products.id', 'ASC')->get();
+                                ->orderBy('products.id', 'ASC')->paginate(100);
                         }
                         if($dealer_product->count()>0){
                             $dealer_status['status'] = 1;
@@ -1165,7 +1201,7 @@ class FrontController extends Controller
                                 ->where('name', 'LIKE', '%' . $trade_name . '%')
                                 ->where('status', 1)
                                 ->where('cat_id', 3)
-                                ->orderBy('id', 'ASC')->get();
+                                ->orderBy('id', 'ASC')->paginate(100);
                             if($dealer_product->count()>0){
                                 $dealer_status['status'] = 0;
                                 return view('frontend.productPage', ['products' => $dealer_product,'status' =>$dealer_status]);
@@ -1179,7 +1215,7 @@ class FrontController extends Controller
                                 ->where('genre', 'LIKE', '%' . $generic_name . '%')
                                 ->where('status', 1)
                                 ->where('cat_id', 3)
-                                ->orderBy('id', 'ASC')->get();
+                                ->orderBy('id', 'ASC')->paginate(100);
                             if($dealer_product->count()>0){
                                 $dealer_status['status'] = 0;
                                 return view('frontend.productPage', ['products' => $dealer_product,'status' =>$dealer_status]);
@@ -1193,7 +1229,7 @@ class FrontController extends Controller
                                 ->where('company', 'LIKE', '%' . $company_name . '%')
                                 ->where('status', 1)
                                 ->where('cat_id', 3)
-                                ->orderBy('id', 'ASC')->get();
+                                ->orderBy('id', 'ASC')->paginate(100);
                             if($dealer_product->count()>0){
                                 $dealer_status['status'] = 0;
                                 return view('frontend.productPage', ['products' => $dealer_product,'status' =>$dealer_status]);
@@ -1211,7 +1247,7 @@ class FrontController extends Controller
                             ->where('name', 'LIKE', '%' . $trade_name . '%')
                             ->where('status', 1)
                             ->where('cat_id', 3)
-                            ->orderBy('id', 'ASC')->get();
+                            ->orderBy('id', 'ASC')->paginate(100);
                         if($dealer_product->count()>0){
                             $dealer_status['status'] = 0;
                             return view('frontend.productPage', ['products' => $dealer_product,'status' =>$dealer_status]);
@@ -1225,7 +1261,7 @@ class FrontController extends Controller
                             ->where('genre', 'LIKE', '%' . $generic_name . '%')
                             ->where('status', 1)
                             ->where('cat_id', 3)
-                            ->orderBy('id', 'ASC')->get();
+                            ->orderBy('id', 'ASC')->paginate(100);
                         if($dealer_product->count()>0){
                             $dealer_status['status'] = 0;
                             return view('frontend.productPage', ['products' => $dealer_product,'status' =>$dealer_status]);
@@ -1239,7 +1275,7 @@ class FrontController extends Controller
                             ->where('company', 'LIKE', '%' . $company_name . '%')
                             ->where('status', 1)
                             ->where('cat_id', 3)
-                            ->orderBy('id', 'ASC')->get();
+                            ->orderBy('id', 'ASC')->paginate(100);
                         if($dealer_product->count()>0){
                             $dealer_status['status'] = 0;
                             return view('frontend.productPage', ['products' => $dealer_product,'status' =>$dealer_status]);
@@ -1282,7 +1318,7 @@ class FrontController extends Controller
                                 ->where('products.status', 1)
                                 ->where('products.cat_id', 3)
                                 ->where('product_assign.dealer_id', $dealer->id)
-                                ->orderBy('products.id', 'ASC')->get();
+                                ->orderBy('products.id', 'ASC')->paginate(100);
                         }
                         if($dealer_product->count()>0){
                             $dealer_status['status'] = 1;
@@ -1296,7 +1332,7 @@ class FrontController extends Controller
                                 ->where('name', 'LIKE',  $letter . '%')
                                 ->where('status', 1)
                                 ->where('cat_id', 3)
-                                ->orderBy('id', 'ASC')->get();
+                                ->orderBy('id', 'ASC')->paginate(100);
                             $dealer_status['status'] = 0;
                             return view('frontend.productPage', ['products' => $dealer_product, 'status' => $dealer_status]);
                         }
@@ -1309,7 +1345,7 @@ class FrontController extends Controller
                             ->where('name', 'LIKE', $letter . '%')
                             ->where('status', 1)
                             ->where('cat_id', 3)
-                            ->orderBy('id', 'ASC')->get();
+                            ->orderBy('id', 'ASC')->paginate(100);
                         $dealer_status['status'] = 0;
                         return view('frontend.productPage', ['products' => $dealer_product, 'status' => $dealer_status]);
                     }

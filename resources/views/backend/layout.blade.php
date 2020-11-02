@@ -212,6 +212,18 @@
                 @if(Cookie::get('user_type') != 12)
                 <li class="header">রিপোর্ট</li>
                 @endif
+                @if(Cookie::get('user_type') == 17||Cookie::get('user_type') == 18||Cookie::get('user_type') == 19||Cookie::get('user_type') == 20)
+                    <li class="@yield('riderServiceArea')">
+                        <a href ="{{ url('riderServiceArea') }}" >
+                            <i class="fa fa-car"></i> <span>আমার সার্ভিস এরিয়া</span>
+                        </a>
+                    </li>
+                        <li class="@yield('myRiding')">
+                        <a href ="{{ url('myRiding') }}" >
+                            <i class="fa fa-car"></i> <span>আমার রাইডিং</span>
+                        </a>
+                    </li>
+                @endif
                 @if(Cookie::get('user_type') == 4)
                     <li class="@yield('mySaleProduct')">
                         <a href ="{{ url('mySaleProduct') }}" >
@@ -231,10 +243,15 @@
                         </a>
                     </li>
                 @endif
-                    @if(Cookie::get('user_type') == 7)
+                @if(Cookie::get('user_type') == 7)
+                    <li class="@yield('mySaleProductDealer')">
+                        <a href ="{{ url('mySaleProductDealer') }}" >
+                            <i class="fa fa-shopping-basket"></i> <span>আমার বিক্রয়</span>
+                        </a>
+                    </li>
                     <li class="@yield('dealerProfile')">
                         <a href ="{{ url('dealerProfile') }}" >
-                            <i class="fa fa-book"></i> <span>আমার পণ্য</span>
+                            <i class="fa fa-shopping-basket"></i> <span>আমার পণ্য</span>
                         </a>
                     </li>
                 @endif
@@ -346,6 +363,11 @@
                 <li class="@yield('medicineOrderReportAdmin')">
                     <a href="{{ url('medicineOrderReportAdmin') }}">
                         <i class="fa fa-shopping-bag"></i> <span>মেডিসিন অর্ডার  রিপোর্ট</span>
+                    </a>
+                </li>
+                <li class="@yield('transportReportAdmin')">
+                    <a href="{{ url('transportReportAdmin') }}">
+                        <i class="fa fa-car"></i> <span>পরিবহন রিপোর্ট</span>
                     </a>
                 </li>
                 <li class="@yield('donationReportBackend')">
@@ -609,6 +631,11 @@
                         <li class="@yield('deliveryLiAdd')">
                             <a href ="{{ url('delivery_charge') }}" >
                                 <i class="fa fa-delicious"></i> <span> পণ্য ডেলিভারি চার্জ</span>
+                            </a>
+                        </li>
+                        <li class="@yield('transportCost')">
+                            <a href ="{{ url('transportCost') }}" >
+                                <i class="fa fa-delicious"></i> <span>পরিবহন খরচ নির্ধারণ</span>
                             </a>
                         </li>
                         <li class="treeview  @yield('serviceMainLi')">

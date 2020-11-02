@@ -349,8 +349,6 @@
                     ->first();
                 ?>
                 {{$stmt->about}}
-                <br><br>
-                <center><strong>সার্বিক সহযোগিতায়<a href="https://parallaxsoft.com/"> -Parallax Soft Inc.</a></strong> </center>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>

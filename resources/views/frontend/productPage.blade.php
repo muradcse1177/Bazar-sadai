@@ -6,7 +6,7 @@
         font-size: 20px;
         text-align: justify;
     }
-    .col-sm-12{
+    .col-sm-12,.col-sm-4{
         padding-right: 0px;
         padding-left: 0px;
     }
@@ -114,7 +114,7 @@
             }
         ?>
         @foreach($products as $product)
-            <div class='col-sm-6'>
+            <div class='col-sm-4'>
                 <div class="card">
                     <div class="card-body cardBody pCard">
                         @php
@@ -172,12 +172,12 @@
                                     </div>
                                 </div>
                             </form>
-
                         </div>
                     </div>
                 </div>
             </div>
         @endforeach
+        {{ $products->links() }}
     </div>
 @endsection
 @section('js')

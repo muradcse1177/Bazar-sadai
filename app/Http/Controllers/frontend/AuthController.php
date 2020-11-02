@@ -65,6 +65,10 @@ class AuthController extends Controller
                             Cookie::queue('pharmacy', $rows->id, time()+31556926 ,'/');
                             return redirect()->to('myMedicineSale');
                         }
+                        elseif($role==17 ||$role==18 ||$role==19 ||$role==20){
+                            Cookie::queue('rider', $rows->id, time()+31556926 ,'/');
+                            return redirect()->to('riderServiceArea');
+                        }
                     }
                     else{
                         return back()->with('errorMessage', 'পাসওয়ার্ড ভুল দিয়েছেন।');
@@ -95,6 +99,7 @@ class AuthController extends Controller
         Cookie::queue(Cookie::forget('pharmacy','/'));
         Cookie::queue(Cookie::forget('seller','/'));
         Cookie::queue(Cookie::forget('dealer','/'));
+        Cookie::queue(Cookie::forget('rider','/'));
         session()->forget('user_info');
         session()->flush();
         return redirect()->to('homepage');

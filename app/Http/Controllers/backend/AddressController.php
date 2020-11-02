@@ -242,13 +242,13 @@ class AddressController extends Controller
                     }
                 }
                 else{
-                    $rows = DB::table('upazillas')
-                        ->select('name')
-                        ->where([['name', '=', $request->name]
-                        ])->where('status', 1)->distinct()->get()->count();
-                    if ($rows > 0) {
-                        return back()->with('errorMessage', ' নতুন উপজেলা লিখুন।');
-                    } else {
+//                    $rows = DB::table('upazillas')
+//                        ->select('name')
+//                        ->where([['name', '=', $request->name]
+//                        ])->where('status', 1)->distinct()->get()->count();
+//                    if ($rows > 0) {
+//                        return back()->with('errorMessage', ' নতুন উপজেলা লিখুন।');
+//                    } else {
                         $result = DB::table('upazillas')->insert([
                             'div_id' => $request->divId,
                             'dis_id' => $request->disId,
@@ -259,7 +259,7 @@ class AddressController extends Controller
                         } else {
                             return back()->with('errorMessage', 'আবার চেষ্টা করুন।');
                         }
-                    }
+//                    }
                 }
             }
             else{
@@ -365,13 +365,13 @@ class AddressController extends Controller
                     }
                 }
                 else{
-                    $rows = DB::table('unions')
-                        ->select('name')
-                        ->where([['name', '=', $request->name]
-                        ])->where('status', 1)->distinct()->get()->count();
-                    if ($rows > 0) {
-                        return back()->with('errorMessage', ' নতুন ইউনিয়ন লিখুন।');
-                    } else {
+//                    $rows = DB::table('unions')
+//                        ->select('name')
+//                        ->where([['name', '=', $request->name]
+//                        ])->where('status', 1)->distinct()->get()->count();
+//                    if ($rows > 0) {
+//                        return back()->with('errorMessage', ' নতুন ইউনিয়ন লিখুন।');
+//                    } else {
                         $result = DB::table('unions')->insert([
                             'div_id' => $request->divId,
                             'dis_id' => $request->disId,
@@ -383,7 +383,7 @@ class AddressController extends Controller
                         } else {
                             return back()->with('errorMessage', 'আবার চেষ্টা করুন।');
                         }
-                    }
+//                    }
                 }
             }
             else{

@@ -59,7 +59,7 @@
                 </div>
                 <div class="box-body table-responsive">
                     @if(Cookie::get('user_id') != null && $count >0)
-                        {{ Form::open(array('url' => 'sales',  'method' => 'post')) }}
+                        {{ Form::open(array('url' => 'getPaymentCartView',  'method' => 'post')) }}
                         {{ csrf_field() }}
                         <h4>
                             <a href='#'>

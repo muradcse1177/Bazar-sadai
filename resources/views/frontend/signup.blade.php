@@ -401,7 +401,7 @@
                 else{
                     $(".doctorsForm").hide();
                     $(".pharmacyForm").hide();
-                    (".cookingForm").hide();
+                    $(".cookingForm").hide();
                     //doctor
                     $('.doc_department').prop('required',false);
                     $('.doc_hospital').prop('required',false);

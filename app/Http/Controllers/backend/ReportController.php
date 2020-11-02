@@ -421,5 +421,330 @@ class ReportController extends Controller
         //dd($rows);
         return view('backend.donationReportBackend',['products' => $rows],['diagnosticReports' => $rows,'from_date'=>$request->from_date,'to_date'=>$request->to_date]);
     }
-
+    public function transportReportAdmin(Request $request){
+        $rows = DB::table('ride_booking')
+            ->get();
+        $booking =array();
+        $i = 0;
+        foreach ($rows as $riding){
+            $user_id = $riding->user_id;
+            $address_type = $riding->address_type;
+            $address_typep = $riding->address_type;
+            $service_area = DB::table('service_area')
+                ->where('user_id',$user_id)
+                ->first();
+            $user = DB::table('users')
+                ->where('id', $user_id)
+                ->first();
+            if($address_type==1){
+                $add_part1 = DB::table('divisions')
+                    ->where('id',$service_area->add_part1)
+                    ->first();
+                $add_part2 = DB::table('districts')
+                    ->where('div_id',$service_area->add_part1)
+                    ->where('id',$service_area->add_part2)
+                    ->first();
+                $add_part3 = DB::table('upazillas')
+                    ->where('div_id',$service_area->add_part1)
+                    ->where('dis_id',$service_area->add_part2)
+                    ->where('id',$riding->add_part3)
+                    ->first();
+                $add_part4 = DB::table('unions')
+                    ->where('div_id',$service_area->add_part1)
+                    ->where('dis_id',$service_area->add_part2)
+                    ->where('upz_id',$riding->add_part3)
+                    ->where('id',$riding->add_part4)
+                    ->first();
+            }
+            if($address_type==2){
+                $add_part1 = DB::table('divisions')
+                    ->where('id',$service_area->add_part1)
+                    ->first();
+                $add_part2 = DB::table('cities')
+                    ->where('div_id',$service_area->add_part1)
+                    ->where('id',$service_area->add_part2)
+                    ->first();
+                $add_part3 = DB::table('city_corporations')
+                    ->where('div_id',$service_area->add_part1)
+                    ->where('city_id',$service_area->add_part2)
+                    ->where('id',$riding->add_part3)
+                    ->first();
+                $add_part4 = DB::table('thanas')
+                    ->where('div_id',$service_area->add_part1)
+                    ->where('city_id',$service_area->add_part2)
+                    ->where('city_co_id',$riding->add_part3)
+                    ->where('id',$riding->add_part4)
+                    ->first();
+            }
+            if($address_typep==1){
+                $add_partp1 = DB::table('divisions')
+                    ->where('id',$riding->add_partp1)
+                    ->first();
+                $add_partp2 = DB::table('districts')
+                    ->where('div_id',$riding->add_partp1)
+                    ->where('id',$riding->add_partp2)
+                    ->first();
+                $add_partp3 = DB::table('upazillas')
+                    ->where('div_id',$riding->add_partp1)
+                    ->where('dis_id',$riding->add_partp2)
+                    ->where('id',$riding->add_partp3)
+                    ->first();
+                $add_partp4 = DB::table('unions')
+                    ->where('div_id',$riding->add_partp1)
+                    ->where('dis_id',$riding->add_partp2)
+                    ->where('upz_id',$riding->add_partp3)
+                    ->where('id',$riding->add_partp4)
+                    ->first();
+            }
+            if($address_typep==2){
+                $add_partp1 = DB::table('divisions')
+                    ->where('id',$riding->add_partp1)
+                    ->first();
+                $add_partp2 = DB::table('cities')
+                    ->where('div_id',$riding->add_partp1)
+                    ->where('id',$riding->add_partp2)
+                    ->first();
+                $add_partp3 = DB::table('city_corporations')
+                    ->where('div_id',$riding->add_partp1)
+                    ->where('city_id',$riding->add_partp2)
+                    ->where('id',$riding->add_partp3)
+                    ->first();
+                $add_partp4 = DB::table('thanas')
+                    ->where('div_id',$riding->add_partp1)
+                    ->where('city_id',$riding->add_partp2)
+                    ->where('city_co_id',$riding->add_partp3)
+                    ->where('id',$riding->add_partp4)
+                    ->first();
+            }
+            if($riding->transport =='Motorcycle'){
+                if($address_type==1){
+                    $add_partp1 = DB::table('divisions')
+                        ->where('id',$service_area->add_part1)
+                        ->first();
+                    $add_partp2 = DB::table('districts')
+                        ->where('div_id',$service_area->add_part1)
+                        ->where('id',$service_area->add_part2)
+                        ->first();
+                    $add_partp3 = DB::table('upazillas')
+                        ->where('div_id',$service_area->add_part1)
+                        ->where('dis_id',$service_area->add_part2)
+                        ->where('id',$riding->add_partp3)
+                        ->first();
+                    $add_partp4 = DB::table('unions')
+                        ->where('div_id',$service_area->add_part1)
+                        ->where('dis_id',$service_area->add_part2)
+                        ->where('upz_id',$riding->add_partp3)
+                        ->where('id',$riding->add_partp4)
+                        ->first();
+                }
+                if($address_type==2){
+                    $add_partp1 = DB::table('divisions')
+                        ->where('id',$service_area->add_part1)
+                        ->first();
+                    $add_partp2 = DB::table('cities')
+                        ->where('div_id',$service_area->add_part1)
+                        ->where('id',$service_area->add_part2)
+                        ->first();
+                    $add_partp3 = DB::table('city_corporations')
+                        ->where('div_id',$service_area->add_part1)
+                        ->where('city_id',$service_area->add_part2)
+                        ->where('id',$riding->add_partp3)
+                        ->first();
+                    $add_partp4 = DB::table('thanas')
+                        ->where('div_id',$service_area->add_part1)
+                        ->where('city_id',$service_area->add_part2)
+                        ->where('city_co_id',$riding->add_part3)
+                        ->where('id',$riding->add_partp4)
+                        ->first();
+                }
+            }
+            $booking[$i]['date'] = $riding->date;
+            $booking[$i]['transport'] = $riding->transport;
+            $booking[$i]['user'] = $user->name;
+            $booking[$i]['add_part1'] = $add_part1->name;
+            $booking[$i]['add_part2'] = $add_part2->name;
+            $booking[$i]['add_part3'] = $add_part3->name;
+            $booking[$i]['add_part4'] = $add_part4->name;
+            $booking[$i]['add_partp1'] = @$add_partp1->name;
+            $booking[$i]['add_partp2'] = @$add_partp2->name;
+            $booking[$i]['add_partp3'] = @$add_partp3->name;
+            $booking[$i]['add_partp4'] = @$add_partp4->name;
+            $booking[$i]['c_distance'] = $riding->customer_distance;
+            $booking[$i]['c_cost'] = $riding->cutomer_cost;
+            $booking[$i]['r_distance'] = $riding->rider_distance;
+            $booking[$i]['r_cost'] = $riding->rider_cost;
+            $i++;
+        }
+        $currentPage = LengthAwarePaginator::resolveCurrentPage();
+        $itemCollection = collect($booking);
+        $perPage = 20;
+        $currentPageItems = $itemCollection->slice(($currentPage * $perPage) - $perPage, $perPage)->all();
+        $paginatedItems= new LengthAwarePaginator($currentPageItems , count($itemCollection), $perPage);
+        $paginatedItems->setPath($request->url());
+        return view('backend.transportReportAdmin',['bookings' => $paginatedItems]);
+    }
+    public function transportListByDate(Request $request){
+        $rows = DB::table('ride_booking')
+            ->where('transport',$request->transport)
+            ->whereBetween('date',array($request->from_date,$request->to_date))
+            ->get();
+        $booking =array();
+        $i = 0;
+        foreach ($rows as $riding){
+            $user_id = $riding->user_id;
+            $address_type = $riding->address_type;
+            $address_typep = $riding->address_type;
+            $service_area = DB::table('service_area')
+                ->where('user_id',$user_id)
+                ->first();
+            $user = DB::table('users')
+                ->where('id', $user_id)
+                ->first();
+            if($address_type==1){
+                $add_part1 = DB::table('divisions')
+                    ->where('id',$service_area->add_part1)
+                    ->first();
+                $add_part2 = DB::table('districts')
+                    ->where('div_id',$service_area->add_part1)
+                    ->where('id',$service_area->add_part2)
+                    ->first();
+                $add_part3 = DB::table('upazillas')
+                    ->where('div_id',$service_area->add_part1)
+                    ->where('dis_id',$service_area->add_part2)
+                    ->where('id',$riding->add_part3)
+                    ->first();
+                $add_part4 = DB::table('unions')
+                    ->where('div_id',$service_area->add_part1)
+                    ->where('dis_id',$service_area->add_part2)
+                    ->where('upz_id',$riding->add_part3)
+                    ->where('id',$riding->add_part4)
+                    ->first();
+            }
+            if($address_type==2){
+                $add_part1 = DB::table('divisions')
+                    ->where('id',$service_area->add_part1)
+                    ->first();
+                $add_part2 = DB::table('cities')
+                    ->where('div_id',$service_area->add_part1)
+                    ->where('id',$service_area->add_part2)
+                    ->first();
+                $add_part3 = DB::table('city_corporations')
+                    ->where('div_id',$service_area->add_part1)
+                    ->where('city_id',$service_area->add_part2)
+                    ->where('id',$riding->add_part3)
+                    ->first();
+                $add_part4 = DB::table('thanas')
+                    ->where('div_id',$service_area->add_part1)
+                    ->where('city_id',$service_area->add_part2)
+                    ->where('city_co_id',$riding->add_part3)
+                    ->where('id',$riding->add_part4)
+                    ->first();
+            }
+            if($address_typep==1){
+                $add_partp1 = DB::table('divisions')
+                    ->where('id',$riding->add_partp1)
+                    ->first();
+                $add_partp2 = DB::table('districts')
+                    ->where('div_id',$riding->add_partp1)
+                    ->where('id',$riding->add_partp2)
+                    ->first();
+                $add_partp3 = DB::table('upazillas')
+                    ->where('div_id',$riding->add_partp1)
+                    ->where('dis_id',$riding->add_partp2)
+                    ->where('id',$riding->add_partp3)
+                    ->first();
+                $add_partp4 = DB::table('unions')
+                    ->where('div_id',$riding->add_partp1)
+                    ->where('dis_id',$riding->add_partp2)
+                    ->where('upz_id',$riding->add_partp3)
+                    ->where('id',$riding->add_partp4)
+                    ->first();
+            }
+            if($address_typep==2){
+                $add_partp1 = DB::table('divisions')
+                    ->where('id',$riding->add_partp1)
+                    ->first();
+                $add_partp2 = DB::table('cities')
+                    ->where('div_id',$riding->add_partp1)
+                    ->where('id',$riding->add_partp2)
+                    ->first();
+                $add_partp3 = DB::table('city_corporations')
+                    ->where('div_id',$riding->add_partp1)
+                    ->where('city_id',$riding->add_partp2)
+                    ->where('id',$riding->add_partp3)
+                    ->first();
+                $add_partp4 = DB::table('thanas')
+                    ->where('div_id',$riding->add_partp1)
+                    ->where('city_id',$riding->add_partp2)
+                    ->where('city_co_id',$riding->add_partp3)
+                    ->where('id',$riding->add_partp4)
+                    ->first();
+            }
+            if($riding->transport =='Motorcycle'){
+                if($address_type==1){
+                    $add_partp1 = DB::table('divisions')
+                        ->where('id',$service_area->add_part1)
+                        ->first();
+                    $add_partp2 = DB::table('districts')
+                        ->where('div_id',$service_area->add_part1)
+                        ->where('id',$service_area->add_part2)
+                        ->first();
+                    $add_partp3 = DB::table('upazillas')
+                        ->where('div_id',$service_area->add_part1)
+                        ->where('dis_id',$service_area->add_part2)
+                        ->where('id',$riding->add_partp3)
+                        ->first();
+                    $add_partp4 = DB::table('unions')
+                        ->where('div_id',$service_area->add_part1)
+                        ->where('dis_id',$service_area->add_part2)
+                        ->where('upz_id',$riding->add_partp3)
+                        ->where('id',$riding->add_partp4)
+                        ->first();
+                }
+                if($address_type==2){
+                    $add_partp1 = DB::table('divisions')
+                        ->where('id',$service_area->add_part1)
+                        ->first();
+                    $add_partp2 = DB::table('cities')
+                        ->where('div_id',$service_area->add_part1)
+                        ->where('id',$service_area->add_part2)
+                        ->first();
+                    $add_partp3 = DB::table('city_corporations')
+                        ->where('div_id',$service_area->add_part1)
+                        ->where('city_id',$service_area->add_part2)
+                        ->where('id',$riding->add_partp3)
+                        ->first();
+                    $add_partp4 = DB::table('thanas')
+                        ->where('div_id',$service_area->add_part1)
+                        ->where('city_id',$service_area->add_part2)
+                        ->where('city_co_id',$riding->add_part3)
+                        ->where('id',$riding->add_partp4)
+                        ->first();
+                }
+            }
+            $booking[$i]['date'] = $riding->date;
+            $booking[$i]['transport'] = $riding->transport;
+            $booking[$i]['user'] = $user->name;
+            $booking[$i]['add_part1'] = $add_part1->name;
+            $booking[$i]['add_part2'] = $add_part2->name;
+            $booking[$i]['add_part3'] = $add_part3->name;
+            $booking[$i]['add_part4'] = $add_part4->name;
+            $booking[$i]['add_partp1'] = @$add_partp1->name;
+            $booking[$i]['add_partp2'] = @$add_partp2->name;
+            $booking[$i]['add_partp3'] = @$add_partp3->name;
+            $booking[$i]['add_partp4'] = @$add_partp4->name;
+            $booking[$i]['c_distance'] = $riding->customer_distance;
+            $booking[$i]['c_cost'] = $riding->cutomer_cost;
+            $booking[$i]['r_distance'] = $riding->rider_distance;
+            $booking[$i]['r_cost'] = $riding->rider_cost;
+            $i++;
+        }
+        $currentPage = LengthAwarePaginator::resolveCurrentPage();
+        $itemCollection = collect($booking);
+        $perPage = 20;
+        $currentPageItems = $itemCollection->slice(($currentPage * $perPage) - $perPage, $perPage)->all();
+        $paginatedItems= new LengthAwarePaginator($currentPageItems , count($itemCollection), $perPage);
+        $paginatedItems->setPath($request->url());
+        return view('backend.transportReportAdmin',['bookings' => $paginatedItems,'from_date'=>$request->from_date,'to_date'=>$request->to_date]);
+    }
 }

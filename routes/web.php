@@ -145,6 +145,8 @@ Route::group(['middleware' => ['adminUser']], function () {
     Route::get('medicineOrderReportAdmin', 'backend\PharmacyController@medicineOrderReportAdmin');
     Route::get('donationReportBackend', 'backend\ReportController@donationReportBackend');
     Route::post('donationListByDate', 'backend\ReportController@donationListByDate');
+    Route::get('transportReportAdmin', 'backend\ReportController@transportReportAdmin');
+    Route::post('transportListByDate', 'backend\ReportController@transportListByDate');
 //Accounting
     Route::get('accounting', 'backend\ReportController@accounting');
     Route::post('insertAccounting', 'backend\ReportController@insertAccounting');
@@ -163,6 +165,10 @@ Route::group(['middleware' => ['adminUser']], function () {
     Route::get('getCoachListById', 'backend\TransportController@getCoachListById');
     Route::post('getTicketRouteList', 'backend\TransportController@getTicketRouteList');
     Route::post('deleteTransportsTickets', 'backend\TransportController@deleteTransportsTickets');
+    Route::get('transportCost', 'backend\TransportController@transportCost');
+    Route::post('insertTransportCost', 'backend\TransportController@insertTransportCost');
+    Route::post('getTransportCostList', 'backend\TransportController@getTransportCostList');
+    Route::post('deleteTransportCost', 'backend\TransportController@deleteTransportCost');
 
 //Medical Services
     Route::get('departmentList', 'backend\MedicalServiceController@departmentList');
@@ -278,19 +284,22 @@ Route::group(['middleware' => ['seller']], function () {
     Route::post('deleteSellerProduct', 'backend\SellerController@deleteSellerProduct');
     Route::get('mySaleProduct', 'backend\SellerController@mySaleProduct');
 });
-Route::group(['middleware' => ['seller']], function () {
-    Route::get('sellerForm', 'backend\SellerController@sellerForm');
-    Route::post('insertSellerProduct', 'backend\SellerController@insertSellerProduct');
-    Route::post('getSellerProductsById', 'backend\SellerController@getSellerProductsById');
-    Route::post('deleteSellerProduct', 'backend\SellerController@deleteSellerProduct');
-    Route::get('mySaleProduct', 'backend\SellerController@mySaleProduct');
-});
 Route::group(['middleware' => ['dealer']], function () {
     Route::get('dealerProfile', 'backend\DealerController@dealerProfile');
     Route::post('changeProductPrice', 'backend\DealerController@changeProductPrice');
     Route::post('getProductListDealer', 'backend\DealerController@getProductListDealer');
     Route::post('getProductListDealer', 'backend\DealerController@getProductListDealer');
     Route::get('productSearchFromDealer', 'backend\DealerController@productSearchFromDealer');
+    Route::get('mySaleProductDealer', 'backend\DealerController@mySaleProductDealer');
+    Route::post('getDealerProductSalesOrderListByDate', 'backend\DealerController@getDealerProductSalesOrderListByDate');
+
+});
+Route::group(['middleware' => ['rider']], function () {
+    Route::get('riderServiceArea', 'backend\RiderController@riderServiceArea');
+    Route::get('myRiding', 'backend\RiderController@myRiding');
+    Route::post('myRidingListByDate', 'backend\RiderController@myRidingListByDate');
+    Route::post('insertRiderServiceArea', 'backend\RiderController@insertRiderServiceArea');
+    Route::post('setRiderDistance', 'backend\RiderController@setRiderDistance');
 });
 
     //Signup
@@ -316,7 +325,10 @@ Route::group(['middleware' => ['dealer']], function () {
         Route::get('/', 'backend\SellerController@sellerForm');
     }
     elseif(Cookie::get('dealer') != null){
-        Route::get('/', 'backend\DealerController@dealerProfile');
+        Route::get('/', 'backend\DealerController@mySaleProductDealer');
+    }
+    elseif(Cookie::get('rider') != null){
+        Route::get('/', 'backend\RiderController@riderServiceArea');
     }
     else{
         Route::get('/', 'frontend\FrontController@homepageManager');
@@ -326,6 +338,7 @@ Route::group(['middleware' => ['dealer']], function () {
     });
     Route::post('getUserList', 'backend\UserController@getUserList');
     Route::post('insertUser', 'backend\UserController@insertUser');
+    Route::get('changeWorkingStatusProvider', 'backend\UserController@changeWorkingStatusProvider');
     Route::get('cart_view', 'frontend\FrontController@cart_view');
 
     Route::get('homepageManager', 'frontend\FrontController@homepageManager');
@@ -355,7 +368,7 @@ Route::group(['middleware' => ['dealer']], function () {
     Route::post('product/cart_delete_donate', 'frontend\FrontController@cart_delete_donate');
     Route::post('product/donate', 'frontend\FrontController@donate');
     Route::post('product/donateQuantityChange', 'frontend\FrontController@donateQuantityChange');
-    Route::post('sales', 'frontend\FrontController@sales');
+    Route::get('sales', 'frontend\FrontController@sales');
     Route::post('transaction', 'frontend\AuthController@transaction');
     Route::post('insertContactUs', 'backend\UserController@insertContactUs');
     Route::get('buySale/{id}', 'frontend\FrontController@buySale');
@@ -439,3 +452,12 @@ Route::group(['middleware' => ['dealer']], function () {
     Route::get('getParlorServiceNameFront', 'frontend\HomeAssistantController@getParlorServiceNameFront');
     Route::get('getParlorServicePriceFront', 'frontend\HomeAssistantController@getParlorServicePriceFront');
     Route::post('parlorServiceBookingFront', 'frontend\HomeAssistantController@parlorServiceBookingFront');
+    Route::get('serviceArea', 'frontend\TransportController@serviceArea');
+    Route::post('insertServiceArea', 'frontend\TransportController@insertServiceArea');
+    Route::get('getAddressGroupMotor', 'frontend\TransportController@getAddressGroupMotor');
+    Route::post('insertMotorcycleRide', 'frontend\TransportController@insertMotorcycleRide');
+    Route::get('getAddressGroupPrivate', 'frontend\TransportController@getAddressGroupPrivate');
+    Route::post('insertPrivateRide', 'frontend\TransportController@insertPrivateRide');
+
+//Payment Gateway
+    Route::post('getPaymentCartView', 'frontend\PaymentController@getPaymentCartView');

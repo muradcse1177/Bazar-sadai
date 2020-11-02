@@ -191,4 +191,325 @@ class TransportController extends Controller
         }
         return 'ok';
     }
+    public function serviceArea(){
+        return view('frontend.serviceArea');
+    }
+    public function insertServiceArea(Request $request){
+        $addressGroup = $request->addressGroup;
+        $add_part1 = $request->div_id;
+        if ($addressGroup == 1) {
+            $add_part2 = $request->disid;
+            $add_part3 = $request->upzid;
+            $add_part4 = $request->uniid;
+
+        }
+        if ($addressGroup == 2) {
+            $add_part2 = $request->c_disid;
+            $add_part3 = $request->c_upzid;
+            $add_part4 = $request->c_uniid;
+        }
+        $rows = DB::table('service_area')
+            ->where('user_id', Cookie::get('user_id'))
+            ->distinct()->get()->count();
+        if ($rows > 0) {
+            $result = DB::table('service_area')
+                ->where('user_id', Cookie::get('user_id'))
+                ->update([
+                    'address_type' => $addressGroup,
+                    'add_part1' => $add_part1,
+                    'add_part2' => $add_part2,
+                    'add_part3' => $add_part3,
+                    'add_part4' => $add_part4,
+                ]);
+            if ($result) {
+                return redirect('transportService')->with('successMessage', 'সফল্ভাবে সম্পন্ন্য হয়েছে।');
+            } else {
+                return back()->with('errorMessage', 'আবার চেষ্টা করুন।');
+            }
+        }
+        else{
+            $result = DB::table('service_area')->insert([
+                'user_id' => Cookie::get('user_id'),
+                'address_type' => $addressGroup,
+                'add_part1' => $add_part1,
+                'add_part2' => $add_part2,
+                'add_part3' => $add_part3,
+                'add_part4' => $add_part4,
+            ]);
+            if ($result) {
+                return redirect('transportService')->with('successMessage', 'সফল্ভাবে সম্পন্ন্য হয়েছে।');
+            } else {
+                return back()->with('errorMessage', 'আবার চেষ্টা করুন।');
+            }
+        }
+    }
+    public function getAddressGroupMotor(Request $request){
+        try{
+            if(Cookie::get('user_id') == null){
+                $addressType =0;
+                $rows =0;
+                $cost=0;
+            }
+            else {
+                $rows = DB::table('service_area')
+                    ->where('user_id', Cookie::get('user_id'))
+                    ->first();
+                if(empty($rows)){
+                    $addressType =1;
+                    $rows =1;
+                    $cost =1;
+                }
+                else{
+                    $addressType = $rows->address_type;
+                    if ($addressType == 1) {
+                        $rows = DB::table('upazillas')
+                            ->where('div_id', $rows->add_part1)
+                            ->where('dis_id', $rows->add_part2)
+                            ->where('status', 1)
+                            ->get();
+                    }
+                    if ($addressType == 2) {
+                        $rows = DB::table('city_corporations')
+                            ->where('div_id', $rows->add_part1)
+                            ->where('city_id', $rows->add_part2)
+                            ->where('status', 1)
+                            ->get();
+                    }
+                    $cost = DB::table('transport_cost')
+                        ->where('transport_type','Motorcycle')
+                        ->first();
+                }
+
+            }
+            return response()->json(array('addressType' => $addressType, 'data' => $rows, 'cost' => $cost));
+        }
+        catch(\Illuminate\Database\QueryException $ex){
+            return response()->json(array('data'=>$ex->getMessage()));
+        }
+    }
+    public function insertMotorcycleRide(Request $request){
+        $user = DB::table('service_area')
+            ->where('user_id',Cookie::get('user_id'))
+            ->first();
+        $rider = DB::table('rider_service_area')
+            ->join('users','users.id','=','rider_service_area.user_id')
+            ->where('rider_service_area.add_part1',$user->add_part1)
+            ->where('rider_service_area.add_part2',$user->add_part2)
+            ->where('rider_service_area.add_part3',$request->upzid)
+            ->where('rider_service_area.add_part4',$request->uniid)
+            ->where('rider_service_area.address_type',$request->addressType)
+            ->where('users.working_status',1)
+            ->where('users.status',1)
+            ->where('users.user_type',17)
+            ->first();
+        if(empty($rider)){
+            return back()->with('errorMessage', 'কোন রাইডার পাওয়া যায়নি।');
+        }
+        else{
+            if($request->addressType ==1){
+                $add_part3 = $request->upzid;
+                $add_part4 = $request->uniid;
+                $add_partp3 = $request->upzidp;
+                $add_partp4 = $request->uniidp;
+            }
+            if($request->addressType ==2){
+                $add_part3 = $request->c_upzid;
+                $add_part4 = $request->c_uniid;
+                $add_partp3 = $request->c_upzidp;
+                $add_partp4 = $request->c_uniidp;
+            }
+            $row = DB::table('transport_cost')
+                ->where('transport_type','Motorcycle')
+                ->first();
+            $distance = $request->distanceMotor;
+            $minCost = $row->minCost;
+            if($distance<=10){
+                $cost = $minCost + $distance*$row->km1;
+            }
+            elseif($distance>10 && $distance<=30){
+                $cost = $minCost + $distance*$row->km2;
+            }
+            elseif($distance>30 && $distance<=50){
+                $cost = $minCost + $distance*$row->km3;
+            }
+            elseif($distance>50 && $distance<=100){
+                $cost = $minCost + $distance*$row->km4;
+            }
+            elseif($distance>100){
+                $cost = $minCost + $distance*$row->km5;
+            }
+            $result = DB::table('ride_booking')->insert([
+                'user_id' => Cookie::get('user_id'),
+                'transport' => $request->transport,
+                'address_type' => $request->addressType,
+                'add_part3' => $add_part3,
+                'add_part4' => $add_part4,
+                'add_partp3' => $add_partp3,
+                'add_partp4' => $add_partp4,
+                'customer_distance' => $request->distanceMotor,
+                'cutomer_cost' => $cost,
+                'rider_id' => $rider->id,
+            ]);
+            if ($result) {
+                $upresult =DB::table('users')
+                    ->where('id', $rider->user_id)
+                    ->update([
+                        'working_status' => 2,
+                    ]);
+                if($upresult){
+                    return back()->with('successMessage', 'আপনার রাইডারঃ '.$rider->name." ফোনঃ ".$rider->phone);
+                }
+                else {
+                    return back()->with('errorMessage', 'আবার চেষ্টা করুন।');
+                }
+            }
+            else {
+                return back()->with('errorMessage', 'আবার চেষ্টা করুন।');
+            }
+        }
+    }
+    public function getAddressGroupPrivate(Request $request){
+        try{
+            if(Cookie::get('user_id') == null){
+                $addressType =0;
+                $rows =0;
+                $cost=0;
+                $type=0;
+            }
+            else {
+                $rows = DB::table('service_area')
+                    ->where('user_id', Cookie::get('user_id'))
+                    ->first();
+                if(empty($rows)){
+                    $addressType =1;
+                    $rows =1;
+                    $cost =1;
+                    $type=1;
+                }
+                else{
+                    $addressType = $rows->address_type;
+                    if ($addressType == 1) {
+                        $rows = DB::table('upazillas')
+                            ->where('div_id', $rows->add_part1)
+                            ->where('dis_id', $rows->add_part2)
+                            ->where('status', 1)
+                            ->get();
+                    }
+                    if ($addressType == 2) {
+                        $rows = DB::table('city_corporations')
+                            ->where('div_id', $rows->add_part1)
+                            ->where('city_id', $rows->add_part2)
+                            ->where('status', 1)
+                            ->get();
+                    }
+                    $cost = DB::table('transport_cost')
+                        ->where('transport_type',$request->type)
+                        ->first();
+                    $type=$request->type;
+                }
+
+            }
+            return response()->json(array('addressType' => $addressType, 'data' => $rows, 'cost' => $cost ,'transport' => $type));
+        }
+        catch(\Illuminate\Database\QueryException $ex){
+            return response()->json(array('data'=>$ex->getMessage()));
+        }
+    }
+    public function insertPrivateRide(Request $request){
+        if($request->transport == 'Private Car')
+            $user_type = 18;
+        if($request->transport == 'Micro Bus')
+            $user_type = 19;
+        if($request->transport == 'Ambulance')
+            $user_type = 20;
+        $user = DB::table('service_area')
+            ->where('user_id',Cookie::get('user_id'))
+            ->first();
+        $rider = DB::table('rider_service_area')
+            ->join('users','users.id','=','rider_service_area.user_id')
+            ->where('rider_service_area.add_part1',$user->add_part1)
+            ->where('rider_service_area.add_part2',$user->add_part2)
+            ->where('rider_service_area.address_type',$request->addressType)
+            ->where('users.working_status',1)
+            ->where('users.status',1)
+            ->where('users.user_type',$user_type)
+            ->first();
+        if(empty($rider)){
+            return back()->with('errorMessage', 'কোন রাইডার পাওয়া যায়নি।');
+        }
+        else{
+            if($request->addressType ==1){
+                $add_part3 = $request->upzidPri;
+                $add_part4 = $request->uniidPri;
+            }
+            if($request->addressType ==2){
+                $add_part3 = $request->c_upzidPri;
+                $add_part4 = $request->c_uniidPri;
+            }
+            if($request->addressGroup ==1){
+                $add_partp1 = $request->div_id;
+                $add_partp2 = $request->disid;
+                $add_partp3 = $request->upzidPostPri;
+                $add_partp4 = $request->uniidPostPri;
+            }
+            if($request->addressGroup ==2){
+                $add_partp1 = $request->div_id;
+                $add_partp2 = $request->c_disid;
+                $add_partp3 = $request->c_upzidPostPri;
+                $add_partp4 = $request->c_uniidPostPri;
+            }
+            $row = DB::table('transport_cost')
+                ->where('transport_type',$request->transport)
+                ->first();
+            $distance = $request->distancePrivate;
+            $minCost = $row->minCost;
+            if($distance<=10){
+                $cost = $minCost + $distance*$row->km1;
+            }
+            elseif($distance>10 && $distance<=30){
+                $cost = $minCost + $distance*$row->km2;
+            }
+            elseif($distance>30 && $distance<=50){
+                $cost = $minCost + $distance*$row->km3;
+            }
+            elseif($distance>50 && $distance<=100){
+                $cost = $minCost + $distance*$row->km4;
+            }
+            elseif($distance>100){
+                $cost = $minCost + $distance*$row->km5;
+            }
+            $result = DB::table('ride_booking')->insert([
+                'user_id' => Cookie::get('user_id'),
+                'transport' => $request->transport,
+                'address_type' => $request->addressType,
+                'add_part3' => $add_part3,
+                'add_part4' => $add_part4,
+                'address_typep' => $request->addressGroup,
+                'add_partp1' => $add_partp1,
+                'add_partp2' => $add_partp2,
+                'add_partp3' => $add_partp3,
+                'add_partp4' => $add_partp4,
+                'customer_distance' => $request->distancePrivate,
+                'cutomer_cost' => $cost,
+                'rider_id' => $rider->id,
+            ]);
+            if ($result) {
+                $upresult =DB::table('users')
+                    ->where('id', $rider->user_id)
+                    ->update([
+                        'working_status' => 2,
+                    ]);
+                if($upresult){
+                    return back()->with('successMessage', 'আপনার রাইডারঃ '.$rider->name." ফোনঃ ".$rider->phone);
+                }
+                else {
+                    return back()->with('errorMessage', 'আবার চেষ্টা করুন।');
+                }
+            }
+            else {
+                return back()->with('errorMessage', 'আবার চেষ্টা করুন।');
+            }
+        }
+
+    }
 }

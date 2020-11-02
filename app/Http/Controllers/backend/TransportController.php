@@ -169,7 +169,7 @@ class TransportController extends Controller
                         ['type_id' ,'=' ,$request->type_id],
                     ])->where('status', 1)->distinct()->get()->count();
                     if ($rows > 0) {
-                        return back()->with('errorMessage', ' নতুন বিভাগ লিখুন।');
+                        return back()->with('errorMessage', ' নতুন রুট লিখুন।');
                     } else {
                         $result = DB::table('transport_tickets')->insert([
                             'transport_id' => $request->transport_id,
@@ -208,6 +208,7 @@ class TransportController extends Controller
             return response()->json(array('data'=>$ex->getMessage()));
         }
     }
+
     public function deleteTransportsTickets (Request $request){
         try{
 
@@ -217,6 +218,97 @@ class TransportController extends Controller
                     ->update([
                         'status' =>  0,
                     ]);
+                if ($result) {
+                    return back()->with('successMessage', 'সফল্ভাবে সম্পন্ন্য হয়েছে।');
+                } else {
+                    return back()->with('errorMessage', 'আবার চেষ্টা করুন।');
+                }
+            }
+            else{
+                return back()->with('errorMessage', 'আবার চেষ্টা করুন।');
+            }
+
+        }
+        catch(\Illuminate\Database\QueryException $ex){
+            return back()->with('errorMessage', $ex->getMessage());
+        }
+    }
+    public function transportCost(){
+        $rows = DB::table('transport_cost')
+            ->Paginate(10);
+        return view('backend.transportCost', ['costs' => $rows]);
+    }
+    public function insertTransportCost(Request $request){
+        try{
+            if($request) {
+                //dd($request);
+                if($request->id) {
+                    $result =DB::table('transport_cost')
+                        ->where('id', $request->id)
+                        ->update([
+                            'transport_type' => $request->transport,
+                            'minCost' => $request->minCost,
+                            'km1' => $request->km1,
+                            'km2' => $request->km2,
+                            'km3' => $request->km3,
+                            'km4' =>  $request->km4,
+                            'km5' =>  $request->km5,
+                        ]);
+                    if ($result) {
+                        return back()->with('successMessage', 'সফল্ভাবে সম্পন্ন্য হয়েছে।');
+                    } else {
+                        return back()->with('errorMessage', 'আবার চেষ্টা করুন।');
+                    }
+                }
+                else{
+                    $rows = DB::table('transport_cost')->select('id')->where([
+                        ['transport_type', '=', $request->transport],
+                    ])->distinct()->get()->count();
+                    if ($rows > 0) {
+                        return back()->with('errorMessage', ' নতুনভাবে লিখুন।');
+                    } else {
+                        $result = DB::table('transport_cost')->insert([
+                            'transport_type' => $request->transport,
+                            'minCost' => $request->minCost,
+                            'km1' => $request->km1,
+                            'km2' => $request->km2,
+                            'km3' => $request->km3,
+                            'km4' =>  $request->km4,
+                            'km5' =>  $request->km5,
+                        ]);
+                        if ($result) {
+                            return back()->with('successMessage', 'সফল্ভাবে সম্পন্ন্য হয়েছে।');
+                        } else {
+                            return back()->with('errorMessage', 'আবার চেষ্টা করুন।');
+                        }
+                    }
+                }
+            }
+            else{
+                return back()->with('errorMessage', 'ফর্ম পুরন করুন।');
+            }
+        }
+        catch(\Illuminate\Database\QueryException $ex){
+            return back()->with('errorMessage', $ex->getMessage());
+        }
+    }
+    public function getTransportCostList(Request $request){
+        try{
+            $rows = DB::table('transport_cost')
+                ->where('id', $request->id)
+                ->first();
+            return response()->json(array('data'=>$rows));
+        }
+        catch(\Illuminate\Database\QueryException $ex){
+            return response()->json(array('data'=>$ex->getMessage()));
+        }
+    }
+    public function deleteTransportCost (Request $request){
+        try{
+            if($request->id) {
+                $result =DB::table('transport_cost')
+                    ->where('id', $request->id)
+                    ->delete();
                 if ($result) {
                     return back()->with('successMessage', 'সফল্ভাবে সম্পন্ন্য হয়েছে।');
                 } else {

@@ -822,4 +822,68 @@ class UserController extends Controller
             return back()->with('errorMessage', $ex->getMessage());
         }
     }
+    public function changeWorkingStatusProvider(Request  $request){
+        if($request->id == 0){
+            $result =DB::table('users')
+                ->where('id', Cookie::get('user_id'))
+                ->update([
+                    'working_status' => $request->id,
+                ]);
+        }
+        if($request->id == 1){
+            $result =DB::table('users')
+                ->where('id', Cookie::get('user_id'))
+                ->update([
+                    'working_status' => $request->id,
+                ]);
+        }
+        if($request->id == 2){
+            $result =DB::table('users')
+                ->where('id', Cookie::get('user_id'))
+                ->update([
+                    'working_status' => $request->id,
+                ]);
+            if($result){
+                if($result){
+                    return response()->json(array('data'=>'ok'));
+                }
+                else{
+                    return response()->json(array('data'=>'not ok'));
+                }
+            }
+        }
+        if($request->id == 3){
+            $result =DB::table('users')
+                ->where('id', Cookie::get('user_id'))
+                ->update([
+                    'working_status' => $request->id,
+                ]);
+            if($result){
+                if($result){
+                    return response()->json(array('data'=>'ok'));
+                }
+                else{
+                    return response()->json(array('data'=>'not ok'));
+                }
+            }
+        }
+        if($request->id == 4){
+            $result =DB::table('users')
+                ->where('id', Cookie::get('user_id'))
+                ->update([
+                    'working_status' => 1,
+                ]);
+            if($result){
+                if($result){
+                    return response()->json(array('data'=>'ok'));
+                }
+                else{
+                    return response()->json(array('data'=>'not ok'));
+                }
+            }
+        }
+        else{
+            return response()->json(array('data'=>'not ok'));
+        }
+    }
 }
