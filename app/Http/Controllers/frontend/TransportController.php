@@ -349,6 +349,7 @@ class TransportController extends Controller
                 'customer_distance' => $request->distanceMotor,
                 'cutomer_cost' => $cost,
                 'rider_id' => $rider->id,
+                'date' => date('y-m-d'),
             ]);
             if ($result) {
                 $upresult =DB::table('users')
@@ -492,6 +493,7 @@ class TransportController extends Controller
                 'customer_distance' => $request->distancePrivate,
                 'cutomer_cost' => $cost,
                 'rider_id' => $rider->id,
+                'date' => date('y-m-d'),
             ]);
             if ($result) {
                 $upresult =DB::table('users')

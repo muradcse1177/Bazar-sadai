@@ -19,16 +19,21 @@
     {{ Form::open(array('url' => 'searchTherapyListFront',  'method' => 'post')) }}
     {{ csrf_field() }}
     <div class="row">
-        <div class="col-sm-4">
-            <div class="form-group">
-                <select class="form-control select2 department" id="department" name="department" style="width: 100%;" required>
-                    <option value="" selected>থেরাপি নির্বাচন করুন</option>
-                </select>
-            </div>
-        </div>
-        <div class="col-sm-4">
-            <div class="form-group">
-                <button type="submit" class="btn allButton">সার্চ করুন</button>
+        <div class="card">
+            <div class="card-body cardBody">
+                <h5 style="text-align: center;"><b>আপনার পছন্দের থেরাপি সেন্টার খুজে নিন।</b></h5>
+                <div class="col-sm-12">
+                    <div class="form-group">
+                        <select class="form-control select2 department" id="department" name="department" style="width: 100%;" required>
+                            <option value="" selected>থেরাপি নির্বাচন করুন</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <div class="form-group">
+                        <button type="submit" class="btn allButton">সার্চ করুন</button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

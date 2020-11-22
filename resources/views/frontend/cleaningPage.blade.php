@@ -19,37 +19,41 @@
     {{ Form::open(array('url' => 'cleaningBookingFront',  'method' => 'post')) }}
     {{ csrf_field() }}
     <div class="row">
-        <div class="col-sm-4">
-            <div class="form-group">
-                <select class="form-control select2 type" id="type" name="type" style="width: 100%;" required>
-                    <option value="" selected>ক্লিনিং  ধরণ  নির্বাচন করুন</option>
-                </select>
-            </div>
-        </div>
-        <div class="col-sm-4">
-            <div class="form-group">
-                <select class="form-control select2 size" id="size" name="size" style="width: 100%;" required>
-                    <option value="" selected> সাইজ ধরণ নির্বাচন করুন</option>
-                </select>
-            </div>
-        </div>
-        <div class="col-sm-4">
-            <div class="form-group">
-                <h4 style="display: none;" class="price"> </h4>
-            </div>
-        </div>
-        <div class="col-sm-4">
-            @if(Cookie::get('user_id'))
-                <div class="form-group">
-                    <button type="submit" class="btn allButton">বুকিং করুন</button>
+        <div class="card">
+            <div class="card-body cardBody">
+                <h5 style="text-align: center;"><b>আপনার পছন্দের ক্লিনার খুজে নিন।</b></h5>
+                <div class="col-sm-12">
+                    <div class="form-group">
+                        <select class="form-control select2 type" id="type" name="type" style="width: 100%;" required>
+                            <option value="" selected>ক্লিনিং  ধরণ  নির্বাচন করুন</option>
+                        </select>
+                    </div>
                 </div>
-            @endif
-            @if(Cookie::get('user_id') == null )
-                <div class="form-group">
-                    <a href='{{url('login')}}'  class="btn allButton">লগ ইন করুন</a>
+                <div class="col-sm-12">
+                    <div class="form-group">
+                        <select class="form-control select2 size" id="size" name="size" style="width: 100%;" required>
+                            <option value="" selected> সাইজ ধরণ নির্বাচন করুন</option>
+                        </select>
+                    </div>
                 </div>
-            @endif
-            {{ Form::close() }}
+                <div class="col-sm-12">
+                    <div class="form-group">
+                        <h4 style="display: none;" class="price"> </h4>
+                    </div>
+                </div>
+                <div class="col-sm-12">
+                    @if(Cookie::get('user_id'))
+                        <div class="form-group">
+                            <button type="submit" class="btn allButton">বুকিং করুন</button>
+                        </div>
+                    @endif
+                    @if(Cookie::get('user_id') == null )
+                        <div class="form-group">
+                            <a href='{{url('login')}}'  class="btn allButton">লগ ইন করুন</a>
+                        </div>
+                    @endif
+                </div>
+            </div>
         </div>
     </div>
     {{ Form::close() }}

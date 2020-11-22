@@ -19,42 +19,46 @@
     {{ Form::open(array('url' => 'helpingHandBookingFront',  'method' => 'post')) }}
     {{ csrf_field() }}
     <div class="row">
-        <div class="col-sm-4">
-            <div class="form-group">
-                <select class="form-control select2 type" id="type" name="type" style="width: 100%;" required>
-                    <option value="" selected> ধরণ  নির্বাচন করুন</option>
-                </select>
-            </div>
-        </div>
-        <div class="col-sm-4">
-            <div class="form-group">
-                <input type="number" name="days" id="days" class="form-control days" placeholder="কয় দিন" min="1" required>
-            </div>
-        </div>
-        <div class="col-sm-4">
-            <div class="form-group">
-                <select class="form-control select2 time" id="time" name="time" style="width: 100%;" required>
-                    <option value="" selected>ঘন্টা নির্বাচন করুন</option>
-                </select>
-            </div>
-        </div>
-        <div class="col-sm-4">
-            <div class="form-group">
-                <h4 style="display: none;" class="price"> </h4>
-            </div>
-        </div>
-        <div class="col-sm-4">
-            @if(Cookie::get('user_id'))
-                <div class="form-group">
-                    <button type="submit" class="btn allButton">বুকিং করুন</button>
+        <div class="card">
+            <div class="card-body cardBody">
+                <h5 style="text-align: center;"><b>আপনার পছন্দের হেল্পিং হ্যান্ড খুজে নিন।</b></h5>
+                <div class="col-sm-12">
+                    <div class="form-group">
+                        <select class="form-control select2 type" id="type" name="type" style="width: 100%;" required>
+                            <option value="" selected> ধরণ  নির্বাচন করুন</option>
+                        </select>
+                    </div>
                 </div>
-            @endif
-            @if(Cookie::get('user_id') == null )
-                <div class="form-group">
-                    <a href='{{url('login')}}'  class="btn allButton">লগ ইন করুন</a>
+                <div class="col-sm-12">
+                    <div class="form-group">
+                        <input type="number" name="days" id="days" class="form-control days" placeholder="কয় দিন" min="1" required>
+                    </div>
                 </div>
-            @endif
-            {{ Form::close() }}
+                <div class="col-sm-12">
+                    <div class="form-group">
+                        <select class="form-control select2 time" id="time" name="time" style="width: 100%;" required>
+                            <option value="" selected>ঘন্টা নির্বাচন করুন</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-sm-12">
+                    <div class="form-group">
+                        <h4 style="display: none;" class="price"> </h4>
+                    </div>
+                </div>
+                <div class="col-sm-12">
+                    @if(Cookie::get('user_id'))
+                        <div class="form-group">
+                            <button type="submit" class="btn allButton">বুকিং করুন</button>
+                        </div>
+                    @endif
+                    @if(Cookie::get('user_id') == null )
+                        <div class="form-group">
+                            <a href='{{url('login')}}'  class="btn allButton">লগ ইন করুন</a>
+                        </div>
+                    @endif
+                </div>
+            </div>
         </div>
     </div>
     {{ Form::close() }}
