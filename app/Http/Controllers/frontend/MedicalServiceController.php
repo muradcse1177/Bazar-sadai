@@ -4,6 +4,7 @@ namespace App\Http\Controllers\frontend;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\DB;
 use smasif\ShurjopayLaravelPackage\ShurjopayService;
@@ -12,6 +13,9 @@ class MedicalServiceController extends Controller
 {
     public function doctorAppointmentForm(){
         return view('frontend.doctorAppointmentForm');
+    }
+    public function localDoctorAppointment(){
+        return view('frontend.localDoctor');
     }
     public function searchDoctorListFront(Request $request){
         if($request->type =='Hospital') {
@@ -47,6 +51,34 @@ class MedicalServiceController extends Controller
         //dd($rows);
         return view('frontend.doctorSearch',['doctorLists' => $rows,'d_type'=>$request->type]);
     }
+    public function searchLocalDoctorListFront(Request $request){
+        $users = DB::table('users')
+            ->where('id',  Cookie::get('user_id'))
+            ->first();
+        $rows = DB::table('doctors')
+            ->select('*','users.name as dr_name','hospitals.name as hos_name',
+                'doctors.address as dr_address','users.id as u_id')
+            ->join('users', 'users.id', '=', 'doctors.doctor_id')
+            ->join('hospitals', 'hospitals.id', '=', 'doctors.hos_name_id')
+            ->join('med_departments', 'med_departments.id', '=', 'doctors.dept_name_id')
+            ->join('rider_service_area', 'rider_service_area.user_id', '=', 'doctors.doctor_id')
+            ->where('doctors.status', 1)
+            ->where('users.status', 1)
+            ->where('users.working_status', 1)
+            ->where('doctors.dept_name_id', $request->department)
+            ->where('rider_service_area.address_type', $users->address_type)
+            ->where('rider_service_area.add_part1', $users->add_part1)
+            ->where('rider_service_area.add_part2', $users->add_part2)
+            ->where('rider_service_area.add_part3', $users->add_part3)
+            ->where('rider_service_area.add_part4', $users->add_part4)
+            ->get();
+        if(count($rows)<1){
+            return back()->with('errorMessage', 'ডাক্তার পাওয়া যায়নি।');
+        }
+
+        //dd($rows);
+        return view('frontend.localDoctorSearch',['doctorLists' => $rows,'d_type'=>$request->type]);
+    }
     public function doctorProfileFront($id){
         $req_item = explode("&",$id);
         $id = $req_item[0];
@@ -78,6 +110,20 @@ class MedicalServiceController extends Controller
         //dd($rows);
         return view('frontend.doctorProfile',['doctorProfile' => $rows,'type'=>$type]);
     }
+    public function localDoctorProfileFront($id){
+        $rows = DB::table('doctors')
+            ->select('*','users.name as dr_name','hospitals.name as hos_name',
+                'doctors.address as dr_address','users.id as u_id')
+            ->join('users', 'users.id', '=', 'doctors.doctor_id')
+            ->join('hospitals', 'hospitals.id', '=', 'doctors.hos_name_id')
+            ->join('med_departments', 'med_departments.id', '=', 'doctors.dept_name_id')
+            ->where('doctors.status', 1)
+            ->where('users.status', 1)
+            ->where('users.id', $id)
+            ->first();
+        $type ='Local';
+        return view('frontend.localDoctorProfile',['doctorProfile' => $rows,'type'=>$type]);
+    }
     public function insertAppointment(Request $request){
         try{
             if($request) {
@@ -92,6 +138,41 @@ class MedicalServiceController extends Controller
                     'price' => $request->fees,
                 ]);
                 if ($result) {
+                    return back()->with('successMessage', 'সফল্ভাবে সম্পন্ন্য হয়েছে।');
+                } else {
+                    return back()->with('errorMessage', 'আবার চেষ্টা করুন।');
+                }
+            }
+            else{
+                return back()->with('errorMessage', 'ফর্ম পুরন করুন।');
+            }
+        }
+        catch(\Illuminate\Database\QueryException $ex){
+            return back()->with('errorMessage', $ex->getMessage());
+        }
+    }
+    public function insertLocalAppointment(Request $request){
+        try{
+            if($request) {
+                $users = DB::table('users')
+                    ->where('id',  $request->dr_id)
+                    ->first();
+                $result = DB::table('dr_apportionment')->insert([
+                    'dr_id' => $request->dr_id,
+                    'type' => $request->type,
+                    'user_id' => Cookie::get('user_id'),
+                    'date' => date('Y-m-d'),
+                    'patient_name' => $request->patient_name,
+                    'age' => $request->age,
+                    'problem' => $request->problem,
+                    'price' => $request->fees,
+                ]);
+                if ($result) {
+                    $result = DB::table('users')
+                        ->where('id',$users->id)
+                        ->update([
+                            'working_status' =>2,
+                        ]);
                     return back()->with('successMessage', 'সফল্ভাবে সম্পন্ন্য হয়েছে।');
                 } else {
                     return back()->with('errorMessage', 'আবার চেষ্টা করুন।');
@@ -136,11 +217,6 @@ class MedicalServiceController extends Controller
     }
     public function insertTherapyAppointment(Request $request){
         try{
-//            $shurjopay_service = new ShurjopayService();
-//            $tx_id = $shurjopay_service->generateTxId();
-//            $success_route = 'http://localhost/bazar-sadai/insertTherapyAppointment';
-//            $shurjopay_service->sendPayment(1, $success_route);
-//            exit();
             if($request) {
                 $result = DB::table('therapy_appointment')->insert([
                     'therapy_fees_id' => $request->tf_id,
@@ -220,5 +296,97 @@ class MedicalServiceController extends Controller
         catch(\Illuminate\Database\QueryException $ex){
             return back()->with('errorMessage', $ex->getMessage());
         }
+    }
+    public function medicalCampFront(Request $request){
+        $rows = DB::table('medical_camp')
+            ->where('end_date','>=',date('Y-m-d'))
+            ->orderBy('id', 'desc')
+            ->get();
+        $camp_arr =array();
+        $i=0;
+        foreach ($rows as $mcamp){
+            $user_id = $mcamp->user;
+            $address_type = $mcamp->address_type;
+            $user = DB::table('users')
+                ->where('id', $user_id)
+                ->first();
+            if($address_type==1){
+                $add_part1 = DB::table('divisions')
+                    ->where('id',$mcamp->add_part1)
+                    ->first();
+                $add_part2 = DB::table('districts')
+                    ->where('div_id',$mcamp->add_part1)
+                    ->where('id',$mcamp->add_part2)
+                    ->first();
+                $add_part3 = DB::table('upazillas')
+                    ->where('div_id',$mcamp->add_part1)
+                    ->where('dis_id',$mcamp->add_part2)
+                    ->where('id',$mcamp->add_part3)
+                    ->first();
+                $add_part4 = DB::table('unions')
+                    ->where('div_id',$mcamp->add_part1)
+                    ->where('dis_id',$mcamp->add_part2)
+                    ->where('upz_id',$mcamp->add_part3)
+                    ->where('id',$mcamp->add_part4)
+                    ->first();
+                $add_part5 = DB::table('wards')
+                    ->where('div_id',$mcamp->add_part1)
+                    ->where('dis_id',$mcamp->add_part2)
+                    ->where('upz_id',$mcamp->add_part3)
+                    ->where('uni_id',$mcamp->add_part4)
+                    ->where('id',$mcamp->add_part5)
+                    ->first();
+            }
+            if($address_type==2){
+                $add_part1 = DB::table('divisions')
+                    ->where('id',$mcamp->add_part1)
+                    ->first();
+                $add_part2 = DB::table('cities')
+                    ->where('div_id',$mcamp->add_part1)
+                    ->where('id',$mcamp->add_part2)
+                    ->first();
+                $add_part3 = DB::table('city_corporations')
+                    ->where('div_id',$mcamp->add_part1)
+                    ->where('city_id',$mcamp->add_part2)
+                    ->where('id',$mcamp->add_part3)
+                    ->first();
+                $add_part4 = DB::table('thanas')
+                    ->where('div_id',$mcamp->add_part1)
+                    ->where('city_id',$mcamp->add_part2)
+                    ->where('city_co_id',$mcamp->add_part3)
+                    ->where('id',$mcamp->add_part4)
+                    ->first();
+                $add_part5 = DB::table('c_wards')
+                    ->where('div_id',$mcamp->add_part1)
+                    ->where('city_id',$mcamp->add_part2)
+                    ->where('city_co_id',$mcamp->add_part3)
+                    ->where('thana_id',$mcamp->add_part4)
+                    ->where('id',$mcamp->add_part5)
+                    ->first();
+            }
+            $camp_arr[$i]['id'] = $mcamp->id;
+            $camp_arr[$i]['c_name'] = $mcamp->id;
+            $camp_arr[$i]['name'] = $mcamp->c_name;
+            $camp_arr[$i]['email'] = $mcamp->email;
+            $camp_arr[$i]['phone'] = $mcamp->phone;
+            $camp_arr[$i]['user'] = $user->name;
+            $camp_arr[$i]['add_part1'] = $add_part1->name;
+            $camp_arr[$i]['add_part2'] = $add_part2->name;
+            $camp_arr[$i]['add_part3'] = $add_part3->name;
+            $camp_arr[$i]['add_part4'] = $add_part4->name;
+            $camp_arr[$i]['add_part5'] = $add_part5->name;
+            $camp_arr[$i]['start_date'] = $mcamp->start_date;
+            $camp_arr[$i]['end_date'] = $mcamp->end_date;
+            $camp_arr[$i]['purpose'] = $mcamp->purpose;
+            $camp_arr[$i]['address'] = $mcamp->address;
+            $i++;
+        }
+        $currentPage = LengthAwarePaginator::resolveCurrentPage();
+        $itemCollection = collect($camp_arr);
+        $perPage = 20;
+        $currentPageItems = $itemCollection->slice(($currentPage * $perPage) - $perPage, $perPage)->all();
+        $paginatedItems= new LengthAwarePaginator($currentPageItems , count($itemCollection), $perPage);
+        $paginatedItems->setPath($request->url());
+        return view('frontend.medicalCampFront',['medCamps' => $paginatedItems]);
     }
 }

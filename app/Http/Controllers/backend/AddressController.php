@@ -21,6 +21,7 @@ class AddressController extends Controller
             return back()->with('errorMessage', $ex->getMessage());
         }
 	}
+
 	public function getDivisionList(Request $request){
         try{
             $rows = DB::table('divisions')->where('id', $request->id)->first();
@@ -953,6 +954,522 @@ class AddressController extends Controller
         }
         catch(\Illuminate\Database\QueryException $ex){
             return back()->with('errorMessage', $ex->getMessage());
+        }
+    }
+    public function naming1 (){
+        try{
+            $rows = DB::table('naming1s')->where('status', 1)
+                ->orderBy('id', 'DESC')->Paginate(10);
+            return view('backend.naming1',['naming1s'=> $rows]);
+        }
+        catch(\Illuminate\Database\QueryException $ex){
+            return back()->with('errorMessage', $ex->getMessage());
+        }
+    }
+    public function insertNaming1(Request $request){
+        try{
+            if($request) {
+                if($request->id) {
+                    $result =DB::table('naming1s')
+                        ->where('id', $request->id)
+                        ->update([
+                            'name' =>  $request->name,
+                        ]);
+                    if ($result) {
+                        return back()->with('successMessage', 'সফল্ভাবে সম্পন্ন্য হয়েছে।');
+                    } else {
+                        return back()->with('errorMessage', 'আবার চেষ্টা করুন।');
+                    }
+                }
+                else{
+                    $rows = DB::table('naming1s')->select('name')->where([
+                        ['name', '=', $request->name]
+                    ])->where('status', 1)->distinct()->get()->count();
+                    if ($rows > 0) {
+                        return back()->with('errorMessage', ' নতুন বিভাগ লিখুন।');
+                    } else {
+                        $result = DB::table('naming1s')->insert([
+                            'name' => $request->name
+                        ]);
+                        if ($result) {
+                            return back()->with('successMessage', 'সফল্ভাবে সম্পন্ন্য হয়েছে।');
+                        } else {
+                            return back()->with('errorMessage', 'আবার চেষ্টা করুন।');
+                        }
+                    }
+                }
+            }
+            else{
+                return back()->with('errorMessage', 'ফর্ম পুরন করুন।');
+            }
+        }
+        catch(\Illuminate\Database\QueryException $ex){
+            return back()->with('errorMessage', $ex->getMessage());
+        }
+    }
+    public function getNaming1List(Request $request){
+        try{
+            $rows = DB::table('naming1s')->where('id', $request->id)->first();
+
+            return response()->json(array('data'=>$rows));
+        }
+        catch(\Illuminate\Database\QueryException $ex){
+            return response()->json(array('data'=>$ex->getMessage()));
+        }
+    }
+    public function deleteNaming1(Request $request){
+        try{
+
+            if($request->id) {
+                $result =DB::table('naming1s')
+                    ->where('id', $request->id)
+                    ->update([
+                        'status' =>  0,
+                    ]);
+                if ($result) {
+                    return back()->with('successMessage', 'সফল্ভাবে সম্পন্ন্য হয়েছে।');
+                } else {
+                    return back()->with('errorMessage', 'আবার চেষ্টা করুন।');
+                }
+            }
+            else{
+                return back()->with('errorMessage', 'আবার চেষ্টা করুন।');
+            }
+
+        }
+        catch(\Illuminate\Database\QueryException $ex){
+            return back()->with('errorMessage', $ex->getMessage());
+        }
+    }
+    public function naming2 (){
+        try{
+            $rows = DB::table('naming2s')
+                ->select('*','naming1s.name as divName','naming2s.name as n_name','naming2s.id as n_id')
+                ->join('naming1s', 'naming2s.div_id', '=', 'naming1s.id')
+                ->where('naming2s.status', 1)
+                ->Paginate(10);
+            return view('backend.naming2',['naming2s'=> $rows]);
+        }
+        catch(\Illuminate\Database\QueryException $ex){
+            return back()->with('errorMessage', $ex->getMessage());
+        }
+    }
+    public function getAllNaming1(Request $request){
+        try{
+            $rows = DB::table('naming1s')->where('status', 1)->get();
+
+            return response()->json(array('data'=>$rows));
+        }
+        catch(\Illuminate\Database\QueryException $ex){
+            return response()->json(array('data'=>$ex->getMessage()));
+        }
+    }
+    public function insertNaming2(Request $request){
+        try{
+            if($request) {
+                if($request->id) {
+                    $result =DB::table('naming2s')
+                        ->where('id', $request->id)
+                        ->update([
+                            'div_id' => $request->divId,
+                            'name' => $request->name,
+                            'naming2' => $request->name2
+                        ]);
+                    if ($result) {
+                        return back()->with('successMessage', 'সফল্ভাবে সম্পন্ন্য হয়েছে।');
+                    } else {
+                        return back()->with('errorMessage', 'আবার চেষ্টা করুন।');
+                    }
+                }
+                else{
+                    $rows = DB::table('naming2s')->select('name')
+                        ->where([['name', '=', $request->name]
+                        ])->where('status', 1)->distinct()->get()->count();
+                    if ($rows > 0) {
+                        return back()->with('errorMessage', ' নতুন জেলা লিখুন।');
+                    } else {
+                        $result = DB::table('naming2s')->insert([
+                            'div_id' => $request->divId,
+                            'name' => $request->name,
+                            'naming2' => $request->name2
+                        ]);
+                        if ($result) {
+                            return back()->with('successMessage', 'সফল্ভাবে সম্পন্ন্য হয়েছে।');
+                        } else {
+                            return back()->with('errorMessage', 'আবার চেষ্টা করুন।');
+                        }
+                    }
+                }
+            }
+            else{
+                return back()->with('errorMessage', 'ফর্ম পুরন করুন।');
+            }
+        }
+        catch(\Illuminate\Database\QueryException $ex){
+            return back()->with('errorMessage', $ex->getMessage());
+        }
+    }
+    public function getNaming2List(Request $request){
+        try{
+            $rows = DB::table('naming2s')->where('id', $request->id)->first();
+
+            return response()->json(array('data'=>$rows));
+        }
+        catch(\Illuminate\Database\QueryException $ex){
+            return response()->json(array('data'=>$ex->getMessage()));
+        }
+    }
+    public function deleteNaming2(Request $request){
+        try{
+
+            if($request->id) {
+                $result =DB::table('naming2s')
+                    ->where('id', $request->id)
+                    ->update([
+                        'status' =>  0,
+                    ]);
+                if ($result) {
+                    return back()->with('successMessage', 'সফল্ভাবে সম্পন্ন্য হয়েছে।');
+                } else {
+                    return back()->with('errorMessage', 'আবার চেষ্টা করুন।');
+                }
+            }
+            else{
+                return back()->with('errorMessage', 'আবার চেষ্টা করুন।');
+            }
+
+        }
+        catch(\Illuminate\Database\QueryException $ex){
+            return back()->with('errorMessage', $ex->getMessage());
+        }
+    }
+    public function naming3(){
+        try{
+            $rows = DB::table('naming3s')
+                ->select('naming1s.name as divName',
+                    'naming2s.name as disName', 'naming3s.id', 'naming3s.name', 'naming3s.naming3')
+                ->join('naming2s', 'naming2s.id', '=', 'naming3s.dis_id')
+                ->join('naming1s', 'naming2s.div_id', '=', 'naming1s.id')
+                ->where('naming3s.status', 1)
+                ->Paginate(20);
+            return view('backend.naming3', ['naming3s' => $rows]);
+        }
+        catch(\Illuminate\Database\QueryException $ex){
+            return back()->with('errorMessage', $ex->getMessage());
+        }
+    }
+    public function getNaming2ListAll(Request $request){
+        try{
+            $rows = DB::table('naming2s')
+                ->where('div_id', $request->id)
+                ->where('status', 1)
+                ->get();
+
+            return response()->json(array('data'=>$rows));
+        }
+        catch(\Illuminate\Database\QueryException $ex){
+            return response()->json(array('data'=>$ex->getMessage()));
+        }
+    }
+    public function insertNaming3(Request $request){
+        try{
+            if($request) {
+                if($request->id) {
+                    $result =DB::table('naming3s')
+                        ->where('id', $request->id)
+                        ->update([
+                            'div_id' => $request->divId,
+                            'dis_id' => $request->disId,
+                            'naming3' => $request->name3,
+                            'name' => $request->name
+                        ]);
+                    if ($result) {
+                        return back()->with('successMessage', 'সফল্ভাবে সম্পন্ন্য হয়েছে।');
+                    } else {
+                        return back()->with('errorMessage', 'আবার চেষ্টা করুন।');
+                    }
+                }
+                else{
+                    $result = DB::table('naming3s')->insert([
+                        'div_id' => $request->divId,
+                        'dis_id' => $request->disId,
+                        'naming3' => $request->name3,
+                        'name' => $request->name
+                    ]);
+                    if ($result) {
+                        return back()->with('successMessage', 'সফল্ভাবে সম্পন্ন্য হয়েছে।');
+                    } else {
+                        return back()->with('errorMessage', 'আবার চেষ্টা করুন।');
+                    }
+                }
+            }
+            else{
+                return back()->with('errorMessage', 'ফর্ম পুরন করুন।');
+            }
+        }
+        catch(\Illuminate\Database\QueryException $ex){
+            return back()->with('errorMessage', $ex->getMessage());
+        }
+    }
+    public function getNaming3List(Request $request){
+        try{
+            $rows = DB::table('naming3s')->where('id', $request->id)->first();
+
+            return response()->json(array('data'=>$rows));
+        }
+        catch(\Illuminate\Database\QueryException $ex){
+            return response()->json(array('data'=>$ex->getMessage()));
+        }
+    }
+    public function deleteNaming3(Request $request){
+        try{
+
+            if($request->id) {
+                $result =DB::table('naming3s')
+                    ->where('id', $request->id)
+                    ->update([
+                        'status' =>  0,
+                    ]);
+                if ($result) {
+                    return back()->with('successMessage', 'সফল্ভাবে সম্পন্ন্য হয়েছে।');
+                } else {
+                    return back()->with('errorMessage', 'আবার চেষ্টা করুন।');
+                }
+            }
+            else{
+                return back()->with('errorMessage', 'আবার চেষ্টা করুন।');
+            }
+
+        }
+        catch(\Illuminate\Database\QueryException $ex){
+            return back()->with('errorMessage', $ex->getMessage());
+        }
+    }
+    public function naming4(){
+        try{
+            $rows = DB::table('naming4')
+                ->select('naming1s.name as divName',
+                    'naming2s.name as disName','naming3s.name as upzName', 'naming4.id', 'naming4.name', 'naming4.naming4')
+                ->join('naming3s', 'naming3s.id', '=', 'naming4.upz_id')
+                ->join('naming2s', 'naming2s.id', '=', 'naming3s.dis_id')
+                ->join('naming1s', 'naming1s.id', '=', 'naming2s.div_id')
+                ->where('naming4.status', 1)
+                ->orderBy('id', 'desc')
+                ->Paginate(10);
+            return view('backend.naming4', ['naming4s' => $rows]);
+        }
+        catch(\Illuminate\Database\QueryException $ex){
+            return back()->with('errorMessage', $ex->getMessage());
+        }
+    }
+    public function getNaming3ListAll(Request $request){
+        try{
+            $rows = DB::table('naming3s')
+                ->where('dis_id', $request->id)
+                ->where('status', 1)
+                ->get();
+
+            return response()->json(array('data'=>$rows));
+        }
+        catch(\Illuminate\Database\QueryException $ex){
+            return response()->json(array('data'=>$ex->getMessage()));
+        }
+    }
+    public function insertNaming4(Request $request){
+        try{
+            if($request) {
+                if($request->id) {
+                    $result =DB::table('naming4')
+                        ->where('id', $request->id)
+                        ->update([
+                            'div_id' => $request->divId,
+                            'dis_id' => $request->disId,
+                            'upz_id' => $request->upzId,
+                            'name' => $request->name,
+                            'naming4' => $request->name4,
+                        ]);
+                    if ($result) {
+                        return back()->with('successMessage', 'সফল্ভাবে সম্পন্ন্য হয়েছে।');
+                    } else {
+                        return back()->with('errorMessage', 'আবার চেষ্টা করুন।');
+                    }
+                }
+                else{
+                    $result = DB::table('naming4')->insert([
+                        'div_id' => $request->divId,
+                        'dis_id' => $request->disId,
+                        'upz_id' => $request->upzId,
+                        'name' => $request->name,
+                        'naming4' => $request->name4,
+                    ]);
+                    if ($result) {
+                        return back()->with('successMessage', 'সফল্ভাবে সম্পন্ন্য হয়েছে।');
+                    } else {
+                        return back()->with('errorMessage', 'আবার চেষ্টা করুন।');
+                    }
+                }
+            }
+            else{
+                return back()->with('errorMessage', 'ফর্ম পুরন করুন।');
+            }
+        }
+        catch(\Illuminate\Database\QueryException $ex){
+            return back()->with('errorMessage', $ex->getMessage());
+        }
+    }
+    public function getNaming4List(Request $request){
+        try{
+            $rows = DB::table('naming4')->where('id', $request->id)->first();
+
+            return response()->json(array('data'=>$rows));
+        }
+        catch(\Illuminate\Database\QueryException $ex){
+            return response()->json(array('data'=>$ex->getMessage()));
+        }
+    }
+    public function deleteNaming4(Request $request){
+        try{
+            if($request->id) {
+                $result =DB::table('naming4')
+                    ->where('id', $request->id)
+                    ->update([
+                        'status' =>  0,
+                    ]);
+                if ($result) {
+                    return back()->with('successMessage', 'সফল্ভাবে সম্পন্ন্য হয়েছে।');
+                } else {
+                    return back()->with('errorMessage', 'আবার চেষ্টা করুন।');
+                }
+            }
+            else{
+                return back()->with('errorMessage', 'আবার চেষ্টা করুন।');
+            }
+
+        }
+        catch(\Illuminate\Database\QueryException $ex){
+            return back()->with('errorMessage', $ex->getMessage());
+        }
+    }
+    public function naming5(){
+        try{
+            $rows = DB::table('naming5s')
+                ->select('naming1s.name as divName',
+                    'naming2s.name as disName','naming3s.name as upzName','naming4.name as uniName',
+                    'naming5s.id', 'naming5s.name','naming5s.naming5')
+                ->join('naming4', 'naming4.id', '=', 'naming5s.uni_id')
+                ->join('naming3s', 'naming3s.id', '=', 'naming4.upz_id')
+                ->join('naming2s', 'naming2s.id', '=', 'naming3s.dis_id')
+                ->join('naming1s', 'naming1s.id', '=', 'naming2s.div_id')
+                ->where('naming5s.status', 1)
+                ->orderBy('naming5s.id', 'desc')
+                ->Paginate(10);
+            return view('backend.naming5', ['naming5s' => $rows]);
+        }
+        catch(\Illuminate\Database\QueryException $ex){
+            return back()->with('errorMessage', $ex->getMessage());
+        }
+    }
+    public function getNaming4ListAll(Request $request){
+        try{
+            $rows = DB::table('naming4')
+                ->where('upz_id', $request->id)
+                ->where('status', 1)
+                ->get();
+
+            return response()->json(array('data'=>$rows));
+        }
+        catch(\Illuminate\Database\QueryException $ex){
+            return response()->json(array('data'=>$ex->getMessage()));
+        }
+    }
+    public function insertNaming5(Request $request){
+        try{
+            if($request) {
+                if($request->id) {
+                    $result =DB::table('naming5s')
+                        ->where('id', $request->id)
+                        ->update([
+                            'div_id' => $request->divId,
+                            'dis_id' => $request->disId,
+                            'upz_id' => $request->upzId,
+                            'uni_id' => $request->uniId,
+                            'name' => $request->name,
+                            'naming5' => $request->name5
+                        ]);
+                    if ($result) {
+                        return back()->with('successMessage', 'সফল্ভাবে সম্পন্ন্য হয়েছে।');
+                    } else {
+                        return back()->with('errorMessage', 'আবার চেষ্টা করুন।');
+                    }
+                }
+                else{
+                    $result = DB::table('naming5s')->insert([
+                        'div_id' => $request->divId,
+                        'dis_id' => $request->disId,
+                        'upz_id' => $request->upzId,
+                        'uni_id' => $request->uniId,
+                        'name' => $request->name,
+                        'naming5' => $request->name5
+                    ]);
+                    if ($result) {
+                        return back()->with('successMessage', 'সফল্ভাবে সম্পন্ন্য হয়েছে।');
+                    } else {
+                        return back()->with('errorMessage', 'আবার চেষ্টা করুন।');
+                    }
+                }
+            }
+            else{
+                return back()->with('errorMessage', 'ফর্ম পুরন করুন।');
+            }
+        }
+        catch(\Illuminate\Database\QueryException $ex){
+            return back()->with('errorMessage', $ex->getMessage());
+        }
+    }
+    public function getNaming5List(Request $request){
+        try{
+            $rows = DB::table('naming5s')->where('id', $request->id)->first();
+
+            return response()->json(array('data'=>$rows));
+        }
+        catch(\Illuminate\Database\QueryException $ex){
+            return response()->json(array('data'=>$ex->getMessage()));
+        }
+    }
+    public function deleteNaming5(Request $request){
+        try{
+
+            if($request->id) {
+                $result =DB::table('naming5s')
+                    ->where('id', $request->id)
+                    ->update([
+                        'status' =>  0,
+                    ]);
+                if ($result) {
+                    return back()->with('successMessage', 'সফল্ভাবে সম্পন্ন্য হয়েছে।');
+                } else {
+                    return back()->with('errorMessage', 'আবার চেষ্টা করুন।');
+                }
+            }
+            else{
+                return back()->with('errorMessage', 'আবার চেষ্টা করুন।');
+            }
+
+        }
+        catch(\Illuminate\Database\QueryException $ex){
+            return back()->with('errorMessage', $ex->getMessage());
+        }
+    }
+    public function getNaming5ListFront(Request $request){
+        try{
+            $rows = DB::table('naming5s')
+                ->where('uni_id', $request->id)
+                ->where('status', 1)
+                ->get();
+            return response()->json(array('data'=>$rows));
+        }
+        catch(\Illuminate\Database\QueryException $ex){
+            return response()->json(array('data'=>$ex->getMessage()));
         }
     }
 

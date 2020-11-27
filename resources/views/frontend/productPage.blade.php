@@ -223,7 +223,7 @@
                 console.log(quantity);
                 $.ajax({
                     type: 'POST',
-                    url: 'getProductMiqty',
+                    url: '{{ url('/') }}/getProductMiqty',
                     data: {
                         "_token": "{{ csrf_token() }}",
                         "id": id
@@ -244,7 +244,7 @@
                 var quantity = $("#"+id+"q").val();
                 $.ajax({
                     type: 'POST',
-                    url: 'getProductMiqty',
+                    url: '{{ url('/') }}/getProductMiqty',
                     data: {
                         "_token": "{{ csrf_token() }}",
                         "id": id

@@ -61,6 +61,10 @@ class AuthController extends Controller
                             Cookie::queue('accounting', $rows->id, time()+31556926 ,'/');
                             return redirect()->to('accounting');
                         }
+                        elseif ($role==13){
+                            Cookie::queue('doctor', $rows->id, time()+31556926 ,'/');
+                            return redirect()->to('doctorServiceArea');
+                        }
                         elseif($role==15){
                             Cookie::queue('pharmacy', $rows->id, time()+31556926 ,'/');
                             return redirect()->to('myMedicineSale');
@@ -100,6 +104,7 @@ class AuthController extends Controller
         Cookie::queue(Cookie::forget('seller','/'));
         Cookie::queue(Cookie::forget('dealer','/'));
         Cookie::queue(Cookie::forget('rider','/'));
+        Cookie::queue(Cookie::forget('doctor','/'));
         session()->forget('user_info');
         session()->flush();
         return redirect()->to('homepage');
@@ -133,21 +138,29 @@ class AuthController extends Controller
                     $password = Hash::make($request->password);
                     $gender = $request->gender;
                     $addressGroup = $request->addressGroup;
-                    $add_part1 = $request->div_id;
                     $address = $request->address;
                     $user_type = $request->user_type;
                     $nid = "";
                     if ($addressGroup == 1) {
+                        $add_part1 = $request->div_id;
                         $add_part2 = $request->disid;
                         $add_part3 = $request->upzid;
                         $add_part4 = $request->uniid;
                         $add_part5 = $request->wardid;
                     }
                     if ($addressGroup == 2) {
+                        $add_part1 = $request->div_id;
                         $add_part2 = $request->c_disid;
                         $add_part3 = $request->c_upzid;
                         $add_part4 = $request->c_uniid;
                         $add_part5 = $request->c_wardid;
+                    }
+                    if ($addressGroup == 3) {
+                        $add_part1 = $request->naming1;
+                        $add_part2 = $request->naming2;
+                        $add_part3 = $request->naming3;
+                        $add_part4 = $request->naming4;
+                        $add_part5 = $request->naming5;
                     }
                     if ($user_type == 5 || $user_type == 6 || $user_type == 7) {
                         $nid = $request->nid;

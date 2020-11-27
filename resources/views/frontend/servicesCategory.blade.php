@@ -16,7 +16,6 @@
             {{ $message }}
         </div>
     @endif
-
     <div class="row">
         <div class="col-md-12">
             @foreach($services_cat_trans as $services_cat_tran)
@@ -52,6 +51,19 @@
                             <div class='box-body prod-body'>
                                 <div class="alert boxBody">
                                     <center><strong>{{ $home_assistant->name }}</strong></center>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            @endforeach
+            @foreach($services_cat_couriers as $services_cat_courier)
+                <a href='{{ URL::to('courier') }}'>
+                    <div class='col-sm-4'>
+                        <div class='box box-solid'>
+                            <div class='box-body prod-body'>
+                                <div class="alert boxBody">
+                                    <center><strong>{{ $services_cat_courier->name }}</strong></center>
                                 </div>
                             </div>
                         </div>

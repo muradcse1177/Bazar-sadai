@@ -561,6 +561,19 @@
                             stack: false
                         })
                     }
+                    else if(data==3){
+                        $.toast({
+                            heading: 'দুঃখিত!',
+                            text: 'আপনার সার্ভিস এরিয়া বিদেশি!',
+                            showHideTransition: 'slide',
+                            icon: 'error',
+                            position: {
+                                left: 40,
+                                top: 60
+                            },
+                            stack: false
+                        })
+                    }
                     else{
                         var len = data.length;
                         var addressType = response.addressType;
@@ -616,6 +629,19 @@
                         $.toast({
                             heading: 'দুঃখিত!',
                             text: 'সার্ভিসটি পেতে লগ ইন করুন!',
+                            showHideTransition: 'slide',
+                            icon: 'error',
+                            position: {
+                                left: 40,
+                                top: 60
+                            },
+                            stack: false
+                        })
+                    }
+                    else if(data==3){
+                        $.toast({
+                            heading: 'দুঃখিত!',
+                            text: 'আপনার সার্ভিস এরিয়া বিদেশি!',
                             showHideTransition: 'slide',
                             icon: 'error',
                             position: {

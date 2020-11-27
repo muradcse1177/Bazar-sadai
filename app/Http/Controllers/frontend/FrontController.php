@@ -1379,7 +1379,11 @@ class FrontController extends Controller
             ->where('type', 2)
             ->where('status', 1)
             ->orderBy('id', 'ASC')->get();
-
+        $services_cat_courier = DB::table('categories')
+            ->where('id', 11)
+            ->where('type', 2)
+            ->where('status', 1)
+            ->orderBy('id', 'ASC')->get();
         $services_cat_medical = DB::table('categories')
             ->where('id', 10)
             ->where('type', 2)
@@ -1394,7 +1398,8 @@ class FrontController extends Controller
                 [
                     'services_cat_trans' => $services_cat_trans,
                     'services_cat_medical'=>$services_cat_medical,
-                    'home_assistants'=>$home_assistants
+                    'home_assistants'=>$home_assistants,
+                    'services_cat_couriers'=>$services_cat_courier
                 ]);
     }
     public function serviceSubCategoryMedical($id){

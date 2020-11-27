@@ -324,5 +324,193 @@ class TransportController extends Controller
             return back()->with('errorMessage', $ex->getMessage());
         }
     }
+    public function courierType(){
+        $rows = DB::table('courier_type')
+            ->Paginate(10);
+        return view('backend.courierType', ['courierTypes' => $rows]);
+    }
+    public function insertCourierType(Request $request){
+        try{
+            if($request) {
+                if($request->id) {
+                    $result =DB::table('courier_type')
+                        ->where('id', $request->id)
+                        ->update([
+                            'name' =>  $request->name,
+                        ]);
+                    if ($result) {
+                        return back()->with('successMessage', 'সফল্ভাবে সম্পন্ন্য হয়েছে।');
+                    } else {
+                        return back()->with('errorMessage', 'আবার চেষ্টা করুন।');
+                    }
+                }
+                else{
+                    $rows = DB::table('courier_type')->select('name')->where([
+                        ['name', '=', $request->name]
+                    ])->where('status', 1)->distinct()->get()->count();
+                    if ($rows > 0) {
+                        return back()->with('errorMessage', ' নতুন বিভাগ লিখুন।');
+                    } else {
+                        $result = DB::table('courier_type')->insert([
+                            'name' => $request->name
+                        ]);
+                        if ($result) {
+                            return back()->with('successMessage', 'সফল্ভাবে সম্পন্ন্য হয়েছে।');
+                        } else {
+                            return back()->with('errorMessage', 'আবার চেষ্টা করুন।');
+                        }
+                    }
+                }
+            }
+            else{
+                return back()->with('errorMessage', 'ফর্ম পুরন করুন।');
+            }
+        }
+        catch(\Illuminate\Database\QueryException $ex){
+            return back()->with('errorMessage', $ex->getMessage());
+        }
+    }
+    public function getCourierTypeList(Request $request){
+        try{
+            $rows = DB::table('courier_type')
+                ->where('id', $request->id)
+                ->first();
+            return response()->json(array('data'=>$rows));
+        }
+        catch(\Illuminate\Database\QueryException $ex){
+            return response()->json(array('data'=>$ex->getMessage()));
+        }
+    }
+    public function deleteCourierType (Request $request){
+        try{
+            if($request->id) {
+                $result =DB::table('courier_type')
+                    ->where('id', $request->id)
+                    ->delete();
+                if ($result) {
+                    return back()->with('successMessage', 'সফল্ভাবে সম্পন্ন্য হয়েছে।');
+                } else {
+                    return back()->with('errorMessage', 'আবার চেষ্টা করুন।');
+                }
+            }
+            else{
+                return back()->with('errorMessage', 'আবার চেষ্টা করুন।');
+            }
 
+        }
+        catch(\Illuminate\Database\QueryException $ex){
+            return back()->with('errorMessage', $ex->getMessage());
+        }
+    }
+    public function courierSettings(){
+        $rows = DB::table('courier_settings')
+            ->select('*','courier_settings.id as c_id','courier_type.name as c_name')
+            ->join('courier_type','courier_type.id','=','courier_settings.type')
+            ->join('naming1s','naming1s.id','=','courier_settings.f_country')
+            ->Paginate(20);
+        return view('backend.courierSettings', ['courierSettings' => $rows]);
+    }
+    public function getAllCourierType(Request $request){
+        try{
+            $rows = DB::table('courier_type')
+                ->where('status', 1)
+                ->get();
+            return response()->json(array('data'=>$rows));
+        }
+        catch(\Illuminate\Database\QueryException $ex){
+            return response()->json(array('data'=>$ex->getMessage()));
+        }
+    }
+    public function getAllNaming1Country(Request $request){
+        try{
+            $rows = DB::table('naming1s')->where('status', 1)->get();
+
+            return response()->json(array('data'=>$rows));
+        }
+        catch(\Illuminate\Database\QueryException $ex){
+            return response()->json(array('data'=>$ex->getMessage()));
+        }
+    }
+    public function insertCourierSettings(Request $request){
+        try{
+            if($request) {
+                if($request->id) {
+                    if(!$request->f_country)
+                        $f_country = 1;
+                    else
+                        $f_country = $request->f_country;
+                    $result =DB::table('courier_settings')
+                        ->where('id', $request->id)
+                        ->update([
+                            'type' =>  $request->c_type,
+                            'country' =>  $request->country,
+                            'f_country' =>  $f_country,
+                            'weight' =>  $request->weight,
+                            'cost' =>  $request->cost,
+                        ]);
+                    if ($result) {
+                        return back()->with('successMessage', 'সফল্ভাবে সম্পন্ন্য হয়েছে।');
+                    } else {
+                        return back()->with('errorMessage', 'আবার চেষ্টা করুন।');
+                    }
+                }
+                else{
+                    if(!$request->f_country)
+                        $f_country = 1;
+                    else
+                        $f_country = $request->f_country;
+                    $result = DB::table('courier_settings')->insert([
+                        'type' =>  $request->c_type,
+                        'country' =>  $request->country,
+                        'f_country' => $f_country,
+                        'weight' =>  $request->weight,
+                        'cost' =>  $request->cost,
+                    ]);
+                    if ($result) {
+                        return back()->with('successMessage', 'সফল্ভাবে সম্পন্ন্য হয়েছে।');
+                    } else {
+                        return back()->with('errorMessage', 'আবার চেষ্টা করুন।');
+                    }
+                }
+            }
+            else{
+                return back()->with('errorMessage', 'ফর্ম পুরন করুন।');
+            }
+        }
+        catch(\Illuminate\Database\QueryException $ex){
+            return back()->with('errorMessage', $ex->getMessage());
+        }
+    }
+    public function getCourierSettingList(Request $request){
+        try{
+            $rows = DB::table('courier_settings')
+                ->where('id', $request->id)
+                ->first();
+            return response()->json(array('data'=>$rows));
+        }
+        catch(\Illuminate\Database\QueryException $ex){
+            return response()->json(array('data'=>$ex->getMessage()));
+        }
+    }
+    public function deleteCourierSetting (Request $request){
+        try{
+            if($request->id) {
+                $result =DB::table('courier_settings')
+                    ->where('id', $request->id)
+                    ->delete();
+                if ($result) {
+                    return back()->with('successMessage', 'সফল্ভাবে সম্পন্ন্য হয়েছে।');
+                } else {
+                    return back()->with('errorMessage', 'আবার চেষ্টা করুন।');
+                }
+            }
+            else{
+                return back()->with('errorMessage', 'আবার চেষ্টা করুন।');
+            }
+
+        }
+        catch(\Illuminate\Database\QueryException $ex){
+            return back()->with('errorMessage', $ex->getMessage());
+        }
+    }
 }

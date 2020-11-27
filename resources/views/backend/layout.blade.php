@@ -224,6 +224,18 @@
                         </a>
                     </li>
                 @endif
+                @if(Cookie::get('user_type') == 13)
+                    <li class="@yield('doctorServiceArea')">
+                        <a href ="{{ url('doctorServiceArea') }}" >
+                            <i class="fa fa-car"></i> <span>আমার সার্ভিস এরিয়া</span>
+                        </a>
+                    </li>
+                        <li class="@yield('myPatientList')">
+                        <a href ="{{ url('myPatientList') }}" >
+                            <i class="fa fa-medkit"></i> <span>আমার পেশেন্ট</span>
+                        </a>
+                    </li>
+                @endif
                 @if(Cookie::get('user_type') == 4)
                     <li class="@yield('mySaleProduct')">
                         <a href ="{{ url('mySaleProduct') }}" >
@@ -368,6 +380,11 @@
                 <li class="@yield('transportReportAdmin')">
                     <a href="{{ url('transportReportAdmin') }}">
                         <i class="fa fa-car"></i> <span>পরিবহন রিপোর্ট</span>
+                    </a>
+                </li>
+                <li class="@yield('courierReport')">
+                    <a href="{{ url('courierReport') }}">
+                        <i class="fa fa-car"></i> <span>কুরিয়ার রিপোর্ট</span>
                     </a>
                 </li>
                 <li class="@yield('donationReportBackend')">
@@ -587,6 +604,20 @@
                                         <li class ="@yield('cWardLiAdd')" ><a href="{{ url('c_ward') }}"><i class="fa fa-circle-o"></i> ওয়ার্ড  </a></li>
                                     </ul>
                                 </li>
+                                <li class="treeview  @yield('mainForeignLiAdd')">
+                                    <a href="#"><i class="fa fa-circle-o"></i> বিদেশ ভিত্তিক
+                                        <span class="pull-right-container">
+                                      <i class="fa fa-angle-left pull-right"></i>
+                                    </span>
+                                    </a>
+                                    <ul class="treeview-menu">
+                                        <li class ="@yield('naming1')" ><a href="{{ url('naming1') }}"><i class="fa fa-circle-o"></i> দেশ (নেমিং ১)  </a></li>
+                                        <li class ="@yield('naming2')" ><a href="{{ url('naming2') }}"><i class="fa fa-circle-o"></i> নেমিং ২ </a></li>
+                                        <li class ="@yield('naming3')" ><a href="{{ url('naming3') }}"><i class="fa fa-circle-o"></i> নেমিং ৩ </a></li>
+                                        <li class ="@yield('naming4')" ><a href="{{ url('naming4') }}"><i class="fa fa-circle-o"></i> নেমিং ৪  </a></li>
+                                        <li class ="@yield('naming5')" ><a href="{{ url('naming5') }}"><i class="fa fa-circle-o"></i> নেমিং ৫  </a></li>
+                                    </ul>
+                                </li>
                             </ul>
                         </li>
                         <li class="treeview  @yield('mainUserLiAdd')">
@@ -656,6 +687,8 @@
                                     <ul class="treeview-menu">
                                         <li class ="@yield('coachPage')"><a href="{{ url('coachPage') }}"><i class="fa fa-circle-o"></i> ট্রান্সপোর্ট</a></li>
                                         <li class ="@yield('ticketRoute')"><a href="{{ url('ticketRoute') }}"><i class="fa fa-circle-o"></i> টিকেট রুট</a></li>
+                                        <li class ="@yield('courierType')"><a href="{{ url('courierType') }}"><i class="fa fa-circle-o"></i>কুরিয়ার ধরণ</a></li>
+                                        <li class ="@yield('courierSettings')"><a href="{{ url('courierSettings') }}"><i class="fa fa-circle-o"></i>কুরিয়ার সেটিংস</a></li>
                                     </ul>
                                 </li>
                                 <li class="treeview  @yield('medicalMainLi')">
@@ -675,6 +708,7 @@
                                         <li class ="@yield('diagnosticTestList')"><a href="{{ url('diagnosticTestList') }}"><i class="fa fa-circle-o"></i> ডায়াগনস্টিক টেস্ট </a></li>
                                         <li class ="@yield('diagnosticCenterList')"><a href="{{ url('diagnosticCenterList') }}"><i class="fa fa-circle-o"></i> ডায়াগনস্টিক সেন্টার </a></li>
                                         <li class ="@yield('diagnosticFees')"><a href="{{ url('diagnosticFees') }}"><i class="fa fa-circle-o"></i> ডায়াগনস্টিক ফিস </a></li>
+                                        <li class ="@yield('medicalCamp')"><a href="{{ url('medicalCampBack') }}"><i class="fa fa-circle-o"></i>মেডিকেল ক্যাম্প</a></li>
                                     </ul>
                                 </li>
                                 <li class="treeview  @yield('homeAssistantMainLi')">

@@ -59,7 +59,7 @@
                                    $Image =url('/').'/'.$product->photo;
                         @endphp
                         <div  id="" class="col-md-12" style="margin-bottom: 10px;">
-                            <img src="{{$Image}}" width ="100%" height="150" >
+                            <img src="{{$Image}}" width ="100%" height="300" >
                         </div>
                         <div class='col-sm-12'>
                             <p>

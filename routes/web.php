@@ -87,6 +87,35 @@ Route::group(['middleware' => ['adminUser']], function () {
     Route::post('insertC_Ward', 'backend\AddressController@insertC_Ward');
     Route::post('getC_WardList', 'backend\AddressController@getC_WardList');
     Route::post('deleteC_ward', 'backend\AddressController@deleteC_ward');
+//Naming1
+    Route::get('naming1', 'backend\AddressController@naming1');
+    Route::post('insertNaming1', 'backend\AddressController@insertNaming1');
+    Route::post('getNaming1List', 'backend\AddressController@getNaming1List');
+    Route::post('deleteNaming1', 'backend\AddressController@deleteNaming1');
+//Naming2
+    Route::get('naming2', 'backend\AddressController@naming2');
+    Route::get('getAllNaming1', 'backend\AddressController@getAllNaming1');
+    Route::post('insertNaming2', 'backend\AddressController@insertNaming2');
+    Route::post('getNaming2List', 'backend\AddressController@getNaming2List');
+    Route::post('deleteNaming2', 'backend\AddressController@deleteNaming2');
+//Naming3
+    Route::get('naming3', 'backend\AddressController@naming3');
+    Route::post('insertNaming3', 'backend\AddressController@insertNaming3');
+    Route::get('getNaming2ListAll', 'backend\AddressController@getNaming2ListAll');
+    Route::post('getNaming3List', 'backend\AddressController@getNaming3List');
+    Route::post('deleteNaming3', 'backend\AddressController@deleteNaming3');
+//Naming4
+    Route::get('naming4', 'backend\AddressController@naming4');
+    Route::get('getNaming3ListAll', 'backend\AddressController@getNaming3ListAll');
+    Route::post('insertNaming4', 'backend\AddressController@insertNaming4');
+    Route::post('getNaming4List', 'backend\AddressController@getNaming4List');
+    Route::post('deleteNaming4', 'backend\AddressController@deleteNaming4');
+//Naming5
+    Route::get('naming5', 'backend\AddressController@naming5');
+    Route::get('getNaming4ListAll', 'backend\AddressController@getNaming4ListAll');
+    Route::post('insertNaming5', 'backend\AddressController@insertNaming5');
+    Route::post('getNaming5List', 'backend\AddressController@getNaming5List');
+    Route::post('deleteNaming5', 'backend\AddressController@deleteNaming5');
 //User
     Route::get('user_type', 'backend\UserController@selectUser_type');
     Route::post('insertUserType', 'backend\UserController@insertUserType');
@@ -147,6 +176,8 @@ Route::group(['middleware' => ['adminUser']], function () {
     Route::post('donationListByDate', 'backend\ReportController@donationListByDate');
     Route::get('transportReportAdmin', 'backend\ReportController@transportReportAdmin');
     Route::post('transportListByDate', 'backend\ReportController@transportListByDate');
+    Route::get('courierReport', 'backend\ReportController@courierReport');
+    Route::post('courierListByDate', 'backend\ReportController@courierListByDate');
 //Accounting
     Route::get('accounting', 'backend\ReportController@accounting');
     Route::post('insertAccounting', 'backend\ReportController@insertAccounting');
@@ -214,7 +245,11 @@ Route::group(['middleware' => ['adminUser']], function () {
     Route::post('insertDiagnosticFees', 'backend\MedicalServiceController@insertDiagnosticFees');
     Route::post('diagnosticFeesListsById', 'backend\MedicalServiceController@diagnosticFeesListsById');
     Route::post('deleteDiagnosticFees', 'backend\MedicalServiceController@deleteDiagnosticFees');
-    //Pharmacy
+    Route::get('medicalCampBack', 'backend\MedicalServiceController@medicalCampBack');
+    Route::post('insertMedicalCamp', 'backend\MedicalServiceController@insertMedicalCamp');
+    Route::post('getMedicalCampList', 'backend\MedicalServiceController@getMedicalCampList');
+    Route::post('deleteMedicalCamp', 'backend\MedicalServiceController@deleteMedicalCamp');
+//Pharmacy
     Route::get('medicineCompanyEmail', 'backend\PharmacyController@medicineCompanyEmail');
     Route::get('getAllMedicineCompany', 'backend\PharmacyController@getAllMedicineCompany');
     Route::post('insertMedicineCompanyEmail', 'backend\PharmacyController@insertMedicineCompanyEmail');
@@ -262,6 +297,17 @@ Route::group(['middleware' => ['adminUser']], function () {
     Route::post('insertVariousServicing', 'backend\HomeAssistantController@insertVariousServicing');
     Route::post('getVariousServiceById', 'backend\HomeAssistantController@getVariousServiceById');
     Route::post('deleteVariousService', 'backend\HomeAssistantController@deleteVariousService');
+//courier
+    Route::get('courierType', 'backend\TransportController@courierType');
+    Route::post('insertCourierType', 'backend\TransportController@insertCourierType');
+    Route::post('getCourierTypeList', 'backend\TransportController@getCourierTypeList');
+    Route::post('deleteCourierType', 'backend\TransportController@deleteCourierType');
+    Route::get('courierSettings', 'backend\TransportController@courierSettings');
+    Route::get('getAllCourierType', 'backend\TransportController@getAllCourierType');
+    Route::get('getAllNaming1Country', 'backend\TransportController@getAllNaming1Country');
+    Route::post('insertCourierSettings', 'backend\TransportController@insertCourierSettings');
+    Route::post('getCourierSettingList', 'backend\TransportController@getCourierSettingList');
+    Route::post('deleteCourierSetting', 'backend\TransportController@deleteCourierSetting');
 });
 Route::group(['middleware' => ['buyer']], function () {
     Route::get('profile', 'frontend\AuthController@profile');
@@ -301,6 +347,13 @@ Route::group(['middleware' => ['rider']], function () {
     Route::post('insertRiderServiceArea', 'backend\RiderController@insertRiderServiceArea');
     Route::post('setRiderDistance', 'backend\RiderController@setRiderDistance');
 });
+Route::group(['middleware' => ['doctor']], function () {
+    Route::get('doctorServiceArea', 'backend\DoctorController@doctorServiceArea');
+    Route::post('insertDoctorServiceArea', 'backend\DoctorController@insertDoctorServiceArea');
+    Route::get('myPatientList', 'backend\DoctorController@myPatientList');
+    Route::post('myPatientListByDate', 'backend\DoctorController@myPatientListByDate');
+    Route::get('changeLocalDoctorStatus', 'backend\DoctorController@changeLocalDoctorStatus');
+});
 
     //Signup
     Route::get('signup', function () {
@@ -329,6 +382,9 @@ Route::group(['middleware' => ['rider']], function () {
     }
     elseif(Cookie::get('rider') != null){
         Route::get('/', 'backend\RiderController@riderServiceArea');
+    }
+    elseif(Cookie::get('doctor') != null){
+        Route::get('/', 'backend\DoctorController@doctorServiceArea');
     }
     else{
         Route::get('/', 'frontend\FrontController@homepageManager');
@@ -359,7 +415,7 @@ Route::group(['middleware' => ['rider']], function () {
     Route::get('homepage' , 'frontend\FrontController@homepageManager');
     Route::get('logout' , 'frontend\AuthController@logout');
     Route::get('product/{id}', 'frontend\FrontController@getProductByCatId');
-    Route::post('product/getProductMiqty', 'frontend\FrontController@getProductMiqty');
+    Route::post('getProductMiqty', 'frontend\FrontController@getProductMiqty');
     Route::get('cart_view', 'frontend\FrontController@cart_view');
     Route::post('product/cart_add', 'frontend\FrontController@cart_add');
     Route::post('product/cart_fetch', 'frontend\FrontController@cart_fetch');
@@ -458,6 +514,26 @@ Route::group(['middleware' => ['rider']], function () {
     Route::post('insertMotorcycleRide', 'frontend\TransportController@insertMotorcycleRide');
     Route::get('getAddressGroupPrivate', 'frontend\TransportController@getAddressGroupPrivate');
     Route::post('insertPrivateRide', 'frontend\TransportController@insertPrivateRide');
+    Route::get('medicalCampFront', 'frontend\MedicalServiceController@medicalCampFront');
+    Route::get('localDoctor', 'frontend\MedicalServiceController@localDoctorAppointment');
+    Route::post('searchLocalDoctorListFront', 'frontend\MedicalServiceController@searchLocalDoctorListFront');
+    Route::get('localDoctorProfileFront/{id}', 'frontend\MedicalServiceController@localDoctorProfileFront');
+    Route::post('insertLocalAppointment', 'frontend\MedicalServiceController@insertLocalAppointment');
 
+    Route::get('getAllNaming1Front', 'backend\AddressController@getAllNaming1');
+    Route::get('getNaming2ListAllFront', 'backend\AddressController@getNaming2ListAll');
+    Route::get('getNaming3ListAllFront', 'backend\AddressController@getNaming3ListAll');
+    Route::get('getNaming4ListAllFront', 'backend\AddressController@getNaming4ListAll');
+    Route::get('getNaming5ListAllFront', 'backend\AddressController@getNaming5ListFront');
+
+    Route::get('courier', 'frontend\TransportController@courier');
+    Route::get('serviceAreaCourier', 'frontend\TransportController@serviceAreaCourier');
+    Route::post('insertServiceAreaCourier', 'frontend\TransportController@insertServiceAreaCourier');
+    Route::get('getAllCourierTypeFront', 'backend\TransportController@getAllCourierType');
+    Route::get('getAllCourierWeight', 'frontend\TransportController@getAllCourierWeight');
+    Route::get('getAllNaming1CountryFront', 'backend\TransportController@getAllNaming1Country');
+    Route::get('getAllCourierCost', 'frontend\TransportController@getAllCourierCost');
+    Route::get('getAllCourierCostBd', 'frontend\TransportController@getAllCourierCostBd');
+    Route::post('insertCourierBooking', 'frontend\TransportController@insertCourierBooking');
 //Payment Gateway
     Route::post('getPaymentCartView', 'frontend\PaymentController@getPaymentCartView');

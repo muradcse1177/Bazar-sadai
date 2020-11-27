@@ -60,6 +60,28 @@
                 </a>
                 @endif
             @endforeach
+                <a href='{{ URL::to('medicalCampFront') }}'>
+                    <div class='col-sm-4'>
+                        <div class='box box-solid'>
+                            <div class='box-body prod-body'>
+                                <div class="alert boxBody">
+                                    <center><strong>{{'মেডিকেল ক্যাম্প'}}</strong></center>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+                <a href='{{ URL::to('localDoctor') }}'>
+                    <div class='col-sm-4'>
+                        <div class='box box-solid'>
+                            <div class='box-body prod-body'>
+                                <div class="alert boxBody">
+                                    <center><strong>{{'লোকাল ডাক্তার এপয়েন্টমেন্ট'}}</strong></center>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </a>
         </div>
     </div>
 @endsection

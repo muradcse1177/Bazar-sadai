@@ -4,7 +4,10 @@ namespace App\Http\Controllers\backend;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 
 class MedicalServiceController extends Controller
 {
@@ -915,6 +918,235 @@ class MedicalServiceController extends Controller
 
             if($request->id) {
                 $result =DB::table('diagnostic_fees')
+                    ->where('id', $request->id)
+                    ->update([
+                        'status' =>  0,
+                    ]);
+                if ($result) {
+                    return back()->with('successMessage', 'সফল্ভাবে সম্পন্ন্য হয়েছে।');
+                } else {
+                    return back()->with('errorMessage', 'আবার চেষ্টা করুন।');
+                }
+            }
+            else{
+                return back()->with('errorMessage', 'আবার চেষ্টা করুন।');
+            }
+
+        }
+        catch(\Illuminate\Database\QueryException $ex){
+            return back()->with('errorMessage', $ex->getMessage());
+        }
+
+    }
+    public function medicalCampBack(Request  $request){
+        $rows = DB::table('medical_camp')
+            ->orderBy('id', 'desc')
+            ->get();
+        $camp_arr =array();
+        $i=0;
+        foreach ($rows as $mcamp){
+            $user_id = $mcamp->user;
+            $address_type = $mcamp->address_type;
+            $user = DB::table('users')
+                ->where('id', $user_id)
+                ->first();
+            if($address_type==1){
+                $add_part1 = DB::table('divisions')
+                    ->where('id',$mcamp->add_part1)
+                    ->first();
+                $add_part2 = DB::table('districts')
+                    ->where('div_id',$mcamp->add_part1)
+                    ->where('id',$mcamp->add_part2)
+                    ->first();
+                $add_part3 = DB::table('upazillas')
+                    ->where('div_id',$mcamp->add_part1)
+                    ->where('dis_id',$mcamp->add_part2)
+                    ->where('id',$mcamp->add_part3)
+                    ->first();
+                $add_part4 = DB::table('unions')
+                    ->where('div_id',$mcamp->add_part1)
+                    ->where('dis_id',$mcamp->add_part2)
+                    ->where('upz_id',$mcamp->add_part3)
+                    ->where('id',$mcamp->add_part4)
+                    ->first();
+                $add_part5 = DB::table('wards')
+                    ->where('div_id',$mcamp->add_part1)
+                    ->where('dis_id',$mcamp->add_part2)
+                    ->where('upz_id',$mcamp->add_part3)
+                    ->where('uni_id',$mcamp->add_part4)
+                    ->where('id',$mcamp->add_part5)
+                    ->first();
+            }
+            if($address_type==2){
+                $add_part1 = DB::table('divisions')
+                    ->where('id',$mcamp->add_part1)
+                    ->first();
+                $add_part2 = DB::table('cities')
+                    ->where('div_id',$mcamp->add_part1)
+                    ->where('id',$mcamp->add_part2)
+                    ->first();
+                $add_part3 = DB::table('city_corporations')
+                    ->where('div_id',$mcamp->add_part1)
+                    ->where('city_id',$mcamp->add_part2)
+                    ->where('id',$mcamp->add_part3)
+                    ->first();
+                $add_part4 = DB::table('thanas')
+                    ->where('div_id',$mcamp->add_part1)
+                    ->where('city_id',$mcamp->add_part2)
+                    ->where('city_co_id',$mcamp->add_part3)
+                    ->where('id',$mcamp->add_part4)
+                    ->first();
+                $add_part5 = DB::table('c_wards')
+                    ->where('div_id',$mcamp->add_part1)
+                    ->where('city_id',$mcamp->add_part2)
+                    ->where('city_co_id',$mcamp->add_part3)
+                    ->where('thana_id',$mcamp->add_part4)
+                    ->where('id',$mcamp->add_part5)
+                    ->first();
+            }
+            $camp_arr[$i]['id'] = $mcamp->id;
+            $camp_arr[$i]['name'] = $mcamp->c_name;
+            $camp_arr[$i]['email'] = $mcamp->email;
+            $camp_arr[$i]['phone'] = $mcamp->phone;
+            $camp_arr[$i]['user'] = $user->name;
+            $camp_arr[$i]['add_part1'] = $add_part1->name;
+            $camp_arr[$i]['add_part2'] = $add_part2->name;
+            $camp_arr[$i]['add_part3'] = $add_part3->name;
+            $camp_arr[$i]['add_part4'] = $add_part4->name;
+            $camp_arr[$i]['add_part5'] = $add_part5->name;
+            $camp_arr[$i]['start_date'] = $mcamp->start_date;
+            $camp_arr[$i]['end_date'] = $mcamp->end_date;
+            $camp_arr[$i]['purpose'] = $mcamp->purpose;
+            $camp_arr[$i]['address'] = $mcamp->address;
+            $i++;
+        }
+        $currentPage = LengthAwarePaginator::resolveCurrentPage();
+        $itemCollection = collect($camp_arr);
+        $perPage = 20;
+        $currentPageItems = $itemCollection->slice(($currentPage * $perPage) - $perPage, $perPage)->all();
+        $paginatedItems= new LengthAwarePaginator($currentPageItems , count($itemCollection), $perPage);
+        $paginatedItems->setPath($request->url());
+        return view('backend.medicalCampBack',['medCamps' => $paginatedItems]);
+    }
+    public function insertMedicalCamp(Request $request){
+        try{
+            //dd($request);
+            if($request) {
+                if ($request->id){
+                    $name = $request->name;
+                    $email = $request->email;
+                    $phone = $request->phone;
+                    $addressGroup = $request->addressGroup;
+                    $add_part1 = $request->div_id;
+                    $address = $request->address;
+                    $purpose = $request->purpose;
+                    $from_date = $request->from_date;
+                    $to_date = $request->to_date;
+                    if ($addressGroup == 1) {
+                        $add_part2 = $request->disid;
+                        $add_part3 = $request->upzid;
+                        $add_part4 = $request->uniid;
+                        $add_part5 = $request->wardid;
+                    }
+                    if ($addressGroup == 2) {
+                        $add_part2 = $request->c_disid;
+                        $add_part3 = $request->c_upzid;
+                        $add_part4 = $request->c_uniid;
+                        $add_part5 = $request->c_wardid;
+                    }
+                    $result =DB::table('medical_camp')
+                        ->where('id', $request->id)
+                        ->update([
+                            'c_name' => $name,
+                            'email' => $email,
+                            'phone' => $phone,
+                            'address_type' => $addressGroup,
+                            'add_part1' => $add_part1,
+                            'add_part2' => $add_part2,
+                            'add_part3' => $add_part3,
+                            'add_part4' => $add_part4,
+                            'add_part5' => $add_part5,
+                            'purpose' => $purpose,
+                            'address' => $address,
+                            'start_date' => $from_date,
+                            'end_date' => $to_date,
+                            'user' => Cookie::get('user_id'),
+                        ]);
+                    if ($result) {
+                        return back()->with('successMessage', 'সফল্ভাবে সম্পন্ন্য হয়েছে।');
+                    } else {
+                        return back()->with('errorMessage', 'আবার চেষ্টা করুন।');
+                    }
+                }
+                else{
+
+                    $name = $request->name;
+                    $email = $request->email;
+                    $phone = $request->phone;
+                    $addressGroup = $request->addressGroup;
+                    $add_part1 = $request->div_id;
+                    $address = $request->address;
+                    $purpose = $request->purpose;
+                    $from_date = $request->from_date;
+                    $to_date = $request->to_date;
+                    if ($addressGroup == 1) {
+                        $add_part2 = $request->disid;
+                        $add_part3 = $request->upzid;
+                        $add_part4 = $request->uniid;
+                        $add_part5 = $request->wardid;
+                    }
+                    if ($addressGroup == 2) {
+                        $add_part2 = $request->c_disid;
+                        $add_part3 = $request->c_upzid;
+                        $add_part4 = $request->c_uniid;
+                        $add_part5 = $request->c_wardid;
+                    }
+                    $result = DB::table('medical_camp')->insert([
+                        'c_name' => $name,
+                        'email' => $email,
+                        'phone' => $phone,
+                        'address_type' => $addressGroup,
+                        'add_part1' => $add_part1,
+                        'add_part2' => $add_part2,
+                        'add_part3' => $add_part3,
+                        'add_part4' => $add_part4,
+                        'add_part5' => $add_part5,
+                        'purpose' => $purpose,
+                        'address' => $address,
+                        'start_date' => $from_date,
+                        'end_date' => $to_date,
+                        'user' => Cookie::get('user_id'),
+                    ]);
+                    if ($result) {
+                        return back()->with('successMessage', 'সফল্ভাবে সম্পন্ন্য হয়েছে।');
+                    } else {
+                        return back()->with('errorMessage', 'আবার চেষ্টা করুন।');
+                    }
+                }
+            }
+            else{
+                return back()->with('errorMessage', 'ফর্ম পুরন করুন।');
+            }
+        }
+        catch(\Illuminate\Database\QueryException $ex){
+            return back()->with('errorMessage', $ex->getMessage());
+        }
+    }
+    public function getMedicalCampList(Request $request){
+        try{
+            $rows = DB::table('medical_camp')
+                ->where('id', $request->id)
+                ->get();
+            return response()->json(array('data'=>$rows));
+        }
+        catch(\Illuminate\Database\QueryException $ex){
+            return response()->json(array('data'=>$ex->getMessage()));
+        }
+    }
+    public function deleteMedicalCamp(Request $request){
+        try{
+            if($request->id) {
+                $result =DB::table('medical_camp')
                     ->where('id', $request->id)
                     ->update([
                         'status' =>  0,

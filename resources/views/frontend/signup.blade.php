@@ -36,17 +36,22 @@
                         </label>
                     </div>
                     <div class="form-group">
-                        <select id="div_name" name ="div_id"  class="form-control select2 div_name" style="width: 100%;" required>
-                            <option value="" selected>বিভাগ নির্বাচন করুন</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
                         <label class="radio-inline">
                             <input type="radio" name="addressGroup"  id="zillaGroup" value="1"  required> জেলা
                         </label>
                         <label class="radio-inline">
                             <input type="radio" name="addressGroup" id="cityGroup" value="2">সিটি
                         </label>
+                        <label class="radio-inline">
+                            <input type="radio" name="addressGroup" id="foreignGroup" value="3">বিদেশ
+                        </label>
+                    </div>
+                    <div id="divDiv" style="display: none;">
+                        <div class="form-group">
+                            <select id="div_name" name ="div_id"  class="form-control select2 div_name" style="width: 100%;" required>
+                                <option value="" selected>বিভাগ নির্বাচন করুন</option>
+                            </select>
+                        </div>
                     </div>
                     <div id= "zillaGroupId" class="zillaGroupId" style="display: none;">
                         <div class="form-group">
@@ -89,6 +94,29 @@
                         <div class="form-group">
                             <select id="c_ward_name" name ="c_wardid" class="form-control select2 c_ward_name"   style=" width: 100%;" required="required">
                                 <option value="" selected>ওয়ার্ড  নির্বাচন করুন</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div id= "foreignGroupId" class="foreignGroupId" style="display: none;">
+                        <div class="form-group">
+                            <select id="naming1" name ="naming1" class="form-control select2 naming1"  style="width: 100%;" required="required">
+                                <option  value="" selected>Select your Country</option>
+                            </select>
+                        </div>
+                        <div class="form-group naming2Div" style="display: none;">
+                            <select id="naming2" name ="naming2" class="form-control select2 naming2"  style="width: 100%;" required="required">
+                            </select>
+                        </div>
+                        <div class="form-group naming3Div" style="display: none;">
+                            <select id="naming3" name ="naming3" class="form-control select2 naming3"  style="width: 100%;" required="required">
+                            </select>
+                        </div>
+                        <div class="form-group naming4Div" style="display: none;">
+                            <select id="naming4" name ="naming4" class="form-control select2 naming4"  style="width: 100%;" required="required">
+                            </select>
+                        </div>
+                        <div class="form-group naming5Div" style="display: none;">
+                            <select id="naming5" name ="naming5" class="form-control select2 naming5"  style="width: 100%;" required="required">
                             </select>
                         </div>
                     </div>
@@ -339,14 +367,43 @@
             $("#zillaGroup").click(function(){
                 $("#zillaGroupId").show();
                 $("#cityGroupId").hide();
+                $("#foreignGroupId").hide();
+                $("#divDiv").show();
                 $('.city_name').prop('required',false);
                 $('.co_name').prop('required',false);
                 $('.thana_name').prop('required',false);
                 $('.c_ward_name').prop('required',false);
+                $('.naming1').prop('required',false);
+                $('.naming2').prop('required',false);
+                $('.naming3').prop('required',false);
+                $('.naming4').prop('required',false);
+                $('.naming5').prop('required',false);
             });
             $("#cityGroup").click(function(){
                 $("#zillaGroupId").hide();
                 $("#cityGroupId").show();
+                $("#foreignGroupId").hide();
+                $("#divDiv").show();
+                $('.dis_name').prop('required',false);
+                $('.upz_name').prop('required',false);
+                $('.uni_name').prop('required',false);
+                $('.ward_name').prop('required',false);
+                $('.naming1').prop('required',false);
+                $('.naming2').prop('required',false);
+                $('.naming3').prop('required',false);
+                $('.naming4').prop('required',false);
+                $('.naming5').prop('required',false);
+            });
+            $("#foreignGroup").click(function(){
+                $("#zillaGroupId").hide();
+                $("#cityGroupId").hide();
+                $("#foreignGroupId").show();
+                $("#divDiv").hide();
+                $('.div_name').prop('required',false);
+                $('.city_name').prop('required',false);
+                $('.co_name').prop('required',false);
+                $('.thana_name').prop('required',false);
+                $('.c_ward_name').prop('required',false);
                 $('.dis_name').prop('required',false);
                 $('.upz_name').prop('required',false);
                 $('.uni_name').prop('required',false);
@@ -585,6 +642,106 @@
                         var id = data[i]['id'];
                         var name = data[i]['name'];
                         $(".c_ward_name").append("<option value='"+id+"'>"+name+"</option>");
+                    }
+                }
+            });
+        });
+
+        $.ajax({
+            url: 'getAllNaming1Front',
+            type: "GET",
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (response) {
+                var data = response.data;
+                var len = data.length;
+                for( var i = 0; i<len; i++){
+                    var id = data[i]['id'];
+                    var name = data[i]['name'];
+                    $(".naming1").append("<option value='"+id+"'>"+name+"</option>");
+                }
+
+            },
+            failure: function (msg) {
+                alert('an error occured');
+            }
+        });
+        $(".naming1").change(function(){
+            var id =$(this).val();
+            $.ajax({
+                type: 'GET',
+                url: 'getNaming2ListAllFront',
+                data: {id:id},
+                dataType: 'json',
+                success: function(response){
+                    var data = response.data;
+                    var len = data.length;
+                    $(".naming2Div").show();
+                    $(".naming2").append("<option value=''>"+'Select your  '+data[0]['naming2']+ "</option>");
+                    for( var i = 0; i<len; i++){
+                        var id = data[i]['id'];
+                        var name = data[i]['name'];
+                        $(".naming2").append("<option value='"+id+"'>"+name+"</option>");
+                    }
+                }
+            });
+        });
+        $(".naming2").change(function(){
+            var id =$(this).val();
+            $.ajax({
+                type: 'GET',
+                url: 'getNaming3ListAllFront',
+                data: {id:id},
+                dataType: 'json',
+                success: function(response){
+                    var data = response.data;
+                    var len = data.length;
+                    $(".naming3Div").show();
+                    $(".naming3").append("<option value=''>"+'Select your  '+data[0]['naming3']+ "</option>");
+                    for( var i = 0; i<len; i++){
+                        var id = data[i]['id'];
+                        var name = data[i]['name'];
+                        $(".naming3").append("<option value='"+id+"'>"+name+"</option>");
+                    }
+                }
+            });
+        });
+        $(".naming3").change(function(){
+            var id =$(this).val();
+            $.ajax({
+                type: 'GET',
+                url: 'getNaming4ListAllFront',
+                data: {id:id},
+                dataType: 'json',
+                success: function(response){
+                    var data = response.data;
+                    var len = data.length;
+                    $(".naming4Div").show();
+                    $(".naming4").append("<option value=''>"+'Select your  '+data[0]['naming4']+ "</option>");
+                    for( var i = 0; i<len; i++){
+                        var id = data[i]['id'];
+                        var name = data[i]['name'];
+                        $(".naming4").append("<option value='"+id+"'>"+name+"</option>");
+                    }
+                }
+            });
+        });
+        $(".naming4").change(function(){
+            var id =$(this).val();
+            $.ajax({
+                type: 'GET',
+                url: 'getNaming5ListAllFront',
+                data: {id:id},
+                dataType: 'json',
+                success: function(response){
+                    var data = response.data;
+                    var len = data.length;
+                    $(".naming5Div").show();
+                    $(".naming5").append("<option value=''>"+'Select your  '+data[0]['naming5']+ "</option>");
+                    for( var i = 0; i<len; i++){
+                        var id = data[i]['id'];
+                        var name = data[i]['name'];
+                        $(".naming5").append("<option value='"+id+"'>"+name+"</option>");
                     }
                 }
             });

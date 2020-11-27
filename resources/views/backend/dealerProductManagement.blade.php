@@ -73,7 +73,7 @@
                                 <td> {{$product->unit}} </td>
                                 <td> {{$product->company}} </td>
                                 <td class="td-actions text-center">
-                                    <button type="button" rel="tooltip" class="btn btn-success edit" data-id="{{$product->product_id}}">
+                                    <button type="button" rel="tooltip" class="btn btn-success edit" data-id="{{$product->p_id}}">
                                         <i class="fa fa-edit"></i>
                                     </button>
                                 </td>

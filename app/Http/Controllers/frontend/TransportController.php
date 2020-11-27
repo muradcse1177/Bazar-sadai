@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\frontend;
 
 use App\Http\Controllers\Controller;
+use Carbon\Traits\Date;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\DB;
@@ -196,17 +197,23 @@ class TransportController extends Controller
     }
     public function insertServiceArea(Request $request){
         $addressGroup = $request->addressGroup;
-        $add_part1 = $request->div_id;
         if ($addressGroup == 1) {
+            $add_part1 = $request->div_id;
             $add_part2 = $request->disid;
             $add_part3 = $request->upzid;
             $add_part4 = $request->uniid;
-
         }
         if ($addressGroup == 2) {
+            $add_part1 = $request->div_id;
             $add_part2 = $request->c_disid;
             $add_part3 = $request->c_upzid;
             $add_part4 = $request->c_uniid;
+        }
+        if ($addressGroup == 3) {
+            $add_part1 = $request->naming1;
+            $add_part2 = $request->naming2;
+            $add_part3 = $request->naming3;
+            $add_part4 = $request->naming4;
         }
         $rows = DB::table('service_area')
             ->where('user_id', Cookie::get('user_id'))
@@ -259,6 +266,11 @@ class TransportController extends Controller
                     $rows =1;
                     $cost =1;
                 }
+                else if($rows->address_type == 3){
+                    $addressType =3;
+                    $rows =3;
+                    $cost=3;
+                }
                 else{
                     $addressType = $rows->address_type;
                     if ($addressType == 1) {
@@ -279,7 +291,6 @@ class TransportController extends Controller
                         ->where('transport_type','Motorcycle')
                         ->first();
                 }
-
             }
             return response()->json(array('addressType' => $addressType, 'data' => $rows, 'cost' => $cost));
         }
@@ -387,6 +398,12 @@ class TransportController extends Controller
                     $cost =1;
                     $type=1;
                 }
+                else if($rows->address_type == 3){
+                    $addressType =3;
+                    $rows =3;
+                    $cost=3;
+                    $type=3;
+                }
                 else{
                     $addressType = $rows->address_type;
                     if ($addressType == 1) {
@@ -408,7 +425,6 @@ class TransportController extends Controller
                         ->first();
                     $type=$request->type;
                 }
-
             }
             return response()->json(array('addressType' => $addressType, 'data' => $rows, 'cost' => $cost ,'transport' => $type));
         }
@@ -511,6 +527,155 @@ class TransportController extends Controller
             else {
                 return back()->with('errorMessage', 'আবার চেষ্টা করুন।');
             }
+        }
+
+    }
+    public function courier(){
+        return view('frontend.courier');
+    }
+    public function serviceAreaCourier(){
+        return view('frontend.serviceAreaCourier');
+    }
+    public function insertServiceAreaCourier(Request $request){
+        $addressGroup = $request->addressGroup;
+        if ($addressGroup == 1) {
+            $add_part1 = $request->div_id;
+            $add_part2 = $request->disid;
+            $add_part3 = $request->upzid;
+            $add_part4 = $request->uniid;
+        }
+        if ($addressGroup == 2) {
+            $add_part1 = $request->div_id;
+            $add_part2 = $request->c_disid;
+            $add_part3 = $request->c_upzid;
+            $add_part4 = $request->c_uniid;
+        }
+        if ($addressGroup == 3) {
+            $add_part1 = $request->naming1;
+            $add_part2 = $request->naming2;
+            $add_part3 = $request->naming3;
+            $add_part4 = $request->naming4;
+        }
+        $rows = DB::table('service_area')
+            ->where('user_id', Cookie::get('user_id'))
+            ->distinct()->get()->count();
+        if ($rows > 0) {
+            $result = DB::table('service_area')
+                ->where('user_id', Cookie::get('user_id'))
+                ->update([
+                    'address_type' => $addressGroup,
+                    'add_part1' => $add_part1,
+                    'add_part2' => $add_part2,
+                    'add_part3' => $add_part3,
+                    'add_part4' => $add_part4,
+                ]);
+            if ($result) {
+                return redirect('courier')->with('successMessage', 'সফল্ভাবে সম্পন্ন্য হয়েছে।');
+            } else {
+                return back()->with('errorMessage', 'আবার চেষ্টা করুন।');
+            }
+        }
+        else{
+            $result = DB::table('service_area')->insert([
+                'user_id' => Cookie::get('user_id'),
+                'address_type' => $addressGroup,
+                'add_part1' => $add_part1,
+                'add_part2' => $add_part2,
+                'add_part3' => $add_part3,
+                'add_part4' => $add_part4,
+            ]);
+            if ($result) {
+                return redirect('courier')->with('successMessage', 'সফল্ভাবে সম্পন্ন্য হয়েছে।');
+            } else {
+                return back()->with('errorMessage', 'আবার চেষ্টা করুন।');
+            }
+        }
+    }
+    public function getAllCourierWeight(Request $request){
+        try{
+            $rows = DB::table('courier_settings')
+                ->where('type', $request->id)
+                ->distinct()
+                ->get('weight');
+            return response()->json(array('data'=>$rows));
+        }
+        catch(\Illuminate\Database\QueryException $ex){
+            return response()->json(array('data'=>$ex->getMessage()));
+        }
+    }
+    public function getAllCourierCost(Request $request){
+        try{
+            $rows = DB::table('courier_settings')
+                ->where('type', $request->type)
+                ->where('weight', $request->weight)
+                ->where('f_country', $request->id)
+                ->first();
+            return response()->json(array('data'=>$rows->cost));
+        }
+        catch(\Illuminate\Database\QueryException $ex){
+            return response()->json(array('data'=>$ex->getMessage()));
+        }
+    }
+    public function getAllCourierCostBd(Request $request){
+        try{
+            $rows = DB::table('courier_settings')
+                ->where('type', $request->type)
+                ->where('weight', $request->weight)
+                ->where('country', $request->id)
+                ->first();
+            return response()->json(array('data'=>$rows->cost));
+        }
+        catch(\Illuminate\Database\QueryException $ex){
+            return response()->json(array('data'=>$ex->getMessage()));
+        }
+    }
+    public function insertCourierBooking(Request $request){
+        $addressGroup = $request->addressGroup;
+        if ($addressGroup == 1) {
+            $add_part1 = $request->div_id;
+            $add_part2 = $request->disid;
+            $add_part3 = $request->upzid;
+            $add_part4 = $request->uniid;
+            $add_part5 = $request->wardid;
+            $f_country =1;
+        }
+        if ($addressGroup == 2) {
+            $add_part1 = $request->div_id;
+            $add_part2 = $request->c_disid;
+            $add_part3 = $request->c_upzid;
+            $add_part4 = $request->c_uniid;
+            $add_part5 = $request->c_wardid;
+            $f_country =1;
+        }
+        if ($addressGroup == 3) {
+            $add_part1 = $request->naming1;
+            $add_part2 = $request->naming2;
+            $add_part3 = $request->naming3;
+            $add_part4 = $request->naming4;
+            $add_part5 = $request->naming5;
+            $f_country =$request->f_country;
+        }
+
+        $result = DB::table('courier_booking')->insert([
+            'user_id' => Cookie::get('user_id'),
+            'date' => Date('Y-m-d'),
+            'type' => $request->type,
+            'weight' => $request->weight,
+            'country' => $request->country,
+            'f_country' => $f_country,
+            'address_type' => $addressGroup,
+            'add_part1' => $add_part1,
+            'add_part2' => $add_part2,
+            'add_part3' => $add_part3,
+            'add_part4' => $add_part4,
+            'add_part5' => $add_part5,
+            'address' => $request->address,
+            'cost' => $request->lastPrice,
+        ]);
+        if ($result) {
+            return redirect('courier')->with('successMessage', 'সফল্ভাবে সম্পন্ন্য হয়েছে।');
+        } else {
+            return back()->with('errorMessage', 'আবার চেষ্টা করুন।');
         }
 
     }

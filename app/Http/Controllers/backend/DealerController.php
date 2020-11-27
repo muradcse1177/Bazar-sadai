@@ -13,6 +13,7 @@ class DealerController extends Controller
     public function dealerProfile(){
         try{
             $rows = DB::table('products')
+                ->select('*','product_assign.id as p_id')
                 ->join('product_assign','product_assign.product_id','=','products.id')
                 ->where('product_assign.dealer_id', Cookie::get('user_id'))
                 ->where('products.status', 1)
@@ -28,34 +29,15 @@ class DealerController extends Controller
         try{
             if(Cookie::get('user_id') !=null) {
                 $user_id = Cookie::get('user_id');
-                $rows = DB::table('product_assign')
-                    ->where('product_id',  $request->id)
-                    ->where('dealer_id',  $user_id)
-                    ->distinct()->get()->count();
-                if ($rows > 0) {
-                    $result =DB::table('product_assign')
-                        ->where('product_id',  $request->id)
-                        ->where('dealer_id',  $user_id)
-                        ->update([
-                            'edit_price' => $request->price
-                        ]);
-                    if ($result) {
-                        return back()->with('successMessage', 'সফল্ভাবে সম্পন্ন্য হয়েছে।');
-                    } else {
-                        return back()->with('errorMessage', 'আবার চেষ্টা করুন।');
-                    }
-                }
-                else {
-                    $result = DB::table('product_assign')->insert([
-                        'product_id' => $request->id,
-                        'dealer_id' => $user_id,
+                $result =DB::table('product_assign')
+                    ->where('id',  $request->id)
+                    ->update([
                         'edit_price' => $request->price
                     ]);
-                    if ($result) {
-                        return back()->with('successMessage', 'সফল্ভাবে সম্পন্ন্য হয়েছে।');
-                    } else {
-                        return back()->with('errorMessage', 'আবার চেষ্টা করুন।');
-                    }
+                if ($result) {
+                    return back()->with('successMessage', 'সফল্ভাবে সম্পন্ন্য হয়েছে।');
+                } else {
+                    return back()->with('errorMessage', 'আবার চেষ্টা করুন।');
                 }
             }
             else{
@@ -70,7 +52,7 @@ class DealerController extends Controller
         try{
             $user_id = Cookie::get('user_id');
             $rows = DB::table('product_assign')
-                ->where('product_id',  $request->id)
+                ->where('id',  $request->id)
                 ->where('dealer_id',  $user_id)
                 ->first();
 
