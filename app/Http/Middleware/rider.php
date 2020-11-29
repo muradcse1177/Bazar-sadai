@@ -16,7 +16,7 @@ class rider
      */
     public function handle($request, Closure $next)
     {
-        if(Cookie::get('user_type') == 17 ||Cookie::get('user_type') == 18 ||Cookie::get('user_type') == 19 ||Cookie::get('user_type') == 20){
+        if(Cookie::get('user_type') == 17 ||Cookie::get('user_type') == 18 ||Cookie::get('user_type') == 19 ||Cookie::get('user_type') == 20||Cookie::get('user_type') == 20||Cookie::get('user_type') == 32){
             return $next($request);
         }
         return redirect()->to('homepage');

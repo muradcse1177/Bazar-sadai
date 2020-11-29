@@ -38,6 +38,7 @@
                                 <option value="Micro Bus">মাইক্রো বাস</option>
                                 <option value="Private Car">প্রাইভেট কার</option>
                                 <option value="Ambulance">এম্বুলেন্স</option>
+                                <option value="Truck">ট্রাক</option>
                             </select>
                         </div>
                         <div class="form-group">

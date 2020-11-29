@@ -69,9 +69,57 @@ class AuthController extends Controller
                             Cookie::queue('pharmacy', $rows->id, time()+31556926 ,'/');
                             return redirect()->to('myMedicineSale');
                         }
-                        elseif($role==17 ||$role==18 ||$role==19 ||$role==20){
+                        elseif($role==16){
+                            Cookie::queue('cooker', $rows->id, time()+31556926 ,'/');
+                            return redirect()->to('cookerProfile');
+                        }
+                        elseif($role==17 ||$role==18 ||$role==19 ||$role==20||$role==32){
                             Cookie::queue('rider', $rows->id, time()+31556926 ,'/');
                             return redirect()->to('riderServiceArea');
+                        }
+                        elseif($role==21){
+                            Cookie::queue('clothCleaner', $rows->id, time()+31556926 ,'/');
+                            return redirect()->to('clothCleanerProfile');
+                        }
+                        elseif($role==22){
+                            Cookie::queue('laundry', $rows->id, time()+31556926 ,'/');
+                            return redirect()->to('laundryProfile');
+                        }
+                        elseif($role==23){
+                            Cookie::queue('roomCleaner', $rows->id, time()+31556926 ,'/');
+                            return redirect()->to('roomCleanerProfile');
+                        }
+                        elseif($role==24){
+                            Cookie::queue('tankCleaner', $rows->id, time()+31556926 ,'/');
+                            return redirect()->to('tankCleanerProfile');
+                        }
+                        elseif($role==25){
+                            Cookie::queue('helpingHand', $rows->id, time()+31556926 ,'/');
+                            return redirect()->to('helpingHandProfile');
+                        }
+                        elseif($role==26){
+                            Cookie::queue('guard', $rows->id, time()+31556926 ,'/');
+                            return redirect()->to('guardProfile');
+                        }
+                        elseif($role==27){
+                            Cookie::queue('stove', $rows->id, time()+31556926 ,'/');
+                            return redirect()->to('stoveProfile');
+                        }
+                        elseif($role==28){
+                            Cookie::queue('electronics', $rows->id, time()+31556926 ,'/');
+                            return redirect()->to('electronicsProfile');
+                        }
+                        elseif($role==29){
+                            Cookie::queue('sanitary', $rows->id, time()+31556926 ,'/');
+                            return redirect()->to('sanitaryProfile');
+                        }
+                        elseif($role==30){
+                            Cookie::queue('ac', $rows->id, time()+31556926 ,'/');
+                            return redirect()->to('acProfile');
+                        }
+                        elseif($role==31){
+                            Cookie::queue('parlor', $rows->id, time()+31556926 ,'/');
+                            return redirect()->to('parlorProfile');
                         }
                     }
                     else{
@@ -105,6 +153,18 @@ class AuthController extends Controller
         Cookie::queue(Cookie::forget('dealer','/'));
         Cookie::queue(Cookie::forget('rider','/'));
         Cookie::queue(Cookie::forget('doctor','/'));
+        Cookie::queue(Cookie::forget('cooker','/'));
+        Cookie::queue(Cookie::forget('clothCleaner','/'));
+        Cookie::queue(Cookie::forget('laundry','/'));
+        Cookie::queue(Cookie::forget('roomCleaner','/'));
+        Cookie::queue(Cookie::forget('tankCleaner','/'));
+        Cookie::queue(Cookie::forget('helpingHand','/'));
+        Cookie::queue(Cookie::forget('guard','/'));
+        Cookie::queue(Cookie::forget('stove','/'));
+        Cookie::queue(Cookie::forget('electronics','/'));
+        Cookie::queue(Cookie::forget('sanitary','/'));
+        Cookie::queue(Cookie::forget('ac','/'));
+        Cookie::queue(Cookie::forget('parlor','/'));
         session()->forget('user_info');
         session()->flush();
         return redirect()->to('homepage');

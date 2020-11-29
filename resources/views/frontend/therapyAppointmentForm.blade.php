@@ -59,6 +59,7 @@
                             <input type="number" class="form-control patient_age" name="age" id="age" placeholder="বয়স" required>
                             <input type="hidden" class="form-control" name="tf_id" value="{{$therapyCenter->tf_id}}" required>
                             <input type="hidden" class="form-control" name="fees" value="{{$therapyCenter->fees}}" required>
+                            <input type="hidden" class="form-control" name="time" value="{{$therapyCenter->time}}" required>
                         </div>
                         <div class="form-group">
                             <textarea type="text" class="form-control problem" name="problem" id="problem" placeholder="সমস্যা" required></textarea>

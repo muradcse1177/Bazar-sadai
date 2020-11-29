@@ -12,7 +12,9 @@ use Illuminate\Support\Facades\Hash;
 class UserController extends Controller
 {
     public function dashboard(){
-        $users = DB::table('users')->where('status', 1)->distinct()->get()->count();
+        $users = DB::table('users')
+            ->where('status', 1)
+            ->distinct()->get()->count();
         $cashOut = DB::table('accounting')
             ->where('date', date('y-m-d'))
             ->where('type', 'Cash Out')
@@ -42,7 +44,6 @@ class UserController extends Controller
         $m_order = DB::table('medicine_order')
             ->where('date', date('y-m-d'))
             ->distinct()->get()->count();
-
         return view('backend.dashboard',
             [
                 'users' => $users,
@@ -682,6 +683,7 @@ class UserController extends Controller
             ->join('users as a','a.id','=','dr_apportionment.dr_id')
             ->join('users as b','b.id','=','dr_apportionment.user_id')
             ->where('b.id', Cookie::get('user_id'))
+            ->orderBy('dr_apportionment.id','desc')
             ->paginate('20');
         return view('frontend.myDrAppointment',['drReports' => $rows]);
     }
@@ -693,6 +695,7 @@ class UserController extends Controller
             ->join('therapy_center','therapy_center.id','=','a.therapy_center_id')
             ->join('therapy_services','therapy_services.id','=','a.therapy_name_id')
             ->where('users.id', Cookie::get('user_id'))
+            ->orderBy('therapy_appointment.id','desc')
             ->paginate('20');
         return view('frontend.myTherapyAppointment',['therapyReports' => $rows]);
     }
@@ -704,9 +707,362 @@ class UserController extends Controller
             ->join('diagnostic_center','diagnostic_center.id','=','a.diagnostic_center_id')
             ->join('diagnostic_test','diagnostic_test.id','=','a.diagnostic_test_id')
             ->where('users.id', Cookie::get('user_id'))
+            ->orderBy('diagonostic_appointment.id','desc')
             ->paginate('20');
         //dd($rows);
         return view('frontend.myDiagnosticAppointment',['diagnosticReports' => $rows]);
+    }
+    public function myTransportOrder(Request $request){
+        $rows = DB::table('ride_booking')
+            ->where('user_id', Cookie::get('user_id'))
+            ->orderBy('id','desc')
+            ->get();
+        $booking =array();
+        $i = 0;
+        foreach ($rows as $riding){
+            $user_id = $riding->user_id;
+            $address_type = $riding->address_type;
+            $address_typep = $riding->address_type;
+            $service_area = DB::table('service_area')
+                ->where('user_id',$user_id)
+                ->first();
+            $user = DB::table('users')
+                ->where('id', $user_id)
+                ->first();
+            if($address_type==1){
+                $add_part1 = DB::table('divisions')
+                    ->where('id',$service_area->add_part1)
+                    ->first();
+                $add_part2 = DB::table('districts')
+                    ->where('div_id',$service_area->add_part1)
+                    ->where('id',$service_area->add_part2)
+                    ->first();
+                $add_part3 = DB::table('upazillas')
+                    ->where('div_id',$service_area->add_part1)
+                    ->where('dis_id',$service_area->add_part2)
+                    ->where('id',$riding->add_part3)
+                    ->first();
+                $add_part4 = DB::table('unions')
+                    ->where('div_id',$service_area->add_part1)
+                    ->where('dis_id',$service_area->add_part2)
+                    ->where('upz_id',$riding->add_part3)
+                    ->where('id',$riding->add_part4)
+                    ->first();
+            }
+            if($address_type==2){
+                $add_part1 = DB::table('divisions')
+                    ->where('id',$service_area->add_part1)
+                    ->first();
+                $add_part2 = DB::table('cities')
+                    ->where('div_id',$service_area->add_part1)
+                    ->where('id',$service_area->add_part2)
+                    ->first();
+                $add_part3 = DB::table('city_corporations')
+                    ->where('div_id',$service_area->add_part1)
+                    ->where('city_id',$service_area->add_part2)
+                    ->where('id',$riding->add_part3)
+                    ->first();
+                $add_part4 = DB::table('thanas')
+                    ->where('div_id',$service_area->add_part1)
+                    ->where('city_id',$service_area->add_part2)
+                    ->where('city_co_id',$riding->add_part3)
+                    ->where('id',$riding->add_part4)
+                    ->first();
+            }
+            if($address_typep==1){
+                $add_partp1 = DB::table('divisions')
+                    ->where('id',$riding->add_partp1)
+                    ->first();
+                $add_partp2 = DB::table('districts')
+                    ->where('div_id',$riding->add_partp1)
+                    ->where('id',$riding->add_partp2)
+                    ->first();
+                $add_partp3 = DB::table('upazillas')
+                    ->where('div_id',$riding->add_partp1)
+                    ->where('dis_id',$riding->add_partp2)
+                    ->where('id',$riding->add_partp3)
+                    ->first();
+                $add_partp4 = DB::table('unions')
+                    ->where('div_id',$riding->add_partp1)
+                    ->where('dis_id',$riding->add_partp2)
+                    ->where('upz_id',$riding->add_partp3)
+                    ->where('id',$riding->add_partp4)
+                    ->first();
+            }
+            if($address_typep==2){
+                $add_partp1 = DB::table('divisions')
+                    ->where('id',$riding->add_partp1)
+                    ->first();
+                $add_partp2 = DB::table('cities')
+                    ->where('div_id',$riding->add_partp1)
+                    ->where('id',$riding->add_partp2)
+                    ->first();
+                $add_partp3 = DB::table('city_corporations')
+                    ->where('div_id',$riding->add_partp1)
+                    ->where('city_id',$riding->add_partp2)
+                    ->where('id',$riding->add_partp3)
+                    ->first();
+                $add_partp4 = DB::table('thanas')
+                    ->where('div_id',$riding->add_partp1)
+                    ->where('city_id',$riding->add_partp2)
+                    ->where('city_co_id',$riding->add_partp3)
+                    ->where('id',$riding->add_partp4)
+                    ->first();
+            }
+            if($riding->transport =='Motorcycle'){
+                if($address_type==1){
+                    $add_partp1 = DB::table('divisions')
+                        ->where('id',$service_area->add_part1)
+                        ->first();
+                    $add_partp2 = DB::table('districts')
+                        ->where('div_id',$service_area->add_part1)
+                        ->where('id',$service_area->add_part2)
+                        ->first();
+                    $add_partp3 = DB::table('upazillas')
+                        ->where('div_id',$service_area->add_part1)
+                        ->where('dis_id',$service_area->add_part2)
+                        ->where('id',$riding->add_partp3)
+                        ->first();
+                    $add_partp4 = DB::table('unions')
+                        ->where('div_id',$service_area->add_part1)
+                        ->where('dis_id',$service_area->add_part2)
+                        ->where('upz_id',$riding->add_partp3)
+                        ->where('id',$riding->add_partp4)
+                        ->first();
+                }
+                if($address_type==2){
+                    $add_partp1 = DB::table('divisions')
+                        ->where('id',$service_area->add_part1)
+                        ->first();
+                    $add_partp2 = DB::table('cities')
+                        ->where('div_id',$service_area->add_part1)
+                        ->where('id',$service_area->add_part2)
+                        ->first();
+                    $add_partp3 = DB::table('city_corporations')
+                        ->where('div_id',$service_area->add_part1)
+                        ->where('city_id',$service_area->add_part2)
+                        ->where('id',$riding->add_partp3)
+                        ->first();
+                    $add_partp4 = DB::table('thanas')
+                        ->where('div_id',$service_area->add_part1)
+                        ->where('city_id',$service_area->add_part2)
+                        ->where('city_co_id',$riding->add_part3)
+                        ->where('id',$riding->add_partp4)
+                        ->first();
+                }
+            }
+            $booking[$i]['date'] = $riding->date;
+            $booking[$i]['transport'] = $riding->transport;
+            $booking[$i]['user'] = $user->name;
+            $booking[$i]['add_part1'] = $add_part1->name;
+            $booking[$i]['add_part2'] = $add_part2->name;
+            $booking[$i]['add_part3'] = $add_part3->name;
+            $booking[$i]['add_part4'] = $add_part4->name;
+            $booking[$i]['add_partp1'] = @$add_partp1->name;
+            $booking[$i]['add_partp2'] = @$add_partp2->name;
+            $booking[$i]['add_partp3'] = @$add_partp3->name;
+            $booking[$i]['add_partp4'] = @$add_partp4->name;
+            $booking[$i]['c_distance'] = $riding->customer_distance;
+            $booking[$i]['c_cost'] = $riding->cutomer_cost;
+            $booking[$i]['r_distance'] = $riding->rider_distance;
+            $booking[$i]['r_cost'] = $riding->rider_cost;
+            $i++;
+        }
+        $currentPage = LengthAwarePaginator::resolveCurrentPage();
+        $itemCollection = collect($booking);
+        $perPage = 20;
+        $currentPageItems = $itemCollection->slice(($currentPage * $perPage) - $perPage, $perPage)->all();
+        $paginatedItems= new LengthAwarePaginator($currentPageItems , count($itemCollection), $perPage);
+        $paginatedItems->setPath($request->url());
+        return view('frontend.myTransportOrder',['bookings' => $paginatedItems]);
+    }
+    public function myCookingOrder (){
+        try{
+            $cooking = DB::table('cooking_booking')
+                ->select('*','a.name as u_name','a.phone as  u_phone')
+                ->join('users as a', 'a.id', '=', 'cooking_booking.user_id')
+                ->join('users as b', 'b.id', '=', 'cooking_booking.cooker_id')
+                ->where('a.status', 1)
+                ->where('b.status', 1)
+                ->where('cooking_booking.user_id', Cookie::get('user_id'))
+                ->paginate(20);
+            return view('frontend.myCookingOrder',['cookings' =>$cooking]);
+        }
+        catch(\Illuminate\Database\QueryException $ex){
+            return back()->with('errorMessage', $ex->getMessage());
+        }
+    }
+    public function myClothWashingOrder (Request  $request){
+        try{
+            $washing = DB::table('cloth_washing_order')
+                ->select('*','a.name as u_name','a.phone as  u_phone','cloth_washing_order.id as c_id')
+                ->join('users as a', 'a.id', '=', 'cloth_washing_order.user_id')
+                ->join('users as b', 'b.id', '=', 'cloth_washing_order.cleaner_id')
+                ->where('a.status', 1)
+                ->where('b.status', 1)
+                ->where('cloth_washing_order.user_id', Cookie::get('user_id'))
+                ->orderBy('cloth_washing_order.id','desc')
+                ->paginate(20);
+            return view('frontend.myClothWashingOrder',['washings' =>$washing]);
+        }
+        catch(\Illuminate\Database\QueryException $ex){
+            return back()->with('errorMessage', $ex->getMessage());
+        }
+    }
+    public function getClothWashingByIdUser(Request $request){
+        $output = array('list'=>'');
+        $orders = DB::table('cloth_washing_order')
+            ->where('id',  $request->id)
+            ->first();
+        $cloth_id = json_decode($orders->cloth_id);
+        $quantity = json_decode($orders->quantity);
+        $i =0;
+        foreach ($quantity as $q){
+            $quantity_arr[$i] =$q;
+            $i++;
+        }
+        for($i=0; $i<count($cloth_id); $i++){
+            $cloth = DB::table('cloth_washing')
+                ->select('*')
+                ->where('id',  $cloth_id[$i])
+                ->first();
+            $output['list'] .= "
+                    <tr class='prepend_items'>
+                        <td>".$cloth->name."</td>
+                        <td>".$quantity_arr[$i]."</td>
+                    </tr>
+                ";
+        }
+        return response()->json(array('data'=>$output));
+    }
+    public function myRoomCleaningOrder (Request  $request){
+        try{
+            $washing = DB::table('cleaning_order')
+                ->select('*','a.name as u_name','a.phone as  u_phone','cleaning_order.id as c_id')
+                ->join('users as a', 'a.id', '=', 'cleaning_order.user_id')
+                ->join('users as b', 'b.id', '=', 'cleaning_order.cleaner_id')
+                ->where('a.status', 1)
+                ->where('b.status', 1)
+                ->where('cleaning_order.user_id', Cookie::get('user_id'))
+                ->orderBy('cleaning_order.id','desc')
+                ->paginate(20);
+            return view('frontend.myRoomCleaningOrder',['washings' =>$washing]);
+        }
+        catch(\Illuminate\Database\QueryException $ex){
+            return back()->with('errorMessage', $ex->getMessage());
+        }
+    }
+    public function myHelpingHandOrder (Request  $request){
+        try{
+            $washing = DB::table('helping_hand_order')
+                ->select('*','a.name as u_name','a.phone as  u_phone','helping_hand_order.id as c_id')
+                ->join('users as a', 'a.id', '=', 'helping_hand_order.user_id')
+                ->join('users as b', 'b.id', '=', 'helping_hand_order.helper')
+                ->where('a.status', 1)
+                ->where('b.status', 1)
+                ->where('helping_hand_order.user_id', Cookie::get('user_id'))
+                ->orderBy('helping_hand_order.id','desc')
+                ->paginate(20);
+            return view('frontend.myHelpingHandOrder',['washings' =>$washing]);
+        }
+        catch(\Illuminate\Database\QueryException $ex){
+            return back()->with('errorMessage', $ex->getMessage());
+        }
+    }
+    public function myGuardOrder (Request  $request){
+        try{
+            $washing = DB::table('guard_order')
+                ->select('*','a.name as u_name','a.phone as  u_phone','guard_order.id as c_id')
+                ->join('users as a', 'a.id', '=', 'guard_order.user_id')
+                ->join('users as b', 'b.id', '=', 'guard_order.gurd_id')
+                ->where('a.status', 1)
+                ->where('b.status', 1)
+                ->where('guard_order.user_id', Cookie::get('user_id'))
+                ->orderBy('guard_order.id','desc')
+                ->paginate(20);
+            return view('frontend.myGuardOrder',['washings' =>$washing]);
+        }
+        catch(\Illuminate\Database\QueryException $ex){
+            return back()->with('errorMessage', $ex->getMessage());
+        }
+    }
+    public function myProductServicingOrder (Request  $request){
+        try{
+
+            $washing = DB::table('various_servicing_order')
+                ->select('*','a.name as u_name','a.phone as  u_phone','various_servicing_order.name as v_name')
+                ->join('users as a', 'a.id', '=', 'various_servicing_order.user_id')
+                ->join('users as b', 'b.id', '=', 'various_servicing_order.worker')
+                ->where('a.status', 1)
+                ->where('b.status', 1)
+                ->where('various_servicing_order.user_id', Cookie::get('user_id'))
+                ->orderBy('various_servicing_order.id','desc')
+                ->paginate(20);
+            return view('frontend.myProductServicingOrder',['washings' =>$washing]);
+        }
+        catch(\Illuminate\Database\QueryException $ex){
+            return back()->with('errorMessage', $ex->getMessage());
+        }
+    }
+    public function myLaundryOrder (Request  $request){
+        try{
+            $washing = DB::table('laundry_order')
+                ->select('*','a.name as u_name','a.phone as  u_phone','laundry_order.id as c_id')
+                ->join('users as a', 'a.id', '=', 'laundry_order.user_id')
+                ->join('users as b', 'b.id', '=', 'laundry_order.cleaner_id')
+                ->where('a.status', 1)
+                ->where('b.status', 1)
+                ->where('laundry_order.user_id', Cookie::get('user_id'))
+                ->orderBy('laundry_order.id','desc')
+                ->paginate(20);
+            return view('frontend.myLaundryOrder',['washings' =>$washing]);
+        }
+        catch(\Illuminate\Database\QueryException $ex){
+            return back()->with('errorMessage', $ex->getMessage());
+        }
+    }
+    public function getLaundryWashingByIdUser(Request $request){
+        $output = array('list'=>'');
+        $orders = DB::table('laundry_order')
+            ->where('id',  $request->id)
+            ->first();
+        $cloth_id = json_decode($orders->cloth_id);
+        $quantity = json_decode($orders->quantity);
+        $i =0;
+        foreach ($quantity as $q){
+            $quantity_arr[$i] =$q;
+            $i++;
+        }
+        for($i=0; $i<count($cloth_id); $i++){
+            $cloth = DB::table('laundry')
+                ->select('*')
+                ->where('id',  $cloth_id[$i])
+                ->first();
+            $output['list'] .= "
+                    <tr class='prepend_items'>
+                        <td>".$cloth->name."</td>
+                        <td>".$quantity_arr[$i]."</td>
+                    </tr>
+                ";
+        }
+        return response()->json(array('data'=>$output));
+    }
+    public function myParlorOrder  (Request  $request){
+        try{
+            $washing = DB::table('parlor_order')
+                ->select('*','a.name as u_name','a.phone as  u_phone','parlor_order.name as v_name')
+                ->join('users as a', 'a.id', '=', 'parlor_order.user_id')
+                ->join('users as b', 'b.id', '=', 'parlor_order.parlor_id')
+                ->where('a.status', 1)
+                ->where('b.status', 1)
+                ->where('parlor_order.user_id', Cookie::get('user_id'))
+                ->orderBy('parlor_order.id','desc')
+                ->paginate(20);
+            return view('frontend.myParlorOrder',['washings' =>$washing]);
+        }
+        catch(\Illuminate\Database\QueryException $ex){
+            return back()->with('errorMessage', $ex->getMessage());
+        }
     }
     public function deliveryProfile(Request $request){
         try{
@@ -809,12 +1165,13 @@ class UserController extends Controller
             return back()->with('errorMessage', $ex->getMessage());
         }
     }
-    public function myVariousProductOrder(){
+    public function myVariousProductOrderUser(){
         try{
             $products = DB::table('product_sales')
                 ->select('*','product_sales.id as ps_id','a.address as ps_address')
                 ->join('seller_product as a','product_sales.product_id','=','a.id')
                 ->where('product_sales.buyer_id', Cookie::get('user_id'))
+                ->orderBy('product_sales.id','desc')
                 ->paginate(20);
             return view('frontend.myVariousProductOrder',['orders' => $products]);
         }

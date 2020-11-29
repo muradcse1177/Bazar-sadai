@@ -856,6 +856,7 @@ class MedicalServiceController extends Controller
                             'diagnostic_test_id' => $request->diagnostic_test_id,
                             'diagnostic_center_id' => $request->diagnostic_center_id,
                             'fees' => $request->fees,
+                            'time' => $request->time,
                             'intime' => $request->intime,
                             'intimezone' => $request->intimezone,
                             'outtime' => $request->outtime,

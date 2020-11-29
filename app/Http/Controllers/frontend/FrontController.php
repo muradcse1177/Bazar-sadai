@@ -1055,7 +1055,7 @@ class FrontController extends Controller
                         'amount' => $rows->amount-1,
                     ]);
                 if ($upresult) {
-                    return redirect()->to('myVariousProductOrder')->with('successMessage', 'সফল্ভাবে সম্পন্ন্য হয়েছে। দ্রুত আপনার সাথে যোগাযোগ করা হবে।');
+                    return redirect()->to('myVariousProductOrderUser')->with('successMessage', 'সফল্ভাবে সম্পন্ন্য হয়েছে। দ্রুত আপনার সাথে যোগাযোগ করা হবে।');
                 }
                 else{
                     return back()->with('errorMessage', 'আবার চেষ্টা করুন।');

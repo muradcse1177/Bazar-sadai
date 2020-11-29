@@ -1116,4 +1116,307 @@ class ReportController extends Controller
         $paginatedItems->setPath($request->url());
         return view('backend.courierReport',['bookings' => $paginatedItems,'from_date'=>$request->from_date,'to_date'=>$request->to_date]);
     }
+    public function cookingReport (){
+        try{
+
+            $cooking = DB::table('cooking_booking')
+                ->select('*','a.name as u_name','a.phone as  u_phone')
+                ->join('users as a', 'a.id', '=', 'cooking_booking.user_id')
+                ->join('users as b', 'b.id', '=', 'cooking_booking.cooker_id')
+                ->where('a.status', 1)
+                ->where('b.status', 1)
+                ->paginate(20);
+            return view('backend.cookingReport',['cookings' =>$cooking]);
+        }
+        catch(\Illuminate\Database\QueryException $ex){
+            return back()->with('errorMessage', $ex->getMessage());
+        }
+    }
+    public function cookingReportListByDate (Request  $request){
+        try{
+
+            $cooking = DB::table('cooking_booking')
+                ->select('*','a.name as u_name','a.phone as  u_phone')
+                ->join('users as a', 'a.id', '=', 'cooking_booking.user_id')
+                ->join('users as b', 'b.id', '=', 'cooking_booking.cooker_id')
+                ->where('a.status', 1)
+                ->where('b.status', 1)
+                ->whereBetween('date',array($request->from_date,$request->to_date))
+                ->paginate(20);
+            return view('backend.cookingReport',['cookings' =>$cooking,'from_date'=>$request->from_date,'to_date'=>$request->to_date]);
+        }
+        catch(\Illuminate\Database\QueryException $ex){
+            return back()->with('errorMessage', $ex->getMessage());
+        }
+    }
+    public function clothWashingReport (Request  $request){
+        try{
+
+            $washing = DB::table('cloth_washing_order')
+                ->select('*','a.name as u_name','a.phone as  u_phone','cloth_washing_order.id as c_id')
+                ->join('users as a', 'a.id', '=', 'cloth_washing_order.user_id')
+                ->join('users as b', 'b.id', '=', 'cloth_washing_order.cleaner_id')
+                ->where('a.status', 1)
+                ->where('b.status', 1)
+                ->orderBy('cloth_washing_order.id','desc')
+                ->paginate(20);
+            return view('backend.clothWashingReport',['washings' =>$washing]);
+        }
+        catch(\Illuminate\Database\QueryException $ex){
+            return back()->with('errorMessage', $ex->getMessage());
+        }
+    }
+    public function clothWashingReportListByDate (Request  $request){
+        try{
+
+            $washing = DB::table('cloth_washing_order')
+                ->select('*','a.name as u_name','a.phone as  u_phone','cloth_washing_order.id as c_id')
+                ->join('users as a', 'a.id', '=', 'cloth_washing_order.user_id')
+                ->join('users as b', 'b.id', '=', 'cloth_washing_order.cleaner_id')
+                ->where('a.status', 1)
+                ->where('b.status', 1)
+                ->orderBy('cloth_washing_order.id','desc')
+                ->whereBetween('date',array($request->from_date,$request->to_date))
+                ->paginate(20);
+            return view('backend.clothWashingReport',['washings' =>$washing,'from_date'=>$request->from_date,'to_date'=>$request->to_date]);
+        }
+        catch(\Illuminate\Database\QueryException $ex){
+            return back()->with('errorMessage', $ex->getMessage());
+        }
+    }
+    public function getClothWashingById(Request $request){
+        $output = array('list'=>'');
+        $orders = DB::table('cloth_washing_order')
+            ->where('id',  $request->id)
+            ->first();
+        $cloth_id = json_decode($orders->cloth_id);
+        $quantity = json_decode($orders->quantity);
+        $i =0;
+        foreach ($quantity as $q){
+            $quantity_arr[$i] =$q;
+            $i++;
+        }
+        for($i=0; $i<count($cloth_id); $i++){
+            $cloth = DB::table('cloth_washing')
+                ->select('*')
+                ->where('id',  $cloth_id[$i])
+                ->first();
+            $output['list'] .= "
+                    <tr class='prepend_items'>
+                        <td>".$cloth->name."</td>
+                        <td>".$quantity_arr[$i]."</td>
+                    </tr>
+                ";
+        }
+        return response()->json(array('data'=>$output));
+    }
+    public function roomCleaningReport (Request  $request){
+        try{
+            $washing = DB::table('cleaning_order')
+                ->select('*','a.name as u_name','a.phone as  u_phone','cleaning_order.id as c_id')
+                ->join('users as a', 'a.id', '=', 'cleaning_order.user_id')
+                ->join('users as b', 'b.id', '=', 'cleaning_order.cleaner_id')
+                ->where('a.status', 1)
+                ->where('b.status', 1)
+                ->orderBy('cleaning_order.id','desc')
+                ->paginate(20);
+            return view('backend.roomCleaningReport',['washings' =>$washing]);
+        }
+        catch(\Illuminate\Database\QueryException $ex){
+            return back()->with('errorMessage', $ex->getMessage());
+        }
+    }
+    public function cleaningReportListByDate (Request  $request){
+        try{
+            $washing = DB::table('cleaning_order')
+                ->select('*','a.name as u_name','a.phone as  u_phone','cleaning_order.id as c_id')
+                ->join('users as a', 'a.id', '=', 'cleaning_order.user_id')
+                ->join('users as b', 'b.id', '=', 'cleaning_order.cleaner_id')
+                ->where('a.status', 1)
+                ->where('b.status', 1)
+                ->whereBetween('date',array($request->from_date,$request->to_date))
+                ->orderBy('cleaning_order.id','desc')
+                ->paginate(20);
+            return view('backend.roomCleaningReport',['washings' =>$washing,'from_date'=>$request->from_date,'to_date'=>$request->to_date]);
+        }
+        catch(\Illuminate\Database\QueryException $ex){
+            return back()->with('errorMessage', $ex->getMessage());
+        }
+    }
+    public function helpingHandReport (Request  $request){
+        try{
+            $washing = DB::table('helping_hand_order')
+                ->select('*','a.name as u_name','a.phone as  u_phone','helping_hand_order.id as c_id')
+                ->join('users as a', 'a.id', '=', 'helping_hand_order.user_id')
+                ->join('users as b', 'b.id', '=', 'helping_hand_order.helper')
+                ->where('a.status', 1)
+                ->where('b.status', 1)
+                ->orderBy('helping_hand_order.id','desc')
+                ->paginate(20);
+            return view('backend.helpingHandReport',['washings' =>$washing]);
+        }
+        catch(\Illuminate\Database\QueryException $ex){
+            return back()->with('errorMessage', $ex->getMessage());
+        }
+    }
+    public function helpingHandReportListByDate (Request  $request){
+        try{
+            $washing = DB::table('helping_hand_order')
+                ->select('*','a.name as u_name','a.phone as  u_phone','helping_hand_order.id as c_id')
+                ->join('users as a', 'a.id', '=', 'helping_hand_order.user_id')
+                ->join('users as b', 'b.id', '=', 'helping_hand_order.helper')
+                ->where('a.status', 1)
+                ->where('b.status', 1)
+                ->whereBetween('date',array($request->from_date,$request->to_date))
+                ->orderBy('helping_hand_order.id','desc')
+                ->paginate(20);
+            return view('backend.helpingHandReport',['washings' =>$washing,'from_date'=>$request->from_date,'to_date'=>$request->to_date]);
+        }
+        catch(\Illuminate\Database\QueryException $ex){
+            return back()->with('errorMessage', $ex->getMessage());
+        }
+    }
+    public function guardReport (Request  $request){
+        try{
+            $washing = DB::table('guard_order')
+                ->select('*','a.name as u_name','a.phone as  u_phone','guard_order.id as c_id')
+                ->join('users as a', 'a.id', '=', 'guard_order.user_id')
+                ->join('users as b', 'b.id', '=', 'guard_order.gurd_id')
+                ->where('a.status', 1)
+                ->where('b.status', 1)
+                ->orderBy('guard_order.id','desc')
+                ->paginate(20);
+            return view('backend.guardReport',['washings' =>$washing]);
+        }
+        catch(\Illuminate\Database\QueryException $ex){
+            return back()->with('errorMessage', $ex->getMessage());
+        }
+    }
+    public function guardReportListByDate (Request  $request){
+        try{
+            $washing = DB::table('guard_order')
+                ->select('*','a.name as u_name','a.phone as  u_phone','guard_order.id as c_id')
+                ->join('users as a', 'a.id', '=', 'guard_order.user_id')
+                ->join('users as b', 'b.id', '=', 'guard_order.gurd_id')
+                ->where('a.status', 1)
+                ->where('b.status', 1)
+                ->whereBetween('date',array($request->from_date,$request->to_date))
+                ->orderBy('guard_order.id','desc')
+                ->paginate(20);
+            return view('backend.guardReport',['washings' =>$washing,'from_date'=>$request->from_date,'to_date'=>$request->to_date]);
+        }
+        catch(\Illuminate\Database\QueryException $ex){
+            return back()->with('errorMessage', $ex->getMessage());
+        }
+    }
+    public function variousServicingReport (Request  $request){
+        try{
+
+            $washing = DB::table('various_servicing_order')
+                ->select('*','a.name as u_name','a.phone as  u_phone','various_servicing_order.name as v_name')
+                ->join('users as a', 'a.id', '=', 'various_servicing_order.user_id')
+                ->join('users as b', 'b.id', '=', 'various_servicing_order.worker')
+                ->where('a.status', 1)
+                ->where('b.status', 1)
+                ->orderBy('various_servicing_order.id','desc')
+                ->paginate(20);
+            return view('backend.variousServicingReport',['washings' =>$washing]);
+        }
+        catch(\Illuminate\Database\QueryException $ex){
+            return back()->with('errorMessage', $ex->getMessage());
+        }
+    }
+    public function laundryReport (Request  $request){
+        try{
+            $washing = DB::table('laundry_order')
+                ->select('*','a.name as u_name','a.phone as  u_phone','laundry_order.id as c_id')
+                ->join('users as a', 'a.id', '=', 'laundry_order.user_id')
+                ->join('users as b', 'b.id', '=', 'laundry_order.cleaner_id')
+                ->where('a.status', 1)
+                ->where('b.status', 1)
+                ->orderBy('laundry_order.id','desc')
+                ->paginate(20);
+            return view('backend.laundryReport',['washings' =>$washing]);
+        }
+        catch(\Illuminate\Database\QueryException $ex){
+            return back()->with('errorMessage', $ex->getMessage());
+        }
+    }
+    public function laundryReportListByDate (Request  $request){
+        try{
+            $washing = DB::table('laundry_order')
+                ->select('*','a.name as u_name','a.phone as  u_phone','laundry_order.id as c_id')
+                ->join('users as a', 'a.id', '=', 'laundry_order.user_id')
+                ->join('users as b', 'b.id', '=', 'laundry_order.cleaner_id')
+                ->where('a.status', 1)
+                ->where('b.status', 1)
+                ->orderBy('laundry_order.id','desc')
+                ->whereBetween('date',array($request->from_date,$request->to_date))
+                ->paginate(20);
+            return view('backend.laundryReport',['washings' =>$washing,'from_date'=>$request->from_date,'to_date'=>$request->to_date]);
+        }
+        catch(\Illuminate\Database\QueryException $ex){
+            return back()->with('errorMessage', $ex->getMessage());
+        }
+    }
+    public function getLaundryWashingById(Request $request){
+        $output = array('list'=>'');
+        $orders = DB::table('laundry_order')
+            ->where('id',  $request->id)
+            ->first();
+        $cloth_id = json_decode($orders->cloth_id);
+        $quantity = json_decode($orders->quantity);
+        $i =0;
+        foreach ($quantity as $q){
+            $quantity_arr[$i] =$q;
+            $i++;
+        }
+        for($i=0; $i<count($cloth_id); $i++){
+            $cloth = DB::table('laundry')
+                ->select('*')
+                ->where('id',  $cloth_id[$i])
+                ->first();
+            $output['list'] .= "
+                    <tr class='prepend_items'>
+                        <td>".$cloth->name."</td>
+                        <td>".$quantity_arr[$i]."</td>
+                    </tr>
+                ";
+        }
+        return response()->json(array('data'=>$output));
+    }
+    public function parlorReport  (Request  $request){
+        try{
+            $washing = DB::table('parlor_order')
+                ->select('*','a.name as u_name','a.phone as  u_phone','parlor_order.name as v_name')
+                ->join('users as a', 'a.id', '=', 'parlor_order.user_id')
+                ->join('users as b', 'b.id', '=', 'parlor_order.parlor_id')
+                ->where('a.status', 1)
+                ->where('b.status', 1)
+                ->orderBy('parlor_order.id','desc')
+                ->paginate(20);
+            return view('backend.parlorReport',['washings' =>$washing]);
+        }
+        catch(\Illuminate\Database\QueryException $ex){
+            return back()->with('errorMessage', $ex->getMessage());
+        }
+    }
+    public function parlorReportListByDate  (Request  $request){
+        try{
+            $washing = DB::table('parlor_order')
+                ->select('*','a.name as u_name','a.phone as  u_phone','parlor_order.name as v_name')
+                ->join('users as a', 'a.id', '=', 'parlor_order.user_id')
+                ->join('users as b', 'b.id', '=', 'parlor_order.parlor_id')
+                ->where('a.status', 1)
+                ->where('b.status', 1)
+                ->whereBetween('date',array($request->from_date,$request->to_date))
+                ->orderBy('parlor_order.id','desc')
+                ->paginate(20);
+            return view('backend.parlorReport',['washings' =>$washing,'from_date'=>$request->from_date,'to_date'=>$request->to_date]);
+        }
+        catch(\Illuminate\Database\QueryException $ex){
+            return back()->with('errorMessage', $ex->getMessage());
+        }
+    }
+
 }

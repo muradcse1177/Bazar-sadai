@@ -40,28 +40,28 @@
                 <div class="divform">
                     <div class="box-body">
                         <center>
-                            @if($users['info']->working_status == 1 || $users['info']->working_status == 4 || $users['info']->working_status == 0)
-                                <input class="form-check-input w_status" type="radio" name="w_status" id="notwork" value="0"  @if($users['info']->working_status == 0) {{'checked'}} @endif>
+                            @if(@$users['info']->working_status == 1 || @$users['info']->working_status == 4 || @$users['info']->working_status == 0)
+                                <input class="form-check-input w_status" type="radio" name="w_status" id="notwork" value="0"  @if(@$users['info']->working_status == 0) {{'checked'}} @endif>
                                 <label class="form-check-label" for="notwork">
                                     Not willing to work
                                 </label>&nbsp;&nbsp;
-                                <input class="form-check-input w_status" type="radio" name="w_status" id="free" value="1" @if($users['info']->working_status == 1) {{'checked'}} @endif>
+                                <input class="form-check-input w_status" type="radio" name="w_status" id="free" value="1" @if(@$users['info']->working_status == 1) {{'checked'}} @endif>
                                 <label class="form-check-label" for="free">
                                     Free
                                 </label>&nbsp;&nbsp;
                             @endif
-                            @if($users['info']->working_status == 2)
-                                <input class="form-check-input w_status" type="radio" name="w_status" id="assigned" value="2" @if($users['info']->working_status == 2) {{'checked'}} @endif>
+                            @if(@$users['info']->working_status == 2)
+                                <input class="form-check-input w_status" type="radio" name="w_status" id="assigned" value="2" @if(@$users['info']->working_status == 2) {{'checked'}} @endif>
                                 <label class="form-check-label" for="free">
                                     Assigned
                                 </label>&nbsp;&nbsp;
-                                <input class="form-check-input w_status" type="radio" name="w_status" id="working" value="3" @if($users['info']->working_status == 3) {{'checked'}} @endif>
+                                <input class="form-check-input w_status" type="radio" name="w_status" id="working" value="3" @if(@$users['info']->working_status == 3) {{'checked'}} @endif>
                                 <label class="form-check-label" for="working">
                                     Start
                                 </label>&nbsp;&nbsp;
                             @endif
-                            @if($users['info']->working_status == 3)
-                                <input class="form-check-input w_status" type="radio" name="w_status" id="working" value="3" @if($users['info']->working_status == 3) {{'checked'}} @endif>
+                            @if(@$users['info']->working_status == 3)
+                                <input class="form-check-input w_status" type="radio" name="w_status" id="working" value="3" @if(@$users['info']->working_status == 3) {{'checked'}} @endif>
                                 <label class="form-check-label" for="working">
                                     Start
                                 </label>&nbsp;&nbsp;

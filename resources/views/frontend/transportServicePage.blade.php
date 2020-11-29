@@ -64,6 +64,10 @@
                         <label class="form-check-label" for="ambulance">
                             এম্বুলেন্স
                         </label>
+                       <input class="form-check-input" type="radio" name="paribahanGroup" id="truck" value="Truck">
+                        <label class="form-check-label" for="truck">
+                            ট্রাক
+                        </label>
                    </center>
                 </div>
                 <div class="ticketGroup" style="display: none;">
@@ -524,7 +528,7 @@
         $(".co_namePostPri,.uni_namePostPri").change(function(){
             $(".serviceAreaPrivate").show();
         });
-        $("#private, #micro, #ambulance").click(function(){
+        $("#private, #micro, #ambulance,#truck").click(function(){
             var parVal =  $('input[name="paribahanGroup"]:checked').val();
             $(".motorDiv").hide();
             $(".privateDiv").show();

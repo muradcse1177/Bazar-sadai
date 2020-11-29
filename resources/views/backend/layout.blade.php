@@ -212,7 +212,7 @@
                 @if(Cookie::get('user_type') != 12)
                 <li class="header">রিপোর্ট</li>
                 @endif
-                @if(Cookie::get('user_type') == 17||Cookie::get('user_type') == 18||Cookie::get('user_type') == 19||Cookie::get('user_type') == 20)
+                @if(Cookie::get('user_type') == 17||Cookie::get('user_type') == 18||Cookie::get('user_type') == 19||Cookie::get('user_type') == 20||Cookie::get('user_type') == 32)
                     <li class="@yield('riderServiceArea')">
                         <a href ="{{ url('riderServiceArea') }}" >
                             <i class="fa fa-car"></i> <span>আমার সার্ভিস এরিয়া</span>
@@ -264,6 +264,90 @@
                     <li class="@yield('dealerProfile')">
                         <a href ="{{ url('dealerProfile') }}" >
                             <i class="fa fa-shopping-basket"></i> <span>আমার পণ্য</span>
+                        </a>
+                    </li>
+                @endif
+                @if(Cookie::get('user_type') == 16)
+                    <li class="@yield('cookerProfile')">
+                        <a href ="{{ url('cookerProfile') }}" >
+                            <i class="fa fa-dashboard"></i> <span>আমার প্রোফাইল</span>
+                        </a>
+                    </li>
+                @endif
+                @if(Cookie::get('user_type') == 21)
+                    <li class="@yield('clothCleanerProfile')">
+                        <a href ="{{ url('clothCleanerProfile') }}" >
+                            <i class="fa fa-dashboard"></i> <span>আমার প্রোফাইল</span>
+                        </a>
+                    </li>
+                @endif
+                @if(Cookie::get('user_type') == 22)
+                    <li class="@yield('laundryProfile')">
+                        <a href ="{{ url('laundryProfile') }}" >
+                            <i class="fa fa-dashboard"></i> <span>আমার প্রোফাইল</span>
+                        </a>
+                    </li>
+                @endif
+                @if(Cookie::get('user_type') == 23)
+                    <li class="@yield('roomCleanerProfile')">
+                        <a href ="{{ url('roomCleanerProfile') }}" >
+                            <i class="fa fa-dashboard"></i> <span>আমার প্রোফাইল</span>
+                        </a>
+                    </li>
+                @endif
+                @if(Cookie::get('user_type') == 24)
+                    <li class="@yield('tankCleanerProfile')">
+                        <a href ="{{ url('tankCleanerProfile') }}" >
+                            <i class="fa fa-dashboard"></i> <span>আমার প্রোফাইল</span>
+                        </a>
+                    </li>
+                @endif
+                @if(Cookie::get('user_type') == 25)
+                    <li class="@yield('helpingHandProfile')">
+                        <a href ="{{ url('helpingHandProfile') }}" >
+                            <i class="fa fa-dashboard"></i> <span>আমার প্রোফাইল</span>
+                        </a>
+                    </li>
+                @endif
+                @if(Cookie::get('user_type') == 26)
+                    <li class="@yield('guardProfile')">
+                        <a href ="{{ url('guardProfile') }}" >
+                            <i class="fa fa-dashboard"></i> <span>আমার প্রোফাইল</span>
+                        </a>
+                    </li>
+                @endif
+                @if(Cookie::get('user_type') == 27)
+                    <li class="@yield('stoveProfile')">
+                        <a href ="{{ url('stoveProfile') }}" >
+                            <i class="fa fa-dashboard"></i> <span>আমার প্রোফাইল</span>
+                        </a>
+                    </li>
+                @endif
+                @if(Cookie::get('user_type') == 28)
+                    <li class="@yield('electronicsProfile')">
+                        <a href ="{{ url('electronicsProfile') }}" >
+                            <i class="fa fa-dashboard"></i> <span>আমার প্রোফাইল</span>
+                        </a>
+                    </li>
+                @endif
+                @if(Cookie::get('user_type') == 29)
+                    <li class="@yield('sanitaryProfile')">
+                        <a href ="{{ url('sanitaryProfile') }}" >
+                            <i class="fa fa-dashboard"></i> <span>আমার প্রোফাইল</span>
+                        </a>
+                    </li>
+                @endif
+                @if(Cookie::get('user_type') == 30)
+                    <li class="@yield('acProfile')">
+                        <a href ="{{ url('acProfile') }}" >
+                            <i class="fa fa-dashboard"></i> <span>আমার প্রোফাইল</span>
+                        </a>
+                    </li>
+                @endif
+                @if(Cookie::get('user_type') == 31)
+                    <li class="@yield('parlorProfile')">
+                        <a href ="{{ url('parlorProfile') }}" >
+                            <i class="fa fa-dashboard"></i> <span>আমার প্রোফাইল</span>
                         </a>
                     </li>
                 @endif
@@ -385,6 +469,46 @@
                 <li class="@yield('courierReport')">
                     <a href="{{ url('courierReport') }}">
                         <i class="fa fa-car"></i> <span>কুরিয়ার রিপোর্ট</span>
+                    </a>
+                </li>
+                <li class="@yield('cookingReport')">
+                    <a href="{{ url('cookingReport') }}">
+                        <i class="fa fa-dashboard"></i> <span>কুকিং রিপোর্ট</span>
+                    </a>
+                </li>
+                <li class="@yield('clothWashingReport')">
+                    <a href="{{ url('clothWashingReport') }}">
+                        <i class="fa fa-dashboard"></i> <span>কাপড় পরিষ্কার রিপোর্ট</span>
+                    </a>
+                </li>
+                <li class="@yield('laundryReport')">
+                    <a href="{{ url('laundryReport') }}">
+                        <i class="fa fa-dashboard"></i> <span>লন্ড্রি রিপোর্ট</span>
+                    </a>
+                </li>
+                <li class="@yield('roomCleaningReport')">
+                    <a href="{{ url('roomCleaningReport') }}">
+                        <i class="fa fa-dashboard"></i> <span>রুম/ ওয়াশরুম/ ট্যাঙ্ক রিপোর্ট</span>
+                    </a>
+                </li>
+                <li class="@yield('helpingHandReport')">
+                    <a href="{{ url('helpingHandReport') }}">
+                        <i class="fa fa-dashboard"></i> <span>বাচ্চা/ কাজে সহায়তা রিপোর্ট</span>
+                    </a>
+                </li>
+                <li class="@yield('guardReport')">
+                    <a href="{{ url('guardReport') }}">
+                        <i class="fa fa-dashboard"></i> <span>গার্ড রিপোর্ট</span>
+                    </a>
+                </li>
+                <li class="@yield('variousServicingReport')">
+                    <a href="{{ url('variousServicingReport') }}">
+                        <i class="fa fa-dashboard"></i> <span>বিভিন্ন সার্ভিসিং রিপোর্ট</span>
+                    </a>
+                </li>
+                <li class="@yield('parlorReport')">
+                    <a href="{{ url('parlorReport') }}">
+                        <i class="fa fa-dashboard"></i> <span>পার্লর রিপোর্ট</span>
                     </a>
                 </li>
                 <li class="@yield('donationReportBackend')">
@@ -725,6 +849,7 @@
                                         <li class ="@yield('guardSetting')"><a href="{{ url('guardSetting') }}"><i class="fa fa-circle-o"></i>গার্ড</a></li>
                                         <li class ="@yield('variousServicing')"><a href="{{ url('variousServicing') }}"><i class="fa fa-circle-o"></i> বিভিন্ন সার্ভিসিং</a></li>
                                         <li class ="@yield('parlorService')"><a href="{{ url('parlorService') }}"><i class="fa fa-circle-o"></i>পার্লার সার্ভিস</a></li>
+                                        <li class ="@yield('laundryService')"><a href="{{ url('laundryService') }}"><i class="fa fa-circle-o"></i>লন্ড্রি সার্ভিস</a></li>
                                     </ul>
                                 </li>
                             </ul>

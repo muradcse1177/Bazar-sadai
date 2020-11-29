@@ -1,4 +1,6 @@
 <?php
+
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
@@ -178,6 +180,23 @@ Route::group(['middleware' => ['adminUser']], function () {
     Route::post('transportListByDate', 'backend\ReportController@transportListByDate');
     Route::get('courierReport', 'backend\ReportController@courierReport');
     Route::post('courierListByDate', 'backend\ReportController@courierListByDate');
+    Route::get('cookingReport', 'backend\ReportController@cookingReport');
+    Route::post('cookingReportListByDate', 'backend\ReportController@cookingReportListByDate');
+    Route::get('clothWashingReport', 'backend\ReportController@clothWashingReport');
+    Route::post('getClothWashingById', 'backend\ReportController@getClothWashingById');
+    Route::post('clothWashingReportListByDate', 'backend\ReportController@clothWashingReportListByDate');
+    Route::get('roomCleaningReport', 'backend\ReportController@roomCleaningReport');
+    Route::post('cleaningReportListByDate', 'backend\ReportController@cleaningReportListByDate');
+    Route::get('helpingHandReport', 'backend\ReportController@helpingHandReport');
+    Route::post('helpingHandReportListByDate', 'backend\ReportController@helpingHandReportListByDate');
+    Route::get('guardReport', 'backend\ReportController@guardReport');
+    Route::post('guardReportListByDate', 'backend\ReportController@guardReportListByDate');
+    Route::get('variousServicingReport', 'backend\ReportController@variousServicingReport');
+    Route::get('laundryReport', 'backend\ReportController@laundryReport');
+    Route::post('getLaundryWashingById', 'backend\ReportController@getLaundryWashingById');
+    Route::post('laundryReportListByDate', 'backend\ReportController@laundryReportListByDate');
+    Route::get('parlorReport', 'backend\ReportController@parlorReport');
+    Route::post('parlorReportListByDate', 'backend\ReportController@parlorReportListByDate');
 //Accounting
     Route::get('accounting', 'backend\ReportController@accounting');
     Route::post('insertAccounting', 'backend\ReportController@insertAccounting');
@@ -297,6 +316,11 @@ Route::group(['middleware' => ['adminUser']], function () {
     Route::post('insertVariousServicing', 'backend\HomeAssistantController@insertVariousServicing');
     Route::post('getVariousServiceById', 'backend\HomeAssistantController@getVariousServiceById');
     Route::post('deleteVariousService', 'backend\HomeAssistantController@deleteVariousService');
+    //Laundry
+    Route::get('laundryService', 'backend\HomeAssistantController@laundryService');
+    Route::post('insertLaundry', 'backend\HomeAssistantController@insertLaundry');
+    Route::post('getLaundryById', 'backend\HomeAssistantController@getLaundryById');
+    Route::post('deleteLaundry', 'backend\HomeAssistantController@deleteLaundry');
 //courier
     Route::get('courierType', 'backend\TransportController@courierType');
     Route::post('insertCourierType', 'backend\TransportController@insertCourierType');
@@ -313,12 +337,23 @@ Route::group(['middleware' => ['buyer']], function () {
     Route::get('profile', 'frontend\AuthController@profile');
     Route::post('getUserListByIdProfile', 'backend\UserController@getUserListByID');
     Route::get('myProductOrder', 'backend\UserController@myProductOrder');
+    Route::get('myVariousProductOrderUser', 'backend\UserController@myVariousProductOrderUser');
     Route::get('myAnimalOrder', 'backend\UserController@myAnimalOrder');
     Route::get('myTicketOrder', 'backend\UserController@myTicketOrder');
     Route::get('myDrAppointment', 'backend\UserController@myDrAppointment');
     Route::get('myTherapyAppointment', 'backend\UserController@myTherapyAppointment');
     Route::get('myDiagnosticAppointment', 'backend\UserController@myDiagnosticAppointment');
-    Route::get('myVariousProductOrder', 'backend\UserController@myVariousProductOrder');
+    Route::get('myTransportOrder', 'backend\UserController@myTransportOrder');
+    Route::get('myCookingOrder', 'backend\UserController@myCookingOrder');
+    Route::get('myClothWashingOrder', 'backend\UserController@myClothWashingOrder');
+    Route::post('getClothWashingByIdUser', 'backend\UserController@getClothWashingByIdUser');
+    Route::get('myRoomCleaningOrder', 'backend\UserController@myRoomCleaningOrder');
+    Route::get('myHelpingHandOrder', 'backend\UserController@myHelpingHandOrder');
+    Route::get('myGuardOrder', 'backend\UserController@myGuardOrder');
+    Route::get('myProductServicingOrder', 'backend\UserController@myProductServicingOrder');
+    Route::get('myLaundryOrder', 'backend\UserController@myLaundryOrder');
+    Route::post('getLaundryWashingByIdUser', 'backend\UserController@getLaundryWashingByIdUser');
+    Route::get('myParlorOrder', 'backend\UserController@myParlorOrder');
 });
 Route::group(['middleware' => ['deliveryMan']], function () {
     Route::get('deliveryProfile', 'backend\UserController@deliveryProfile');
@@ -355,6 +390,48 @@ Route::group(['middleware' => ['doctor']], function () {
     Route::get('changeLocalDoctorStatus', 'backend\DoctorController@changeLocalDoctorStatus');
 });
 
+Route::group(['middleware' => ['cooker']], function () {
+    Route::get('cookerProfile', 'backend\CookerController@cookerProfile');
+});
+Route::group(['middleware' => ['clothCleaner']], function () {
+    Route::get('clothCleanerProfile', 'backend\ClothCleanerController@clothCleanerProfile');
+    Route::post('getClothWashingByIdOwn', 'backend\ClothCleanerController@getClothWashingByIdOwn');
+});
+Route::group(['middleware' => ['roomCleaner']], function () {
+    Route::get('roomCleanerProfile', 'backend\RoomCleanerController@roomCleanerProfile');
+});
+Route::group(['middleware' => ['tankCleaner']], function () {
+    Route::get('tankCleanerProfile', 'backend\TankCleanerController@tankCleanerProfile');
+});
+Route::group(['middleware' => ['helpingHand']], function () {
+    Route::get('helpingHandProfile', 'backend\HelpingHandController@helpingHandProfile');
+});
+Route::group(['middleware' => ['guard']], function () {
+    Route::get('guardProfile', 'backend\GuardController@guardProfile');
+});
+Route::group(['middleware' => ['stove']], function () {
+    Route::get('stoveProfile', 'backend\StoveController@stoveProfile');
+});
+Route::group(['middleware' => ['electronics']], function () {
+    Route::get('electronicsProfile', 'backend\ElectronicsController@electronicsProfile');
+});
+Route::group(['middleware' => ['sanitary']], function () {
+    Route::get('sanitaryProfile', 'backend\SanitaryController@sanitaryProfile');
+});
+Route::group(['middleware' => ['ac']], function () {
+    Route::get('acProfile', 'backend\AcController@acProfile');
+});
+Route::group(['middleware' => ['parlor']], function () {
+    Route::get('parlorProfile', 'backend\ParlorController@parlorProfile');
+});
+Route::group(['middleware' => ['laundry']], function () {
+    Route::get('laundryProfile', 'backend\LaundryController@laundryProfile');
+    Route::post('getLaundryWashingByIdOwn', 'backend\LaundryController@getLaundryWashingByIdOwn');
+});
+    Route::get('/clear-cache', function() {
+        $exitCode = Artisan::call('cache:clear');
+        // return what you want
+    });
     //Signup
     Route::get('signup', function () {
         return view('frontend.signup');
@@ -385,6 +462,42 @@ Route::group(['middleware' => ['doctor']], function () {
     }
     elseif(Cookie::get('doctor') != null){
         Route::get('/', 'backend\DoctorController@doctorServiceArea');
+    }
+    elseif(Cookie::get('cooker') != null){
+        Route::get('/', 'backend\CookerController@cookerProfile');
+    }
+    elseif(Cookie::get('clothCleaner') != null){
+        Route::get('/', 'backend\ClothCleanerController@clothCleanerProfile');
+    }
+    elseif(Cookie::get('roomCleaner') != null){
+        Route::get('/', 'backend\RoomCleanerController@roomCleanerProfile');
+    }
+    elseif(Cookie::get('tankCleaner') != null){
+        Route::get('/', 'backend\TankCleanerController@tankCleanerProfile');
+    }
+    elseif(Cookie::get('helpingHand') != null){
+        Route::get('/', 'backend\HelpingHandController@helpingHandProfile');
+    }
+    elseif(Cookie::get('guard') != null){
+        Route::get('/', 'backend\GuardController@guardProfile');
+    }
+    elseif(Cookie::get('stove') != null){
+        Route::get('stoveProfile', 'backend\StoveController@stoveProfile');
+    }
+    elseif(Cookie::get('electronics') != null){
+        Route::get('electronicsProfile', 'backend\ElectronicsController@electronicsProfile');
+    }
+    elseif(Cookie::get('sanitary') != null){
+        Route::get('sanitaryProfile', 'backend\SanitaryController@sanitaryProfile');
+    }
+    elseif(Cookie::get('ac') != null){
+        Route::get('acProfile', 'backend\AcController@acProfile');
+    }
+    elseif(Cookie::get('parlor') != null){
+        Route::get('parlorProfile', 'backend\ParlorController@parlorProfile');
+    }
+    elseif(Cookie::get('laundry') != null){
+        Route::get('laundryProfile', 'backend\LaundryController@laundryProfile');
     }
     else{
         Route::get('/', 'frontend\FrontController@homepageManager');
@@ -535,5 +648,9 @@ Route::group(['middleware' => ['doctor']], function () {
     Route::get('getAllCourierCost', 'frontend\TransportController@getAllCourierCost');
     Route::get('getAllCourierCostBd', 'frontend\TransportController@getAllCourierCostBd');
     Route::post('insertCourierBooking', 'frontend\TransportController@insertCourierBooking');
+
+    Route::get('laundryServicePage', 'frontend\HomeAssistantController@laundryServicePage');
+    Route::get('getLaundryPriceByIdFront', 'frontend\HomeAssistantController@getLaundryPriceByIdFront');
+    Route::post('laundryBookingFront', 'frontend\HomeAssistantController@laundryBookingFront');
 //Payment Gateway
     Route::post('getPaymentCartView', 'frontend\PaymentController@getPaymentCartView');

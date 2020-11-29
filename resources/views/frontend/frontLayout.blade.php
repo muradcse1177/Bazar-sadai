@@ -149,6 +149,12 @@
         .skin-blue .main-header li.user-header {
             background-color: darkgreen;
         }
+        .container {
+            padding-right: 15px;
+            padding-left: 15px;
+            margin-right: auto;
+            margin-left: auto;
+        }
     </style>
     @yield('ExtCss')
 </head>
@@ -183,25 +189,21 @@
                                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-expanded="false">আমার ট্রানজেকশন <span class="caret"></span></a>
                                 <ul class="dropdown-menu" role="menu">
                                     <li><a href="{{url('myProductOrder')}}">পণ্য ক্রয়</a></li>
-                                    <li><a href="{{url('myVariousProductOrder')}}">হরেক রকম পণ্য ক্রয়</a></li>
+                                    <li><a href="{{url('myVariousProductOrderUser')}}">হরেক রকম পণ্য ক্রয়</a></li>
                                     <li><a href="{{url('myAnimalOrder')}}">পশু ক্রয়</a></li>
                                     <li><a href="{{url('myTicketOrder')}}">টিকেট ক্রয়</a></li>
                                     <li><a href="{{url('myDrAppointment')}}">ডাক্তার এপয়েনমেনট</a></li>
                                     <li><a href="{{url('myTherapyAppointment')}}">থেরাপি এপয়েনমেনট</a></li>
                                     <li><a href="{{url('myDiagnosticAppointment')}}">ডায়াগনস্টিক এপয়েনমেনট</a></li>
-                                </ul>
-                            </li>
-                        @endif
-                        @if(Cookie::get('user_type') == 5)
-                            <li class="dropdown">
-                                <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-expanded="false">আমার ট্রানজেকশন <span class="caret"></span></a>
-                                <ul class="dropdown-menu" role="menu">
-                                    <li><a href="{{url('myProductOrder')}}">পণ্য ক্রয়</a></li>
-                                    <li><a href="{{url('myAnimalOrder')}}">পশু ক্রয়</a></li>
-                                    <li><a href="{{url('myTicketOrder')}}">টিকেট ক্রয়</a></li>
-                                    <li><a href="{{url('myDrAppointment')}}">ডাক্তার এপয়েনমেনট</a></li>
-                                    <li><a href="{{url('myTherapyAppointment')}}">থেরাপি এপয়েনমেনট</a></li>
-                                    <li><a href="{{url('myDiagnosticAppointment')}}">ডায়াগনস্টিক এপয়েনমেনট</a></li>
+                                    <li><a href="{{url('myTransportOrder')}}">পরিবহন অর্ডার</a></li>
+                                    <li><a href="{{url('myCookingOrder')}}">কুকিং অর্ডার</a></li>
+                                    <li><a href="{{url('myClothWashingOrder')}}">কাপড় পরিষ্কার অর্ডার</a></li>
+                                    <li><a href="{{url('myRoomCleaningOrder')}}">রুম/ওয়াশরুম/ট্যাং পরিষ্কার অর্ডার</a></li>
+                                    <li><a href="{{url('myHelpingHandOrder')}}">বাচ্চা দেখাশুনা ও কাজে সহায়তা অর্ডার</a></li>
+                                    <li><a href="{{url('myGuardOrder')}}">গার্ড অর্ডার</a></li>
+                                    <li><a href="{{url('myProductServicingOrder')}}">পণ্য সার্ভিসিং অর্ডার</a></li>
+                                    <li><a href="{{url('myLaundryOrder')}}">লন্ড্রি অর্ডার</a></li>
+                                    <li><a href="{{url('myParlorOrder')}}">পার্লার সার্ভিস অর্ডার</a></li>
                                 </ul>
                             </li>
                         @endif

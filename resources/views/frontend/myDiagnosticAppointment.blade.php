@@ -35,6 +35,7 @@
                                     <th>পেশেন্ট নাম</th>
                                     <th>পেশেন্ট ফোন</th>
                                     <th>পেশেন্ট বয়স</th>
+                                    <th>সিরিয়াল</th>
                                     <th>ঠিকানা</th>
                                     <th>সমস্যা</th>
                                     <th>ফিস</th>
@@ -54,6 +55,7 @@
                                         <td> {{$diagnosticReport->patient_name}} </td>
                                         <td> {{$diagnosticReport->phone}} </td>
                                         <td> {{$diagnosticReport->age}} </td>
+                                        <td> {{$diagnosticReport->serial}} </td>
                                         <td> {{$diagnosticReport->address}} </td>
                                         <td> {{$diagnosticReport->problem}} </td>
                                         <td> {{$diagnosticReport->price.'/-'}} </td>

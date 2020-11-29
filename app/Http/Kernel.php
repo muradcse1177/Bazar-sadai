@@ -71,5 +71,17 @@ class Kernel extends HttpKernel
         'dealer' => \App\Http\Middleware\dealer::class,
         'rider' => \App\Http\Middleware\rider::class,
         'doctor' => \App\Http\Middleware\doctor::class,
+        'cooker' => \App\Http\Middleware\cooker::class,
+        'clothCleaner' => \App\Http\Middleware\clothCleaner::class,
+        'roomCleaner' => \App\Http\Middleware\roomCleaner::class,
+        'tankCleaner' => \App\Http\Middleware\tankCleaner::class,
+        'helpingHand' => \App\Http\Middleware\helpingHand::class,
+        'guard' => \App\Http\Middleware\guard::class,
+        'stove' => \App\Http\Middleware\stove::class,
+        'electronics' => \App\Http\Middleware\electronics::class,
+        'sanitary' => \App\Http\Middleware\sanitary::class,
+        'ac' => \App\Http\Middleware\ac::class,
+        'parlor' => \App\Http\Middleware\parlor::class,
+        'laundry' => \App\Http\Middleware\laundry::class,
     ];
 }

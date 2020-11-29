@@ -35,6 +35,7 @@
                                     <th>পেশেন্ট নাম</th>
                                     <th>পেশেন্ট ফোন</th>
                                     <th>পেশেন্ট বয়স</th>
+                                    <th>সিরিয়াল</th>
                                     <th>ঠিকানা</th>
                                     <th>সমস্যা</th>
                                     <th>ফিস</th>
@@ -53,6 +54,7 @@
                                         <td> {{$therapyReport->patient_name}} </td>
                                         <td> {{$therapyReport->phone}} </td>
                                         <td> {{$therapyReport->age}} </td>
+                                        <td> {{$therapyReport->serial}} </td>
                                         <td> {{$therapyReport->address}} </td>
                                         <td> {{$therapyReport->problem}} </td>
                                         <td> {{$therapyReport->price.'/-'}} </td>

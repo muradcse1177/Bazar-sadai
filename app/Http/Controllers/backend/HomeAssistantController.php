@@ -644,4 +644,88 @@ class HomeAssistantController extends Controller
             return back()->with('errorMessage', $ex->getMessage());
         }
     }
+    public function laundryService(){
+        $rows = DB::table('laundry')
+            ->orderBy('id', 'DESC')->Paginate(20);
+        return view('backend.laundryService', ['cloths' => $rows]);
+    }
+    public function insertLaundry(Request $request){
+        try{
+            if($request) {
+                if($request->id) {
+                    $result =DB::table('laundry')
+                        ->where('id', $request->id)
+                        ->update([
+                            'name' => $request->name,
+                            'price' => $request->price,
+                        ]);
+                    if ($result) {
+                        return back()->with('successMessage', 'সফল্ভাবে সম্পন্ন্য হয়েছে।');
+                    } else {
+                        return back()->with('errorMessage', 'আবার চেষ্টা করুন।');
+                    }
+                }
+                else{
+                    $rows = DB::table('laundry')->select('id')->where([
+                        ['name', '=', $request->name],
+                    ])->where('status', 1)->distinct()->get()->count();
+                    if ($rows > 0) {
+                        return back()->with('errorMessage', ' নতুন আইটেম লিখুন।');
+                    } else {
+                        $result = DB::table('laundry')->insert([
+                            'name' => $request->name,
+                            'price' => $request->price,
+                        ]);
+                        if ($result) {
+                            return back()->with('successMessage', 'সফল্ভাবে সম্পন্ন্য হয়েছে।');
+                        } else {
+                            return back()->with('errorMessage', 'আবার চেষ্টা করুন।');
+                        }
+                    }
+                }
+            }
+            else{
+                return back()->with('errorMessage', 'ফর্ম পুরন করুন।');
+            }
+        }
+        catch(\Illuminate\Database\QueryException $ex){
+            return back()->with('errorMessage', $ex->getMessage());
+        }
+    }
+    public function getLaundryById(Request $request){
+        try{
+            $rows = DB::table('laundry')
+                ->where('id', $request->id)
+                ->where('status', 1)
+                ->first();
+            return response()->json(array('data'=>$rows));
+        }
+        catch(\Illuminate\Database\QueryException $ex){
+            return response()->json(array('data'=>$ex->getMessage()));
+        }
+    }
+    public function deleteLaundry(Request $request){
+        try{
+
+            if($request->id) {
+                $result =DB::table('laundry')
+                    ->where('id', $request->id)
+                    ->update([
+                        'status' =>  0,
+                    ]);
+                if ($result) {
+                    return back()->with('successMessage', 'সফল্ভাবে সম্পন্ন্য হয়েছে।');
+                } else {
+                    return back()->with('errorMessage', 'আবার চেষ্টা করুন।');
+                }
+            }
+            else{
+                return back()->with('errorMessage', 'আবার চেষ্টা করুন।');
+            }
+
+        }
+        catch(\Illuminate\Database\QueryException $ex){
+            return back()->with('errorMessage', $ex->getMessage());
+        }
+    }
 }

@@ -17,7 +17,7 @@
         </div>
     @endif
     <?php
-        $url_arr = array("cookingPageFront", "clothWashingPage", "cleaningPage","helpingHandPage","guardPage","productServicingPage","parlorServicingPage");
+        $url_arr = array("cookingPageFront", "clothWashingPage", "cleaningPage","helpingHandPage","guardPage","productServicingPage","parlorServicingPage",'laundryServicePage');
         $i=0;
     ?>
     <div class="row">

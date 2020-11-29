@@ -138,7 +138,68 @@ class MedicalServiceController extends Controller
                     'price' => $request->fees,
                 ]);
                 if ($result) {
-                    return back()->with('successMessage', 'সফল্ভাবে সম্পন্ন্য হয়েছে।');
+                    $lastId = DB::getPdo()->lastInsertId();
+                    $rows = DB::table('doctors')
+                        ->join('users', 'users.id', '=', 'doctors.doctor_id')
+                        ->where('users.id', $request->dr_id)
+                        ->first();
+                    if($rows->in_timezone == 'AM'){
+                        $inTime = $rows->in_time;
+                    }
+                    if($rows->in_timezone == 'PM'){
+                        $inTime = $rows->in_time+12;
+                    }
+                    if($rows->out_timezone == 'AM'){
+                        $outTime = $rows->out_time;
+                    }
+                    if($rows->out_timezone == 'PM'){
+                        $outTime = $rows->out_time+12;
+                    }
+                    $timeDifference = $outTime - $inTime;
+                    $timSlot =15;
+                    $totalSerial = ($timeDifference*60)/$timSlot;
+                    $rowsDr = DB::table('dr_apportionment')
+                        ->where('dr_id', $request->dr_id)
+                        ->where('type', $request->type)
+                        ->where('date', $request->date)
+                        ->orderBy('id','desc')
+                        ->skip(1)
+                        ->take(1)
+                        ->first();
+
+                    if(!empty($rowsDr->serial)){
+                        $currSerial = $rowsDr->serial+1;
+                    }
+                    else{
+                        $currSerial = 1;
+                    }
+                    $timeMode = $currSerial % 4;
+                    $hour = (int) floor( $currSerial/4);
+                    $totalHour = $inTime+$hour;
+                    if($timeMode == 1){
+                        $totalMinutes = 15;
+                    }
+                    if($timeMode == 2){
+                        $totalMinutes = 30;
+                    }
+                    if($timeMode == 3){
+                        $totalMinutes = 45;
+                    }
+                    if($timeMode == 0){
+                        $totalMinutes = '00';
+                    }
+                    $result =DB::table('dr_apportionment')
+                        ->where('id', $lastId)
+                        ->update([
+                            'serial' =>  $currSerial,
+                            'time' =>  $totalHour.':'.$totalMinutes,
+                        ]);
+                    if($result){
+                        return back()->with('successMessage', 'ডাক্তার এর ফোন নাম্বারঃ '.$rows->phone.' ভিডিও কল করতে পারেন অথবা কল করতে পারেন।আপনার সিরিয়াল নম্বর:'. $currSerial. ' আপনার ভিসিট টাইম আনুমানিক: '.$totalHour.':'.$totalMinutes);
+                    }
+                    else{
+                        return back()->with('errorMessage', 'আবার চেষ্টা করুন।');
+                    }
                 } else {
                     return back()->with('errorMessage', 'আবার চেষ্টা করুন।');
                 }
@@ -229,7 +290,31 @@ class MedicalServiceController extends Controller
                     'price' => $request->fees,
                 ]);
                 if ($result) {
-                    return back()->with('successMessage', 'সফল্ভাবে সম্পন্ন্য হয়েছে।');
+                    $lastId = DB::getPdo()->lastInsertId();
+                    $rowsDr = DB::table('therapy_appointment')
+                        ->where('therapy_fees_id', $request->tf_id)
+                        ->where('date', $request->date)
+                        ->orderBy('id','desc')
+                        ->skip(1)
+                        ->take(1)
+                        ->first();
+                    if(!empty($rowsDr->serial)){
+                        $currSerial = $rowsDr->serial+1;
+                    }
+                    else{
+                        $currSerial = 1;
+                    }
+                    $result =DB::table('therapy_appointment')
+                        ->where('id', $lastId)
+                        ->update([
+                            'serial' =>  $currSerial,
+                        ]);
+                    if($result){
+                        return back()->with('successMessage', 'আপনার সিরিয়াল নম্বর: = '. $currSerial. '। প্রতিটি  সিরিয়াল টাইম = '.$request->time.' মিনিট।');
+                    }
+                    else{
+                        return back()->with('errorMessage', 'আবার চেষ্টা করুন।');
+                    }
                 } else {
                     return back()->with('errorMessage', 'আবার চেষ্টা করুন।');
                 }
@@ -284,6 +369,31 @@ class MedicalServiceController extends Controller
                     'price' => $request->fees,
                 ]);
                 if ($result) {
+                    $lastId = DB::getPdo()->lastInsertId();
+                    $rowsDr = DB::table('diagonostic_appointment')
+                        ->where('diagnostic_fees_id', $request->df_id)
+                        ->where('date', $request->date)
+                        ->orderBy('id','desc')
+                        ->skip(1)
+                        ->take(1)
+                        ->first();
+                    if(!empty($rowsDr->serial)){
+                        $currSerial = $rowsDr->serial+1;
+                    }
+                    else{
+                        $currSerial = 1;
+                    }
+                    $result =DB::table('diagonostic_appointment')
+                        ->where('id', $lastId)
+                        ->update([
+                            'serial' =>  $currSerial,
+                        ]);
+                    if($result){
+                        return back()->with('successMessage', 'আপনার সিরিয়াল নম্বর: = '. $currSerial. '। প্রতিটি  সিরিয়াল টাইম = '.$request->time.' মিনিট।');
+                    }
+                    else{
+                        return back()->with('errorMessage', 'আবার চেষ্টা করুন।');
+                    }
                     return back()->with('successMessage', 'সফল্ভাবে সম্পন্ন্য হয়েছে।');
                 } else {
                     return back()->with('errorMessage', 'আবার চেষ্টা করুন।');

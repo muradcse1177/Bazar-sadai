@@ -49,6 +49,10 @@
                             <input type="number" min="1" class="form-control fees" id="fees"  name="fees" placeholder=" ফিস লিখুন" required>
                         </div>
                         <div class="form-group">
+                            <label for="">টেস্ট সময় </label>
+                            <input type="number" min="1" class="form-control time" id="time"  name="time" placeholder=" সময় লিখুন" required>
+                        </div>
+                        <div class="form-group">
                             <label for="">ওপেনিং টাইম </label>
                             <input type="number" class="form-control intime" id="intime"  name="intime" min="0" placeholder="ইন টাইম" required>
                         </div>
@@ -112,6 +116,7 @@
                             <th>ডায়াগনস্টিক নাম </th>
                             <th>ডায়াগনস্টিক সেন্টার </th>
                             <th>ডায়াগনস্টিক ফিস </th>
+                            <th>ডায়াগনস্টিক সময় </th>
                             <th>সময়(শু-শে) </th>
                             <th>টুল</th>
                         </tr>
@@ -120,6 +125,7 @@
                                 <td> {{$diagnosticFeesList->name}} </td>
                                 <td> {{$diagnosticFeesList->center_name}} </td>
                                 <td> {{$diagnosticFeesList->fees}} </td>
+                                <td> {{$diagnosticFeesList->time}} </td>
                                 <td> {{$diagnosticFeesList->intime.''.$diagnosticFeesList->intimezone .'-'.$diagnosticFeesList->outtime.''.$diagnosticFeesList->outtimezone}} </td>
                                 <td class="td-actions text-center">
                                     <button type="button" rel="tooltip" class="btn btn-success edit" data-id="{{$diagnosticFeesList->f_id}}">
@@ -243,6 +249,7 @@
                 success: function(response){
                     var data = response.data;
                     $('.fees').val(data.fees);
+                    $('.time').val(data.time);
                     $('.intime').val(data.intime);
                     $('.intimezone').val(data.intimezone);
                     $('.outtime').val(data.outtime);

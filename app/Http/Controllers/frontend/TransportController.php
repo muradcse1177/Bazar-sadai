@@ -439,6 +439,8 @@ class TransportController extends Controller
             $user_type = 19;
         if($request->transport == 'Ambulance')
             $user_type = 20;
+        if($request->transport == 'Truck')
+            $user_type = 32;
         $user = DB::table('service_area')
             ->where('user_id',Cookie::get('user_id'))
             ->first();
