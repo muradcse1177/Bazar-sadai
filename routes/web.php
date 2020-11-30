@@ -197,6 +197,9 @@ Route::group(['middleware' => ['adminUser']], function () {
     Route::post('laundryReportListByDate', 'backend\ReportController@laundryReportListByDate');
     Route::get('parlorReport', 'backend\ReportController@parlorReport');
     Route::post('parlorReportListByDate', 'backend\ReportController@parlorReportListByDate');
+    Route::get('dealerProductAdmin', 'backend\DealerController@dealerProductAdmin');
+    Route::get('getAllDealerAdmin', 'backend\DealerController@getAllDealerAdmin');
+    Route::post('searchDealerProductsAdmin', 'backend\DealerController@searchDealerProductsAdmin');
 //Accounting
     Route::get('accounting', 'backend\ReportController@accounting');
     Route::post('insertAccounting', 'backend\ReportController@insertAccounting');
@@ -547,7 +550,7 @@ Route::group(['middleware' => ['laundry']], function () {
     Route::get('animalSaleView/{id}', 'frontend\FrontController@animalSaleView');
     Route::get('productSaleView/{id}', 'frontend\FrontController@productSaleView');
     Route::get('animalSales/{id}', 'frontend\FrontController@animalSales');
-    Route::get('productSales/{id}', 'frontend\FrontController@productSales');
+    Route::get('productSales', 'frontend\FrontController@productSales');
     Route::get('searchProduct', 'frontend\FrontController@searchProduct');
     Route::post('deliveryAddress', 'frontend\FrontController@deliveryAddress');
     Route::get('serviceCategory', 'frontend\FrontController@serviceCategory');
@@ -558,7 +561,7 @@ Route::group(['middleware' => ['laundry']], function () {
     Route::get('getAllTransport', 'frontend\TransportController@getAllTransport');
     Route::get('getAllTransportType', 'frontend\TransportController@getAllTransportType');
     Route::get('getAllTransportTime', 'frontend\TransportController@getAllTransportTime');
-    Route::post('insertTransport', 'frontend\TransportController@insertTransport');
+    Route::get('insertTransport', 'frontend\TransportController@insertTransport');
     Route::get('getTransportPrice', 'frontend\TransportController@getTransportPrice');
     Route::get('searchMedicine', 'frontend\FrontController@searchMedicine');
     Route::get('searchMedicineByLetter/{letter}', 'frontend\FrontController@searchMedicineByLetter');
@@ -569,17 +572,17 @@ Route::group(['middleware' => ['laundry']], function () {
     Route::get('getAllMedDepartmentFront', 'backend\MedicalServiceController@getAllMedDepartment');
     Route::post('searchDoctorListFront', 'frontend\MedicalServiceController@searchDoctorListFront');
     Route::get('doctorProfileFront/{id}', 'frontend\MedicalServiceController@doctorProfileFront');
-    Route::post('insertAppointment', 'frontend\MedicalServiceController@insertAppointment');
+    Route::get('insertAppointment', 'frontend\MedicalServiceController@insertAppointment');
     Route::get('therapyServiceForm', 'frontend\MedicalServiceController@therapyServiceForm');
     Route::get('getAllTherapyServiceListFront', 'backend\MedicalServiceController@getAllTherapyServiceList');
     Route::post('searchTherapyListFront', 'frontend\MedicalServiceController@searchTherapyListFront');
     Route::get('therapyAppointmentForm/{id}', 'frontend\MedicalServiceController@therapyAppointmentForm');
-    Route::post('insertTherapyAppointment', 'frontend\MedicalServiceController@insertTherapyAppointment');
+    Route::get('insertTherapyAppointment', 'frontend\MedicalServiceController@insertTherapyAppointment');
     Route::get('diagnosticBookingForm', 'frontend\MedicalServiceController@diagnosticBookingForm');
     Route::get('getAllDiagnosticTest', 'backend\MedicalServiceController@getAllDiagnosticTest');
     Route::post('searchDiagnosticListFront', 'frontend\MedicalServiceController@searchDiagnosticListFront');
     Route::get('diagnosticAppointmentForm/{id}', 'frontend\MedicalServiceController@diagnosticAppointmentForm');
-    Route::post('insertDiagnosticAppointment', 'frontend\MedicalServiceController@insertDiagnosticAppointment');
+    Route::get('insertDiagnosticAppointment', 'frontend\MedicalServiceController@insertDiagnosticAppointment');
     Route::get('changeWorkingStatus', 'frontend\FrontController@changeWorkingStatus');
     Route::get('getAllMedDept ', 'backend\UserController@getAllMedDept');
     Route::get('getHospitalListAll ', 'backend\UserController@getHospitalListAll');
@@ -631,7 +634,7 @@ Route::group(['middleware' => ['laundry']], function () {
     Route::get('localDoctor', 'frontend\MedicalServiceController@localDoctorAppointment');
     Route::post('searchLocalDoctorListFront', 'frontend\MedicalServiceController@searchLocalDoctorListFront');
     Route::get('localDoctorProfileFront/{id}', 'frontend\MedicalServiceController@localDoctorProfileFront');
-    Route::post('insertLocalAppointment', 'frontend\MedicalServiceController@insertLocalAppointment');
+    Route::get('insertLocalAppointment', 'frontend\MedicalServiceController@insertLocalAppointment');
 
     Route::get('getAllNaming1Front', 'backend\AddressController@getAllNaming1');
     Route::get('getNaming2ListAllFront', 'backend\AddressController@getNaming2ListAll');
@@ -652,5 +655,22 @@ Route::group(['middleware' => ['laundry']], function () {
     Route::get('laundryServicePage', 'frontend\HomeAssistantController@laundryServicePage');
     Route::get('getLaundryPriceByIdFront', 'frontend\HomeAssistantController@getLaundryPriceByIdFront');
     Route::post('laundryBookingFront', 'frontend\HomeAssistantController@laundryBookingFront');
+
+
+
 //Payment Gateway
     Route::post('getPaymentCartView', 'frontend\PaymentController@getPaymentCartView');
+    Route::get('paymentFromVariousMarket/{id}', 'frontend\PaymentController@paymentFromVariousMarket');
+    Route::post('insertTicketPayment', 'frontend\PaymentController@insertTicketPayment');
+    Route::post('insertDrAppointmentPayment', 'frontend\PaymentController@insertDrAppointmentPayment');
+    Route::post('insertTherapyAppointmentPayment', 'frontend\PaymentController@insertTherapyAppointmentPayment');
+    Route::post('insertDiagnosticAppointmentPayment', 'frontend\PaymentController@insertDiagnosticAppointmentPayment');
+    Route::post('insertLocalAppointmentPayment', 'frontend\PaymentController@insertLocalAppointmentPayment');
+    Route::get('insertCookingPaymentInfo', 'frontend\HomeAssistantController@insertCookingPaymentInfo');
+    Route::get('insertClothWashingPaymentInfo', 'frontend\HomeAssistantController@insertClothWashingPaymentInfo');
+    Route::get('insertRoomCleaningPaymentInfo', 'frontend\HomeAssistantController@insertRoomCleaningPaymentInfo');
+    Route::get('insertHelpingHandPaymentInfo', 'frontend\HomeAssistantController@insertHelpingHandPaymentInfo');
+    Route::get('insertGuardPaymentInfo', 'frontend\HomeAssistantController@insertGuardPaymentInfo');
+    Route::get('insertProductServicingPaymentInfo', 'frontend\HomeAssistantController@insertProductServicingPaymentInfo');
+    Route::get('insertParlorPaymentInfo', 'frontend\HomeAssistantController@insertParlorPaymentInfo');
+    Route::get('insertLaundryPaymentInfo', 'frontend\HomeAssistantController@insertLaundryPaymentInfo');

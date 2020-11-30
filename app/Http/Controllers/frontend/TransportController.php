@@ -7,6 +7,7 @@ use Carbon\Traits\Date;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Session;
 
 class TransportController extends Controller
 {
@@ -121,49 +122,73 @@ class TransportController extends Controller
             return response()->json(array('data'=>$ex->getMessage()));
         }
     }
-    public function insertTransport(Request $request){
+    public function insertTransport(Request  $request){
         try{
-            if($request) {
-                if($request->ticketGroup)
-                    $transport= $request->ticketGroup;
-                if($request->paribahanGroup)
-                    $transport= $request->paribahanGroup;
-                //dd($request);
+            $status = $request->status;
+            $type = 'Ticket sales';
+            $msg = $request->msg;
+            $tx_id = $request->tx_id;
+            $bank_tx_id = $request->bank_tx_id;
+            $amount = $request->amount;
+            $bank_status = $request->bank_status;
+            $sp_code = $request->sp_code;
+            $sp_code_des = $request->sp_code_des;
+            $sp_payment_option = $request->sp_payment_option;
+            $date = date('Y-m-d');
+            $result = DB::table('payment_info')->insert([
+                'user_id' => Cookie::get('user_id'),
+                'status' => $status,
+                'type' => $type,
+                'msg' => $msg,
+                'tx_id' => $tx_id,
+                'bank_tx_id' => $bank_tx_id,
+                'amount' => $amount,
+                'bank_status' => $bank_status,
+                'sp_code' => $sp_code,
+                'sp_code_des' => $sp_code_des,
+                'sp_payment_option' => $sp_payment_option,
+            ]);
+            if($result){
+                $sessRequest = json_encode(Session::get('ticketRequest'));
+                $sessRequest = json_decode($sessRequest);
+                if(@$sessRequest->ticketGroup)
+                    $transport= $sessRequest->ticketGroup;
+                if(@$sessRequest->paribahanGroup)
+                    $transport= $sessRequest->paribahanGroup;
                 $rows = DB::table('transport_tickets')
                     ->join('transport_types', 'transport_tickets.transport_id', '=', 'transport_types.tranport_id')
                     ->join('transports_caoch', 'transports_caoch.id', '=', 'transport_tickets.coach_id')
-                    ->where('transports_caoch.coach_name', $request->transportName)
-                    ->where('from_address', $request->from_address)
-                    ->where('to_address', $request->to_address)
-                    ->where('transport_types.type', $request->transportType)
-                    ->where('transport_tickets.transport_id', $request->ticketGroup)
-                    ->where('transport_tickets.time', $request->transportTime)
+                    ->where('transports_caoch.coach_name', $sessRequest->transportName)
+                    ->where('from_address', $sessRequest->from_address)
+                    ->where('to_address', $sessRequest->to_address)
+                    ->where('transport_types.type', $sessRequest->transportType)
+                    ->where('transport_tickets.transport_id', $sessRequest->ticketGroup)
+                    ->where('transport_tickets.time', $sessRequest->transportTime)
                     ->where('transport_tickets.status', 1)
                     ->first();
-                //dd($rows);
-                $ticket_price = $rows->price*$request->adult;
+                $ticket_price = $rows->price*$sessRequest->adult;
                 $result = DB::table('ticket_booking')->insert([
                     'user_id' => Cookie::get('user_id'),
-                    'type' => $request->type,
+                    'tx_id' => $tx_id,
+                    'type' => $sessRequest->type,
                     'transport' => $transport,
-                    'from_address' => $request->from_address,
-                    'to_address' => $request->to_address	,
-                    'adult' => $request->adult	,
-                    'child' => $request->child	,
-                    'date' => $request->date	,
-                    'transport_name' => $request->transportName	,
-                    'transport_type' => $request->transportType	,
-                    'transport_time' => $request->transportTime	,
+                    'from_address' => $sessRequest->from_address,
+                    'to_address' => $sessRequest->to_address	,
+                    'adult' => $sessRequest->adult	,
+                    'date' => $sessRequest->date	,
+                    'transport_name' => $sessRequest->transportName	,
+                    'transport_type' => $sessRequest->transportType	,
+                    'transport_time' => $sessRequest->transportTime	,
                     'price' => $ticket_price,
                 ]);
                 if ($result) {
-                    return back()->with('successMessage', 'সফল্ভাবে সম্পন্ন্য হয়েছে।');
+                    return redirect()->to('myTicketOrder')->with('successMessage', 'সফল্ভাবে সম্পন্ন্য হয়েছে।');
                 } else {
                     return back()->with('errorMessage', 'আবার চেষ্টা করুন।');
                 }
             }
-            else{
-                return back()->with('errorMessage', 'ফর্ম পুরন করুন।');
+            else {
+                return back()->with('errorMessage', 'আবার চেষ্টা করুন।');
             }
         }
         catch(\Illuminate\Database\QueryException $ex){

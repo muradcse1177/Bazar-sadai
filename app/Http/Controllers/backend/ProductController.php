@@ -204,7 +204,6 @@ class ProductController extends Controller
         }
     }
 
-
     public function selectProduct(Request $request){
         try{
 

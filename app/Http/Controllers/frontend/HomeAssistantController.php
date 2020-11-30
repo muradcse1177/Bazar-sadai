@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Session;
+use smasif\ShurjopayLaravelPackage\ShurjopayService;
 
 class HomeAssistantController extends Controller
 {
@@ -158,22 +160,7 @@ class HomeAssistantController extends Controller
                     ->where('status',  1)
                     ->first();
                 if(!empty($delivery_man)){
-                    $result =DB::table('users')
-                        ->where('id', $delivery_man->id)
-                        ->update([
-                            'working_status' => 2,
-                        ]);
-                    $result = DB::table('cooking_booking')->insert([
-                        'user_id' => Cookie::get('user_id'),
-                        'cooker_id' => $delivery_man->id,
-                        'days' => $days,
-                        'cooking_type' => $request->cooking_type,
-                        'meal' => $request->meal,
-                        'person' => $request->person,
-                        'time' => $request->time,
-                        'price' => $price,
-                        'date' => date("Y-m-d"),
-                    ]);
+                    $ok='ok';
                 }
                 else{
                     $delivery_man = DB::table('users')
@@ -188,22 +175,7 @@ class HomeAssistantController extends Controller
                         ->where('status',  1)
                         ->first();
                     if(!empty($delivery_man)){
-                        $result =DB::table('users')
-                            ->where('id', $delivery_man->id)
-                            ->update([
-                                'working_status' => 2,
-                            ]);
-                        $result = DB::table('cooking_booking')->insert([
-                            'user_id' => Cookie::get('user_id'),
-                            'cooker_id' => $delivery_man->id,
-                            'days' => $days,
-                            'cooking_type' => $request->cooking_type,
-                            'meal' => $request->meal,
-                            'person' => $request->person,
-                            'time' => $request->time,
-                            'price' => $price,
-                            'date' => date("Y-m-d"),
-                        ]);
+                        $ok='ok';
                     }
                     else{
                         $delivery_man = DB::table('users')
@@ -218,28 +190,35 @@ class HomeAssistantController extends Controller
                             ->where('status',  1)
                             ->first();
                         if(!empty($delivery_man)){
-                            $result =DB::table('users')
-                                ->where('id', $delivery_man->id)
-                                ->update([
-                                    'working_status' => 2,
-                                ]);
-                            $result = DB::table('cooking_booking')->insert([
-                                'user_id' => Cookie::get('user_id'),
-                                'cooker_id' => $delivery_man->id,
-                                'days' => $days,
-                                'cooking_type' => $request->cooking_type,
-                                'meal' => $request->meal,
-                                'person' => $request->person,
-                                'time' => $request->time,
-                                'price' => $price,
-                                'date' => date("Y-m-d"),
-                            ]);
+                            $ok='ok';
 
                         }
                     }
                 }
                 if(!empty($delivery_man)){
-                    return redirect()->to('cookingPageFront')->with('successMessage', 'সফল্ভাবে অর্ডার সম্পন্ন্য হয়েছে। '.$delivery_man->name.' আপনার অর্ডার এর দায়িত্বে আছে। প্রয়োজনে '.$delivery_man->phone.' কল করুন।'  );
+                    Session::put('d_name', $delivery_man->name);
+                    Session::put('d_phone', $delivery_man->phone);
+                    $shurjopay_service = new ShurjopayService();
+                    $tx_id = $shurjopay_service->generateTxId();
+                    $result =DB::table('users')
+                        ->where('id', $delivery_man->id)
+                        ->update([
+                            'working_status' => 2,
+                        ]);
+                    $result = DB::table('cooking_booking')->insert([
+                        'tx_id' => $tx_id,
+                        'user_id' => Cookie::get('user_id'),
+                        'cooker_id' => $delivery_man->id,
+                        'days' => $days,
+                        'cooking_type' => $request->cooking_type,
+                        'meal' => $request->meal,
+                        'person' => $request->person,
+                        'time' => $request->time,
+                        'price' => $price,
+                        'date' => date("Y-m-d"),
+                    ]);
+                    $success_route = url('insertCookingPaymentInfo');
+                    $shurjopay_service->sendPayment($price, $success_route);
                 }
                 else{
                     return redirect()->to('cookingPageFront')->with('errorMessage', 'আপনার এলাকাই কোন কুকার খুজে পাওয়া যায়নি।');
@@ -252,6 +231,37 @@ class HomeAssistantController extends Controller
         catch(\Illuminate\Database\QueryException $ex){
             return back()->with('errorMessage', $ex->getMessage());
         }
+    }
+    public function insertCookingPaymentInfo(Request $request){
+        $name = Session::get('d_name');
+        $phone =Session::get('d_phone');
+        $status = $request->status;
+        $type = 'Cooking';
+        $msg = $request->msg;
+        $tx_id = $request->tx_id;
+        $bank_tx_id = $request->bank_tx_id;
+        $amount = $request->amount;
+        $bank_status = $request->bank_status;
+        $sp_code = $request->sp_code;
+        $sp_code_des = $request->sp_code_des;
+        $sp_payment_option = $request->sp_payment_option;
+        $date = date('Y-m-d');
+        $result = DB::table('payment_info')->insert([
+            'user_id' => Cookie::get('user_id'),
+            'status' => $status,
+            'type' => $type,
+            'msg' => $msg,
+            'tx_id' => $tx_id,
+            'bank_tx_id' => $bank_tx_id,
+            'amount' => $amount,
+            'bank_status' => $bank_status,
+            'sp_code' => $sp_code,
+            'sp_code_des' => $sp_code_des,
+            'sp_payment_option' => $sp_payment_option,
+        ]);
+        session()->forget('d_name');
+        session()->forget('d_phone');
+        return redirect()->to('myCookingOrder')->with('successMessage', 'সফল্ভাবে অর্ডার সম্পন্ন্য হয়েছে। '.$name.' আপনার অর্ডার এর দায়িত্বে আছে। প্রয়োজনে '.$phone.' কল করুন।'  );
     }
     public function clothWashingPage(){
         $rows = DB::table('cloth_washing')
@@ -378,20 +388,7 @@ class HomeAssistantController extends Controller
                         ->where('status',  1)
                         ->first();
                     if(!empty($delivery_man)){
-                        $result =DB::table('users')
-                            ->where('id', $delivery_man->id)
-                            ->update([
-                                'working_status' => 2,
-                            ]);
-                        $result = DB::table('cloth_washing_order')->insert([
-                            'user_id' => Cookie::get('user_id'),
-                            'cleaner_id' => $delivery_man->id,
-                            'date' => date("Y-m-d"),
-                            'cloth_id' => json_encode($cloth_id),
-                            'quantity' => json_encode($quantity),
-                            'price' => $price,
 
-                        ]);
                     }
                     else{
                         $delivery_man = DB::table('users')
@@ -406,20 +403,7 @@ class HomeAssistantController extends Controller
                             ->where('status',  1)
                             ->first();
                         if(!empty($delivery_man)){
-                            $result =DB::table('users')
-                                ->where('id', $delivery_man->id)
-                                ->update([
-                                    'working_status' => 2,
-                                ]);
-                            $result = DB::table('cloth_washing_order')->insert([
-                                'user_id' => Cookie::get('user_id'),
-                                'cleaner_id' => $delivery_man->id,
-                                'date' => date("Y-m-d"),
-                                'cloth_id' => json_encode($cloth_id),
-                                'quantity' => json_encode($quantity),
-                                'price' => $price,
 
-                            ]);
                         }
                         else{
                             $delivery_man = DB::table('users')
@@ -434,27 +418,34 @@ class HomeAssistantController extends Controller
                                 ->where('status',  1)
                                 ->first();
                             if(!empty($delivery_man)){
-                                $result =DB::table('users')
-                                    ->where('id', $delivery_man->id)
-                                    ->update([
-                                        'working_status' => 2,
-                                    ]);
-                                $result = DB::table('cloth_washing_order')->insert([
-                                    'user_id' => Cookie::get('user_id'),
-                                    'cleaner_id' => $delivery_man->id,
-                                    'date' => date("Y-m-d"),
-                                    'cloth_id' => json_encode($cloth_id),
-                                    'quantity' => json_encode($quantity),
-                                    'price' => $price,
-                                ]);
+
                             }
                         }
                     }
                     if(!empty($delivery_man)){
-                        return redirect()->to('clothWashingPage')->with('successMessage', 'সফল্ভাবে অর্ডার সম্পন্ন্য হয়েছে। '.$delivery_man->name.' আপনার অর্ডার এর দায়িত্বে আছে। প্রয়োজনে '.$delivery_man->phone.' কল করুন।'  );
+                        Session::put('d_name', $delivery_man->name);
+                        Session::put('d_phone', $delivery_man->phone);
+                        $shurjopay_service = new ShurjopayService();
+                        $tx_id = $shurjopay_service->generateTxId();
+                        $result =DB::table('users')
+                            ->where('id', $delivery_man->id)
+                            ->update([
+                                'working_status' => 2,
+                            ]);
+                        $result = DB::table('cloth_washing_order')->insert([
+                            'user_id' => Cookie::get('user_id'),
+                            'tx_id' => $tx_id,
+                            'cleaner_id' => $delivery_man->id,
+                            'date' => date("Y-m-d"),
+                            'cloth_id' => json_encode($cloth_id),
+                            'quantity' => json_encode($quantity),
+                            'price' => $price,
+                        ]);
+                        $success_route = url('insertClothWashingPaymentInfo');
+                        $shurjopay_service->sendPayment($price, $success_route);
                     }
                     else{
-                        return redirect()->to('cookingPageFront')->with('errorMessage', 'আপনার এলাকাই কোন কাপড় পরিস্কারক খুজে পাওয়া যায়নি।');
+                        return redirect()->to('clothWashingPage')->with('errorMessage', 'আপনার এলাকাই কোন কাপড় পরিস্কারক খুজে পাওয়া যায়নি।');
                     }
                 }
                 else{
@@ -468,6 +459,37 @@ class HomeAssistantController extends Controller
         catch(\Illuminate\Database\QueryException $ex){
             return back()->with('errorMessage', $ex->getMessage());
         }
+    }
+    public function insertClothWashingPaymentInfo(Request $request){
+        $name = Session::get('d_name');
+        $phone =Session::get('d_phone');
+        $status = $request->status;
+        $type = 'Cloth Washing';
+        $msg = $request->msg;
+        $tx_id = $request->tx_id;
+        $bank_tx_id = $request->bank_tx_id;
+        $amount = $request->amount;
+        $bank_status = $request->bank_status;
+        $sp_code = $request->sp_code;
+        $sp_code_des = $request->sp_code_des;
+        $sp_payment_option = $request->sp_payment_option;
+        $date = date('Y-m-d');
+        $result = DB::table('payment_info')->insert([
+            'user_id' => Cookie::get('user_id'),
+            'status' => $status,
+            'type' => $type,
+            'msg' => $msg,
+            'tx_id' => $tx_id,
+            'bank_tx_id' => $bank_tx_id,
+            'amount' => $amount,
+            'bank_status' => $bank_status,
+            'sp_code' => $sp_code,
+            'sp_code_des' => $sp_code_des,
+            'sp_payment_option' => $sp_payment_option,
+        ]);
+        session()->forget('d_name');
+        session()->forget('d_phone');
+        return redirect()->to('myClothWashingOrder')->with('successMessage', 'সফল্ভাবে অর্ডার সম্পন্ন্য হয়েছে। '.$name.' আপনার অর্ডার এর দায়িত্বে আছে। প্রয়োজনে '.$phone.' কল করুন।'  );
     }
     public function getClothPriceByIdFront(Request $request){
         $rows = DB::table('cloth_washing')
@@ -592,19 +614,7 @@ class HomeAssistantController extends Controller
                     ->where('status',  1)
                     ->first();
                 if(!empty($delivery_man)){
-                    $result =DB::table('users')
-                        ->where('id', $delivery_man->id)
-                        ->update([
-                            'working_status' => 2,
-                        ]);
-                    $result = DB::table('cleaning_order')->insert([
-                        'user_id' => Cookie::get('user_id'),
-                        'cleaner_id' => $delivery_man->id,
-                        'type' => $request->type,
-                        'size' => $request->size,
-                        'price' => $rows->price,
-                        'date' => date("Y-m-d"),
-                    ]);
+
                 }
                 else{
                     $delivery_man = DB::table('users')
@@ -619,19 +629,7 @@ class HomeAssistantController extends Controller
                         ->where('status',  1)
                         ->first();
                     if(!empty($delivery_man)){
-                        $result =DB::table('users')
-                            ->where('id', $delivery_man->id)
-                            ->update([
-                                'working_status' => 2,
-                            ]);
-                        $result = DB::table('cleaning_order')->insert([
-                            'user_id' => Cookie::get('user_id'),
-                            'cleaner_id' => $delivery_man->id,
-                            'type' => $request->type,
-                            'size' => $request->size,
-                            'price' => $rows->price,
-                            'date' => date("Y-m-d"),
-                        ]);
+
                     }
                     else{
                         $delivery_man = DB::table('users')
@@ -646,24 +644,32 @@ class HomeAssistantController extends Controller
                             ->where('status',  1)
                             ->first();
                         if(!empty($delivery_man)){
-                            $result =DB::table('users')
-                                ->where('id', $delivery_man->id)
-                                ->update([
-                                    'working_status' => 2,
-                                ]);
-                            $result = DB::table('cleaning_order')->insert([
-                                'user_id' => Cookie::get('user_id'),
-                                'cleaner_id' => $delivery_man->id,
-                                'type' => $request->type,
-                                'size' => $request->size,
-                                'price' => $rows->price,
-                                'date' => date("Y-m-d"),
-                            ]);
+
                         }
                     }
                 }
                 if(!empty($delivery_man)){
-                    return redirect()->to('cleaningPage')->with('successMessage', 'সফল্ভাবে অর্ডার সম্পন্ন্য হয়েছে। '.$delivery_man->name.' আপনার অর্ডার এর দায়িত্বে আছে। প্রয়োজনে '.$delivery_man->phone.' কল করুন।'  );
+                    Session::put('d_name', $delivery_man->name);
+                    Session::put('d_phone', $delivery_man->phone);
+                    $shurjopay_service = new ShurjopayService();
+                    $tx_id = $shurjopay_service->generateTxId();
+                    $result =DB::table('users')
+                        ->where('id', $delivery_man->id)
+                        ->update([
+                            'working_status' => 2,
+                        ]);
+                    $result = DB::table('cleaning_order')->insert([
+                        'user_id' => Cookie::get('user_id'),
+                        'tx_id' =>  $tx_id,
+                        'cleaner_id' => $delivery_man->id,
+                        'type' => $request->type,
+                        'size' => $request->size,
+                        'price' => $rows->price,
+                        'date' => date("Y-m-d"),
+                    ]);
+                    $success_route = url('insertRoomCleaningPaymentInfo');
+                    $shurjopay_service->sendPayment($rows->price, $success_route);
+
                 }
                 else{
                     return redirect()->to('cleaningPage')->with('errorMessage', 'আপনার এলাকাই কোন  পরিস্কারক খুজে পাওয়া যায়নি।');
@@ -676,6 +682,37 @@ class HomeAssistantController extends Controller
         catch(\Illuminate\Database\QueryException $ex){
             return back()->with('errorMessage', $ex->getMessage());
         }
+    }
+    public function insertRoomCleaningPaymentInfo(Request $request){
+        $name = Session::get('d_name');
+        $phone =Session::get('d_phone');
+        $status = $request->status;
+        $type = 'Room/Washroom/Tank Cleaning';
+        $msg = $request->msg;
+        $tx_id = $request->tx_id;
+        $bank_tx_id = $request->bank_tx_id;
+        $amount = $request->amount;
+        $bank_status = $request->bank_status;
+        $sp_code = $request->sp_code;
+        $sp_code_des = $request->sp_code_des;
+        $sp_payment_option = $request->sp_payment_option;
+        $date = date('Y-m-d');
+        $result = DB::table('payment_info')->insert([
+            'user_id' => Cookie::get('user_id'),
+            'status' => $status,
+            'type' => $type,
+            'msg' => $msg,
+            'tx_id' => $tx_id,
+            'bank_tx_id' => $bank_tx_id,
+            'amount' => $amount,
+            'bank_status' => $bank_status,
+            'sp_code' => $sp_code,
+            'sp_code_des' => $sp_code_des,
+            'sp_payment_option' => $sp_payment_option,
+        ]);
+        session()->forget('d_name');
+        session()->forget('d_phone');
+        return redirect()->to('myRoomCleaningOrder')->with('successMessage', 'সফল্ভাবে অর্ডার সম্পন্ন্য হয়েছে। '.$name.' আপনার অর্ডার এর দায়িত্বে আছে। প্রয়োজনে '.$phone.' কল করুন।'  );
     }
     public function getAllHelpingHandTypeFront(Request $request){
         $rows = DB::table('child_caring')
@@ -799,20 +836,7 @@ class HomeAssistantController extends Controller
                     ->where('status',  1)
                     ->first();
                 if(!empty($delivery_man)){
-                    $result =DB::table('users')
-                        ->where('id', $delivery_man->id)
-                        ->update([
-                            'working_status' => 2,
-                        ]);
-                    $result = DB::table('helping_hand_order')->insert([
-                        'user_id' => Cookie::get('user_id'),
-                        'helper' => $delivery_man->id,
-                        'days' => $days,
-                        'type' => $request->type,
-                        'time' => $request->time,
-                        'price' => $price,
-                        'date' => date("Y-m-d"),
-                    ]);
+
                 }
                 else{
                     $delivery_man = DB::table('users')
@@ -827,20 +851,7 @@ class HomeAssistantController extends Controller
                         ->where('status',  1)
                         ->first();
                     if(!empty($delivery_man)){
-                        $result =DB::table('users')
-                            ->where('id', $delivery_man->id)
-                            ->update([
-                                'working_status' => 2,
-                            ]);
-                        $result = DB::table('helping_hand_order')->insert([
-                            'user_id' => Cookie::get('user_id'),
-                            'helper' => $delivery_man->id,
-                            'days' => $days,
-                            'type' => $request->type,
-                            'time' => $request->time,
-                            'price' => $price,
-                            'date' => date("Y-m-d"),
-                        ]);
+
                     }
                     else{
                         $delivery_man = DB::table('users')
@@ -855,25 +866,31 @@ class HomeAssistantController extends Controller
                             ->where('status',  1)
                             ->first();
                         if(!empty($delivery_man)){
-                            $result =DB::table('users')
-                                ->where('id', $delivery_man->id)
-                                ->update([
-                                    'working_status' => 2,
-                                ]);
-                            $result = DB::table('helping_hand_order')->insert([
-                                'user_id' => Cookie::get('user_id'),
-                                'helper' => $delivery_man->id,
-                                'days' => $days,
-                                'type' => $request->type,
-                                'time' => $request->time,
-                                'price' => $price,
-                                'date' => date("Y-m-d"),
-                            ]);
                         }
                     }
                 }
                 if(!empty($delivery_man)){
-                    return redirect()->to('helpingHandPage')->with('successMessage', 'সফল্ভাবে অর্ডার সম্পন্ন্য হয়েছে। '.$delivery_man->name.' আপনার অর্ডার এর দায়িত্বে আছে। প্রয়োজনে '.$delivery_man->phone.' কল করুন।'  );
+                    Session::put('d_name', $delivery_man->name);
+                    Session::put('d_phone', $delivery_man->phone);
+                    $shurjopay_service = new ShurjopayService();
+                    $tx_id = $shurjopay_service->generateTxId();
+                    $result =DB::table('users')
+                        ->where('id', $delivery_man->id)
+                        ->update([
+                            'working_status' => 2,
+                        ]);
+                    $result = DB::table('helping_hand_order')->insert([
+                        'user_id' => Cookie::get('user_id'),
+                        'helper' => $delivery_man->id,
+                        'tx_id' => $tx_id,
+                        'days' => $days,
+                        'type' => $request->type,
+                        'time' => $request->time,
+                        'price' => $price,
+                        'date' => date("Y-m-d"),
+                    ]);
+                    $success_route = url('insertHelpingHandPaymentInfo');
+                    $shurjopay_service->sendPayment($price, $success_route);
                 }
                 else{
                     return redirect()->to('helpingHandPage')->with('errorMessage', 'আপনার এলাকাই কোন হেল্পার খুজে পাওয়া যায়নি।');
@@ -886,6 +903,37 @@ class HomeAssistantController extends Controller
         catch(\Illuminate\Database\QueryException $ex){
             return back()->with('errorMessage', $ex->getMessage());
         }
+    }
+    public function insertHelpingHandPaymentInfo(Request $request){
+        $name = Session::get('d_name');
+        $phone =Session::get('d_phone');
+        $status = $request->status;
+        $type = 'Helping Hand';
+        $msg = $request->msg;
+        $tx_id = $request->tx_id;
+        $bank_tx_id = $request->bank_tx_id;
+        $amount = $request->amount;
+        $bank_status = $request->bank_status;
+        $sp_code = $request->sp_code;
+        $sp_code_des = $request->sp_code_des;
+        $sp_payment_option = $request->sp_payment_option;
+        $date = date('Y-m-d');
+        $result = DB::table('payment_info')->insert([
+            'user_id' => Cookie::get('user_id'),
+            'status' => $status,
+            'type' => $type,
+            'msg' => $msg,
+            'tx_id' => $tx_id,
+            'bank_tx_id' => $bank_tx_id,
+            'amount' => $amount,
+            'bank_status' => $bank_status,
+            'sp_code' => $sp_code,
+            'sp_code_des' => $sp_code_des,
+            'sp_payment_option' => $sp_payment_option,
+        ]);
+        session()->forget('d_name');
+        session()->forget('d_phone');
+        return redirect()->to('myHelpingHandOrder')->with('successMessage', 'সফল্ভাবে অর্ডার সম্পন্ন্য হয়েছে। '.$name.' আপনার অর্ডার এর দায়িত্বে আছে। প্রয়োজনে '.$phone.' কল করুন।'  );
     }
     public function guardPage(){
         return view('frontend.guardPage');
@@ -1009,20 +1057,7 @@ class HomeAssistantController extends Controller
                     ->where('status',  1)
                     ->first();
                 if(!empty($delivery_man)){
-                    $result =DB::table('users')
-                        ->where('id', $delivery_man->id)
-                        ->update([
-                            'working_status' => 2,
-                        ]);
-                    $result = DB::table('guard_order')->insert([
-                        'user_id' => Cookie::get('user_id'),
-                        'gurd_id' => $delivery_man->id,
-                        'days' => $days,
-                        'type' => $request->type,
-                        'time' => $request->time,
-                        'price' => $price,
-                        'date' => date("Y-m-d"),
-                    ]);
+
                 }
                 else{
                     $delivery_man = DB::table('users')
@@ -1037,20 +1072,7 @@ class HomeAssistantController extends Controller
                         ->where('status',  1)
                         ->first();
                     if(!empty($delivery_man)){
-                        $result =DB::table('users')
-                            ->where('id', $delivery_man->id)
-                            ->update([
-                                'working_status' => 2,
-                            ]);
-                        $result = DB::table('guard_order')->insert([
-                            'user_id' => Cookie::get('user_id'),
-                            'gurd_id' => $delivery_man->id,
-                            'days' => $days,
-                            'type' => $request->type,
-                            'time' => $request->time,
-                            'price' => $price,
-                            'date' => date("Y-m-d"),
-                        ]);
+
                     }
                     else{
                         $delivery_man = DB::table('users')
@@ -1065,25 +1087,32 @@ class HomeAssistantController extends Controller
                             ->where('status',  1)
                             ->first();
                         if(!empty($delivery_man)){
-                            $result =DB::table('users')
-                                ->where('id', $delivery_man->id)
-                                ->update([
-                                    'working_status' => 2,
-                                ]);
-                            $result = DB::table('guard_order')->insert([
-                                'user_id' => Cookie::get('user_id'),
-                                'gurd_id' => $delivery_man->id,
-                                'days' => $days,
-                                'type' => $request->type,
-                                'time' => $request->time,
-                                'price' => $price,
-                                'date' => date("Y-m-d"),
-                            ]);
+
                         }
                     }
                 }
                 if(!empty($delivery_man)){
-                    return redirect()->to('guardPage')->with('successMessage', 'সফল্ভাবে অর্ডার সম্পন্ন্য হয়েছে। '.$delivery_man->name.' আপনার অর্ডার এর দায়িত্বে আছে। প্রয়োজনে '.$delivery_man->phone.' কল করুন।'  );
+                    Session::put('d_name', $delivery_man->name);
+                    Session::put('d_phone', $delivery_man->phone);
+                    $shurjopay_service = new ShurjopayService();
+                    $tx_id = $shurjopay_service->generateTxId();
+                    $result =DB::table('users')
+                        ->where('id', $delivery_man->id)
+                        ->update([
+                            'working_status' => 2,
+                        ]);
+                    $result = DB::table('guard_order')->insert([
+                        'user_id' => Cookie::get('user_id'),
+                        'gurd_id' => $delivery_man->id,
+                        'days' => $days,
+                        'tx_id' => $tx_id,
+                        'type' => $request->type,
+                        'time' => $request->time,
+                        'price' => $price,
+                        'date' => date("Y-m-d"),
+                    ]);
+                    $success_route = url('insertGuardPaymentInfo');
+                    $shurjopay_service->sendPayment($price, $success_route);
                 }
                 else{
                     return redirect()->to('guardPage')->with('errorMessage', 'আপনার এলাকাই কোন গার্ড খুজে পাওয়া যায়নি।');
@@ -1096,6 +1125,37 @@ class HomeAssistantController extends Controller
         catch(\Illuminate\Database\QueryException $ex){
             return back()->with('errorMessage', $ex->getMessage());
         }
+    }
+    public function insertGuardPaymentInfo(Request $request){
+        $name = Session::get('d_name');
+        $phone =Session::get('d_phone');
+        $status = $request->status;
+        $type = 'Guard';
+        $msg = $request->msg;
+        $tx_id = $request->tx_id;
+        $bank_tx_id = $request->bank_tx_id;
+        $amount = $request->amount;
+        $bank_status = $request->bank_status;
+        $sp_code = $request->sp_code;
+        $sp_code_des = $request->sp_code_des;
+        $sp_payment_option = $request->sp_payment_option;
+        $date = date('Y-m-d');
+        $result = DB::table('payment_info')->insert([
+            'user_id' => Cookie::get('user_id'),
+            'status' => $status,
+            'type' => $type,
+            'msg' => $msg,
+            'tx_id' => $tx_id,
+            'bank_tx_id' => $bank_tx_id,
+            'amount' => $amount,
+            'bank_status' => $bank_status,
+            'sp_code' => $sp_code,
+            'sp_code_des' => $sp_code_des,
+            'sp_payment_option' => $sp_payment_option,
+        ]);
+        session()->forget('d_name');
+        session()->forget('d_phone');
+        return redirect()->to('myGuardOrder')->with('successMessage', 'সফল্ভাবে অর্ডার সম্পন্ন্য হয়েছে। '.$name.' আপনার অর্ডার এর দায়িত্বে আছে। প্রয়োজনে '.$phone.' কল করুন।'  );
     }
     public function productServicingPage(){
         return view('frontend.productServicingPage');
@@ -1217,19 +1277,7 @@ class HomeAssistantController extends Controller
                     ->where('status',  1)
                     ->first();
                 if(!empty($delivery_man)){
-                    $result =DB::table('users')
-                        ->where('id', $delivery_man->id)
-                        ->update([
-                            'working_status' => 2,
-                        ]);
-                    $result = DB::table('various_servicing_order')->insert([
-                        'user_id' => Cookie::get('user_id'),
-                        'worker' => $delivery_man->id,
-                        'type' => $request->type,
-                        'name' => $request->name,
-                        'price' => $rows->price,
-                        'date' => date("Y-m-d"),
-                    ]);
+
                 }
                 else{
                     $delivery_man = DB::table('users')
@@ -1244,19 +1292,7 @@ class HomeAssistantController extends Controller
                         ->where('status',  1)
                         ->first();
                     if(!empty($delivery_man)){
-                        $result =DB::table('users')
-                            ->where('id', $delivery_man->id)
-                            ->update([
-                                'working_status' => 2,
-                            ]);
-                        $result = DB::table('various_servicing_order')->insert([
-                            'user_id' => Cookie::get('user_id'),
-                            'worker' => $delivery_man->id,
-                            'type' => $request->type,
-                            'name' => $request->name,
-                            'price' => $rows->price,
-                            'date' => date("Y-m-d"),
-                        ]);
+
                     }
                     else{
                         $delivery_man = DB::table('users')
@@ -1271,24 +1307,31 @@ class HomeAssistantController extends Controller
                             ->where('status',  1)
                             ->first();
                         if(!empty($delivery_man)){
-                            $result =DB::table('users')
-                                ->where('id', $delivery_man->id)
-                                ->update([
-                                    'working_status' => 2,
-                                ]);
-                            $result = DB::table('various_servicing_order')->insert([
-                                'user_id' => Cookie::get('user_id'),
-                                'worker' => $delivery_man->id,
-                                'type' => $request->type,
-                                'name' => $request->name,
-                                'price' => $rows->price,
-                                'date' => date("Y-m-d"),
-                            ]);
+
                         }
                     }
                 }
                 if(!empty($delivery_man)){
-                    return redirect()->to('productServicingPage')->with('successMessage', 'সফল্ভাবে অর্ডার সম্পন্ন্য হয়েছে। '.$delivery_man->name.' আপনার অর্ডার এর দায়িত্বে আছে। প্রয়োজনে '.$delivery_man->phone.' কল করুন।'  );
+                    Session::put('d_name', $delivery_man->name);
+                    Session::put('d_phone', $delivery_man->phone);
+                    $shurjopay_service = new ShurjopayService();
+                    $tx_id = $shurjopay_service->generateTxId();
+                    $result =DB::table('users')
+                        ->where('id', $delivery_man->id)
+                        ->update([
+                            'working_status' => 2,
+                        ]);
+                    $result = DB::table('various_servicing_order')->insert([
+                        'user_id' => Cookie::get('user_id'),
+                        'worker' => $delivery_man->id,
+                        'tx_id' => $tx_id,
+                        'type' => $request->type,
+                        'name' => $request->name,
+                        'price' => $rows->price,
+                        'date' => date("Y-m-d"),
+                    ]);
+                    $success_route = url('insertProductServicingPaymentInfo');
+                    $shurjopay_service->sendPayment($rows->price, $success_route);
                 }
                 else{
                     return redirect()->to('productServicingPage')->with('errorMessage', 'আপনার এলাকাই কোন কাজের লোক খুজে পাওয়া যায়নি।');
@@ -1301,6 +1344,37 @@ class HomeAssistantController extends Controller
         catch(\Illuminate\Database\QueryException $ex){
             return back()->with('errorMessage', $ex->getMessage());
         }
+    }
+    public function insertProductServicingPaymentInfo(Request $request){
+        $name = Session::get('d_name');
+        $phone =Session::get('d_phone');
+        $status = $request->status;
+        $type = 'Various Servicing';
+        $msg = $request->msg;
+        $tx_id = $request->tx_id;
+        $bank_tx_id = $request->bank_tx_id;
+        $amount = $request->amount;
+        $bank_status = $request->bank_status;
+        $sp_code = $request->sp_code;
+        $sp_code_des = $request->sp_code_des;
+        $sp_payment_option = $request->sp_payment_option;
+        $date = date('Y-m-d');
+        $result = DB::table('payment_info')->insert([
+            'user_id' => Cookie::get('user_id'),
+            'status' => $status,
+            'type' => $type,
+            'msg' => $msg,
+            'tx_id' => $tx_id,
+            'bank_tx_id' => $bank_tx_id,
+            'amount' => $amount,
+            'bank_status' => $bank_status,
+            'sp_code' => $sp_code,
+            'sp_code_des' => $sp_code_des,
+            'sp_payment_option' => $sp_payment_option,
+        ]);
+        session()->forget('d_name');
+        session()->forget('d_phone');
+        return redirect()->to('myProductServicingOrder')->with('successMessage', 'সফল্ভাবে অর্ডার সম্পন্ন্য হয়েছে। '.$name.' আপনার অর্ডার এর দায়িত্বে আছে। প্রয়োজনে '.$phone.' কল করুন।'  );
     }
     public function parlorServicingPage(){
         return view('frontend.parlorServicingPage');
@@ -1416,19 +1490,7 @@ class HomeAssistantController extends Controller
                     ->where('status',  1)
                     ->first();
                 if(!empty($delivery_man)){
-                    $result =DB::table('users')
-                        ->where('id', $delivery_man->id)
-                        ->update([
-                            'working_status' => 2,
-                        ]);
-                    $result = DB::table('parlor_order')->insert([
-                        'user_id' => Cookie::get('user_id'),
-                        'type' => $request->type,
-                        'parlor_id' => $delivery_man->id,
-                        'name' => $request->service,
-                        'price' => $rows->price,
-                        'date' => date("Y-m-d"),
-                    ]);
+
                 }
                 else{
                     $delivery_man = DB::table('users')
@@ -1443,19 +1505,7 @@ class HomeAssistantController extends Controller
                         ->where('status',  1)
                         ->first();
                     if(!empty($delivery_man)){
-                        $result =DB::table('users')
-                            ->where('id', $delivery_man->id)
-                            ->update([
-                                'working_status' => 2,
-                            ]);
-                        $result = DB::table('parlor_order')->insert([
-                            'user_id' => Cookie::get('user_id'),
-                            'type' => $request->type,
-                            'parlor_id' => $delivery_man->id,
-                            'name' => $request->service,
-                            'price' => $rows->price,
-                            'date' => date("Y-m-d"),
-                        ]);
+
                     }
                     else{
                         $delivery_man = DB::table('users')
@@ -1487,10 +1537,29 @@ class HomeAssistantController extends Controller
                     }
                 }
                 if(!empty($delivery_man)){
-                    return redirect()->to('productServicingPage')->with('successMessage', 'সফল্ভাবে অর্ডার সম্পন্ন্য হয়েছে। '.$delivery_man->name.' আপনার অর্ডার এর দায়িত্বে আছে। প্রয়োজনে '.$delivery_man->phone.' কল করুন।'  );
+                    Session::put('d_name', $delivery_man->name);
+                    Session::put('d_phone', $delivery_man->phone);
+                    $shurjopay_service = new ShurjopayService();
+                    $tx_id = $shurjopay_service->generateTxId();
+                    $result =DB::table('users')
+                        ->where('id', $delivery_man->id)
+                        ->update([
+                            'working_status' => 2,
+                        ]);
+                    $result = DB::table('parlor_order')->insert([
+                        'user_id' => Cookie::get('user_id'),
+                        'tx_id' => $tx_id,
+                        'type' => $request->type,
+                        'parlor_id' => $delivery_man->id,
+                        'name' => $request->service,
+                        'price' => $rows->price,
+                        'date' => date("Y-m-d"),
+                    ]);
+                    $success_route = url('insertParlorPaymentInfo');
+                    $shurjopay_service->sendPayment($rows->price, $success_route);
                 }
                 else{
-                    return redirect()->to('productServicingPage')->with('errorMessage', 'আপনার এলাকাই কোন কাজের লোক খুজে পাওয়া যায়নি।');
+                    return redirect()->to('parlorServicingPage')->with('errorMessage', 'আপনার এলাকাই কোন পার্লার খুজে পাওয়া যায়নি।');
                 }
             }
             else{
@@ -1500,6 +1569,37 @@ class HomeAssistantController extends Controller
         catch(\Illuminate\Database\QueryException $ex){
             return back()->with('errorMessage', $ex->getMessage());
         }
+    }
+    public function insertParlorPaymentInfo(Request $request){
+        $name = Session::get('d_name');
+        $phone =Session::get('d_phone');
+        $status = $request->status;
+        $type = 'Parlour';
+        $msg = $request->msg;
+        $tx_id = $request->tx_id;
+        $bank_tx_id = $request->bank_tx_id;
+        $amount = $request->amount;
+        $bank_status = $request->bank_status;
+        $sp_code = $request->sp_code;
+        $sp_code_des = $request->sp_code_des;
+        $sp_payment_option = $request->sp_payment_option;
+        $date = date('Y-m-d');
+        $result = DB::table('payment_info')->insert([
+            'user_id' => Cookie::get('user_id'),
+            'status' => $status,
+            'type' => $type,
+            'msg' => $msg,
+            'tx_id' => $tx_id,
+            'bank_tx_id' => $bank_tx_id,
+            'amount' => $amount,
+            'bank_status' => $bank_status,
+            'sp_code' => $sp_code,
+            'sp_code_des' => $sp_code_des,
+            'sp_payment_option' => $sp_payment_option,
+        ]);
+        session()->forget('d_name');
+        session()->forget('d_phone');
+        return redirect()->to('myParlorOrder')->with('successMessage', 'সফল্ভাবে অর্ডার সম্পন্ন্য হয়েছে। '.$name.' আপনার অর্ডার এর দায়িত্বে আছে। প্রয়োজনে '.$phone.' কল করুন।'  );
     }
     public function laundryServicePage(){
         $rows = DB::table('laundry')
@@ -1621,20 +1721,7 @@ class HomeAssistantController extends Controller
                         ->where('status',  1)
                         ->first();
                     if(!empty($delivery_man)){
-                        $result =DB::table('users')
-                            ->where('id', $delivery_man->id)
-                            ->update([
-                                'working_status' => 2,
-                            ]);
-                        $result = DB::table('laundry_order')->insert([
-                            'user_id' => Cookie::get('user_id'),
-                            'cleaner_id' => $delivery_man->id,
-                            'date' => date("Y-m-d"),
-                            'cloth_id' => json_encode($cloth_id),
-                            'quantity' => json_encode($quantity),
-                            'price' => $price,
 
-                        ]);
                     }
                     else{
                         $delivery_man = DB::table('users')
@@ -1649,20 +1736,7 @@ class HomeAssistantController extends Controller
                             ->where('status',  1)
                             ->first();
                         if(!empty($delivery_man)){
-                            $result =DB::table('users')
-                                ->where('id', $delivery_man->id)
-                                ->update([
-                                    'working_status' => 2,
-                                ]);
-                            $result = DB::table('laundry_order')->insert([
-                                'user_id' => Cookie::get('user_id'),
-                                'cleaner_id' => $delivery_man->id,
-                                'date' => date("Y-m-d"),
-                                'cloth_id' => json_encode($cloth_id),
-                                'quantity' => json_encode($quantity),
-                                'price' => $price,
 
-                            ]);
                         }
                         else{
                             $delivery_man = DB::table('users')
@@ -1677,24 +1751,30 @@ class HomeAssistantController extends Controller
                                 ->where('status',  1)
                                 ->first();
                             if(!empty($delivery_man)){
-                                $result =DB::table('users')
-                                    ->where('id', $delivery_man->id)
-                                    ->update([
-                                        'working_status' => 2,
-                                    ]);
-                                $result = DB::table('laundry_order')->insert([
-                                    'user_id' => Cookie::get('user_id'),
-                                    'cleaner_id' => $delivery_man->id,
-                                    'date' => date("Y-m-d"),
-                                    'cloth_id' => json_encode($cloth_id),
-                                    'quantity' => json_encode($quantity),
-                                    'price' => $price,
-                                ]);
+
                             }
                         }
                     }
-                    if(!empty($delivery_man)){
-                        return redirect()->to('laundryServicePage')->with('successMessage', 'সফল্ভাবে অর্ডার সম্পন্ন্য হয়েছে। '.$delivery_man->name.' আপনার অর্ডার এর দায়িত্বে আছে। প্রয়োজনে '.$delivery_man->phone.' কল করুন।'  );
+                    if(!empty($delivery_man)){ Session::put('d_name', $delivery_man->name);
+                        Session::put('d_phone', $delivery_man->phone);
+                        $shurjopay_service = new ShurjopayService();
+                        $tx_id = $shurjopay_service->generateTxId();
+                        $result =DB::table('users')
+                            ->where('id', $delivery_man->id)
+                            ->update([
+                                'working_status' => 2,
+                            ]);
+                        $result = DB::table('laundry_order')->insert([
+                            'user_id' => Cookie::get('user_id'),
+                            'cleaner_id' => $delivery_man->id,
+                            'tx_id' => $tx_id,
+                            'date' => date("Y-m-d"),
+                            'cloth_id' => json_encode($cloth_id),
+                            'quantity' => json_encode($quantity),
+                            'price' => $price,
+                        ]);
+                        $success_route = url('insertLaundryPaymentInfo');
+                        $shurjopay_service->sendPayment(1, $success_route);
                     }
                     else{
                         return redirect()->to('laundryServicePage')->with('errorMessage', 'আপনার এলাকাই কোন কাপড় পরিস্কারক খুজে পাওয়া যায়নি।');
@@ -1711,5 +1791,36 @@ class HomeAssistantController extends Controller
         catch(\Illuminate\Database\QueryException $ex){
             return back()->with('errorMessage', $ex->getMessage());
         }
+    }
+    public function insertLaundryPaymentInfo(Request $request){
+        $name = Session::get('d_name');
+        $phone =Session::get('d_phone');
+        $status = $request->status;
+        $type = 'Laundry';
+        $msg = $request->msg;
+        $tx_id = $request->tx_id;
+        $bank_tx_id = $request->bank_tx_id;
+        $amount = $request->amount;
+        $bank_status = $request->bank_status;
+        $sp_code = $request->sp_code;
+        $sp_code_des = $request->sp_code_des;
+        $sp_payment_option = $request->sp_payment_option;
+        $date = date('Y-m-d');
+        $result = DB::table('payment_info')->insert([
+            'user_id' => Cookie::get('user_id'),
+            'status' => $status,
+            'type' => $type,
+            'msg' => $msg,
+            'tx_id' => $tx_id,
+            'bank_tx_id' => $bank_tx_id,
+            'amount' => $amount,
+            'bank_status' => $bank_status,
+            'sp_code' => $sp_code,
+            'sp_code_des' => $sp_code_des,
+            'sp_payment_option' => $sp_payment_option,
+        ]);
+        session()->forget('d_name');
+        session()->forget('d_phone');
+        return redirect()->to('myLaundryOrder')->with('successMessage', 'সফল্ভাবে অর্ডার সম্পন্ন্য হয়েছে। '.$name.' আপনার অর্ডার এর দায়িত্বে আছে। প্রয়োজনে '.$phone.' কল করুন।'  );
     }
 }

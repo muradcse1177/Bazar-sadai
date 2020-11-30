@@ -58,9 +58,12 @@
                     <p class="card-text">অভিজ্ঞতাঃ   {{$doctorProfile->experience}} </p>
                     <p class="card-text">ই-মেইলঃ   {{$doctorProfile->email}} </p>
                     <h3 class="card-title">{{"এপয়েনমেন্ট ফর্ম পুরন করুন" }}</h3>
-                    {{ Form::open(array('url' => 'insertLocalAppointment',  'method' => 'post')) }}
+                    {{ Form::open(array('url' => 'insertLocalAppointmentPayment',  'method' => 'post')) }}
                     {{ csrf_field() }}
 
+                    <div class="form-group">
+                        <input type="text" class="form-control date" name="date" id="date" placeholder="তারিখ" required>
+                    </div>
                     <div class="form-group">
                         <input type="text" class="form-control patient_name" name="patient_name" id="patient_name" placeholder="রোগীর নাম" required>
                     </div>

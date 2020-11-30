@@ -100,6 +100,8 @@
                             <th> নাম  </th>
                             <th> দাম  </th>
                             <th> ইউনিট  </th>
+                            <th> কোম্পানি </th>
+                            <th> ধরণ </th>
                              <th>টুল</th>
                         </tr>
                         <?php $i=1?>
@@ -121,6 +123,8 @@
                                 <td> {{$product->name}} </td>
                                 <td> {{$product->price}} </td>
                                 <td> {{$product->unit}} </td>
+                                <td> {{$product->company}} </td>
+                                <td> {{$product->type}} </td>
                                 <td class="td-actions text-center">
                                     <button type="button" rel="tooltip" class="btn btn-success edit" data-id="{{$product->id}}">
                                         <i class="fa fa-edit"></i>

@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Session;
 use smasif\ShurjopayLaravelPackage\ShurjopayService;
 
 class MedicalServiceController extends Controller
@@ -126,22 +127,49 @@ class MedicalServiceController extends Controller
     }
     public function insertAppointment(Request $request){
         try{
-            if($request) {
+            $status = $request->status;
+            $type = 'Doctor Appointment';
+            $msg = $request->msg;
+            $tx_id = $request->tx_id;
+            $bank_tx_id = $request->bank_tx_id;
+            $amount = $request->amount;
+            $bank_status = $request->bank_status;
+            $sp_code = $request->sp_code;
+            $sp_code_des = $request->sp_code_des;
+            $sp_payment_option = $request->sp_payment_option;
+            $date = date('Y-m-d');
+            $result = DB::table('payment_info')->insert([
+                'user_id' => Cookie::get('user_id'),
+                'status' => $status,
+                'type' => $type,
+                'msg' => $msg,
+                'tx_id' => $tx_id,
+                'bank_tx_id' => $bank_tx_id,
+                'amount' => $amount,
+                'bank_status' => $bank_status,
+                'sp_code' => $sp_code,
+                'sp_code_des' => $sp_code_des,
+                'sp_payment_option' => $sp_payment_option,
+            ]);
+            if($result) {
+                $sessRequest = json_encode(Session::get('drAppointmentRequest'));
+                $sessRequest = json_decode($sessRequest);
                 $result = DB::table('dr_apportionment')->insert([
-                    'dr_id' => $request->dr_id,
-                    'type' => $request->type,
+                    'dr_id' => $sessRequest->dr_id,
+                    'tx_id' => $tx_id,
+                    'type' => $sessRequest->type,
                     'user_id' => Cookie::get('user_id'),
-                    'date' => $request->date,
-                    'patient_name' => $request->patient_name,
-                    'age' => $request->age,
-                    'problem' => $request->problem,
-                    'price' => $request->fees,
+                    'date' => $sessRequest->date,
+                    'patient_name' => $sessRequest->patient_name,
+                    'age' => $sessRequest->age,
+                    'problem' => $sessRequest->problem,
+                    'price' => $sessRequest->fees,
                 ]);
                 if ($result) {
                     $lastId = DB::getPdo()->lastInsertId();
                     $rows = DB::table('doctors')
                         ->join('users', 'users.id', '=', 'doctors.doctor_id')
-                        ->where('users.id', $request->dr_id)
+                        ->where('users.id', $sessRequest->dr_id)
                         ->first();
                     if($rows->in_timezone == 'AM'){
                         $inTime = $rows->in_time;
@@ -159,9 +187,9 @@ class MedicalServiceController extends Controller
                     $timSlot =15;
                     $totalSerial = ($timeDifference*60)/$timSlot;
                     $rowsDr = DB::table('dr_apportionment')
-                        ->where('dr_id', $request->dr_id)
-                        ->where('type', $request->type)
-                        ->where('date', $request->date)
+                        ->where('dr_id', $sessRequest->dr_id)
+                        ->where('type', $sessRequest->type)
+                        ->where('date', $sessRequest->date)
                         ->orderBy('id','desc')
                         ->skip(1)
                         ->take(1)
@@ -195,7 +223,7 @@ class MedicalServiceController extends Controller
                             'time' =>  $totalHour.':'.$totalMinutes,
                         ]);
                     if($result){
-                        return back()->with('successMessage', 'ডাক্তার এর ফোন নাম্বারঃ '.$rows->phone.' ভিডিও কল করতে পারেন অথবা কল করতে পারেন।আপনার সিরিয়াল নম্বর:'. $currSerial. ' আপনার ভিসিট টাইম আনুমানিক: '.$totalHour.':'.$totalMinutes);
+                        return redirect()->to('myDrAppointment')->with('successMessage', 'ডাক্তার এর ফোন নাম্বারঃ '.$rows->phone.' ভিডিও কল করতে পারেন অথবা কল করতে পারেন।আপনার সিরিয়াল নম্বর:'. $currSerial. ' আপনার ভিসিট টাইম আনুমানিক: '.$totalHour.':'.$totalMinutes);
                     }
                     else{
                         return back()->with('errorMessage', 'আবার চেষ্টা করুন।');
@@ -205,7 +233,7 @@ class MedicalServiceController extends Controller
                 }
             }
             else{
-                return back()->with('errorMessage', 'ফর্ম পুরন করুন।');
+                return back()->with('errorMessage', 'আবার চেষ্টা করুন।');
             }
         }
         catch(\Illuminate\Database\QueryException $ex){
@@ -214,29 +242,112 @@ class MedicalServiceController extends Controller
     }
     public function insertLocalAppointment(Request $request){
         try{
-            if($request) {
-                $users = DB::table('users')
-                    ->where('id',  $request->dr_id)
+            $status = $request->status;
+            $type = 'Local Doctor Appointment';
+            $msg = $request->msg;
+            $tx_id = $request->tx_id;
+            $bank_tx_id = $request->bank_tx_id;
+            $amount = $request->amount;
+            $bank_status = $request->bank_status;
+            $sp_code = $request->sp_code;
+            $sp_code_des = $request->sp_code_des;
+            $sp_payment_option = $request->sp_payment_option;
+            $date = date('Y-m-d');
+            $result = DB::table('payment_info')->insert([
+                'user_id' => Cookie::get('user_id'),
+                'status' => $status,
+                'type' => $type,
+                'msg' => $msg,
+                'tx_id' => $tx_id,
+                'bank_tx_id' => $bank_tx_id,
+                'amount' => $amount,
+                'bank_status' => $bank_status,
+                'sp_code' => $sp_code,
+                'sp_code_des' => $sp_code_des,
+                'sp_payment_option' => $sp_payment_option,
+            ]);
+            if($result) {
+                $sessRequest = json_encode(Session::get('localAppointmentRequest'));
+                $sessRequest = json_decode($sessRequest);
+                $lastId = DB::getPdo()->lastInsertId();
+                $rows = DB::table('doctors')
+                    ->join('users', 'users.id', '=', 'doctors.doctor_id')
+                    ->where('users.id', $sessRequest->dr_id)
                     ->first();
                 $result = DB::table('dr_apportionment')->insert([
-                    'dr_id' => $request->dr_id,
-                    'type' => $request->type,
+                    'tx_id' => $tx_id,
+                    'dr_id' => $sessRequest->dr_id,
+                    'type' => $sessRequest->type,
                     'user_id' => Cookie::get('user_id'),
-                    'date' => date('Y-m-d'),
-                    'patient_name' => $request->patient_name,
-                    'age' => $request->age,
-                    'problem' => $request->problem,
-                    'price' => $request->fees,
+                    'date' => $sessRequest->date,
+                    'patient_name' => $sessRequest->patient_name,
+                    'age' => $sessRequest->age,
+                    'problem' => $sessRequest->problem,
+                    'price' => $sessRequest->fees,
                 ]);
                 if ($result) {
-                    $result = DB::table('users')
-                        ->where('id',$users->id)
+                    $lastId = DB::getPdo()->lastInsertId();
+                    $rows = DB::table('doctors')
+                        ->join('users', 'users.id', '=', 'doctors.doctor_id')
+                        ->where('users.id', $sessRequest->dr_id)
+                        ->first();
+                    if($rows->in_timezone == 'AM'){
+                        $inTime = $rows->in_time;
+                    }
+                    if($rows->in_timezone == 'PM'){
+                        $inTime = $rows->in_time+12;
+                    }
+                    if($rows->out_timezone == 'AM'){
+                        $outTime = $rows->out_time;
+                    }
+                    if($rows->out_timezone == 'PM'){
+                        $outTime = $rows->out_time+12;
+                    }
+                    $timeDifference = $outTime - $inTime;
+                    $timSlot =15;
+                    $totalSerial = ($timeDifference*60)/$timSlot;
+                    $rowsDr = DB::table('dr_apportionment')
+                        ->where('dr_id', $sessRequest->dr_id)
+                        ->where('type', $sessRequest->type)
+                        ->where('date', $sessRequest->date)
+                        ->orderBy('id','desc')
+                        ->skip(1)
+                        ->take(1)
+                        ->first();
+
+                    if(!empty($rowsDr->serial)){
+                        $currSerial = $rowsDr->serial+1;
+                    }
+                    else{
+                        $currSerial = 1;
+                    }
+                    $timeMode = $currSerial % 4;
+                    $hour = (int) floor( $currSerial/4);
+                    $totalHour = $inTime+$hour;
+                    if($timeMode == 1){
+                        $totalMinutes = 15;
+                    }
+                    if($timeMode == 2){
+                        $totalMinutes = 30;
+                    }
+                    if($timeMode == 3){
+                        $totalMinutes = 45;
+                    }
+                    if($timeMode == 0){
+                        $totalMinutes = '00';
+                    }
+                    $result =DB::table('dr_apportionment')
+                        ->where('id', $lastId)
                         ->update([
-                            'working_status' =>2,
+                            'serial' =>  $currSerial,
+                            'time' =>  $totalHour.':'.$totalMinutes,
                         ]);
-                    return back()->with('successMessage', 'সফল্ভাবে সম্পন্ন্য হয়েছে।');
-                } else {
-                    return back()->with('errorMessage', 'আবার চেষ্টা করুন।');
+                    if($result){
+                        return redirect()->to('myDrAppointment')->with('successMessage', 'ডাক্তার এর ফোন নাম্বারঃ '.$rows->phone.' ভিডিও কল করতে পারেন অথবা কল করতে পারেন।আপনার সিরিয়াল নম্বর:'. $currSerial. ' আপনার ভিসিট টাইম আনুমানিক: '.$totalHour.':'.$totalMinutes);
+                    }
+                    else{
+                        return back()->with('errorMessage', 'আবার চেষ্টা করুন।');
+                    }
                 }
             }
             else{
@@ -278,22 +389,49 @@ class MedicalServiceController extends Controller
     }
     public function insertTherapyAppointment(Request $request){
         try{
-            if($request) {
+            $status = $request->status;
+            $type = 'Therapy Appointment';
+            $msg = $request->msg;
+            $tx_id = $request->tx_id;
+            $bank_tx_id = $request->bank_tx_id;
+            $amount = $request->amount;
+            $bank_status = $request->bank_status;
+            $sp_code = $request->sp_code;
+            $sp_code_des = $request->sp_code_des;
+            $sp_payment_option = $request->sp_payment_option;
+            $date = date('Y-m-d');
+            $result = DB::table('payment_info')->insert([
+                'user_id' => Cookie::get('user_id'),
+                'status' => $status,
+                'type' => $type,
+                'msg' => $msg,
+                'tx_id' => $tx_id,
+                'bank_tx_id' => $bank_tx_id,
+                'amount' => $amount,
+                'bank_status' => $bank_status,
+                'sp_code' => $sp_code,
+                'sp_code_des' => $sp_code_des,
+                'sp_payment_option' => $sp_payment_option,
+            ]);
+            if($result) {
+                $sessRequest = json_encode(Session::get('therapyAppointmentRequest'));
+                $sessRequest = json_decode($sessRequest);
                 $result = DB::table('therapy_appointment')->insert([
-                    'therapy_fees_id' => $request->tf_id,
+                    'tx_id' => $tx_id,
+                    'therapy_fees_id' => $sessRequest->tf_id,
                     'user_id' => Cookie::get('user_id'),
-                    'date' => $request->date,
-                    'patient_name' => $request->patient_name,
-                    'age' => $request->age,
-                    'problem' => $request->problem,
-                    'address' => $request->patient_address,
-                    'price' => $request->fees,
+                    'date' => $sessRequest->date,
+                    'patient_name' => $sessRequest->patient_name,
+                    'age' => $sessRequest->age,
+                    'problem' => $sessRequest->problem,
+                    'address' => $sessRequest->patient_address,
+                    'price' => $sessRequest->fees,
                 ]);
                 if ($result) {
                     $lastId = DB::getPdo()->lastInsertId();
                     $rowsDr = DB::table('therapy_appointment')
-                        ->where('therapy_fees_id', $request->tf_id)
-                        ->where('date', $request->date)
+                        ->where('therapy_fees_id', $sessRequest->tf_id)
+                        ->where('date', $sessRequest->date)
                         ->orderBy('id','desc')
                         ->skip(1)
                         ->take(1)
@@ -310,7 +448,7 @@ class MedicalServiceController extends Controller
                             'serial' =>  $currSerial,
                         ]);
                     if($result){
-                        return back()->with('successMessage', 'আপনার সিরিয়াল নম্বর: = '. $currSerial. '। প্রতিটি  সিরিয়াল টাইম = '.$request->time.' মিনিট।');
+                        return redirect()->to('myTherapyAppointment')->with('successMessage', 'আপনার সিরিয়াল নম্বর: = '. $currSerial. '। প্রতিটি  সিরিয়াল টাইম = '.$sessRequest->time.' মিনিট।');
                     }
                     else{
                         return back()->with('errorMessage', 'আবার চেষ্টা করুন।');
@@ -320,7 +458,7 @@ class MedicalServiceController extends Controller
                 }
             }
             else{
-                return back()->with('errorMessage', 'ফর্ম পুরন করুন।');
+                return back()->with('errorMessage', 'আবার চেষ্টা করুন।');
             }
         }
         catch(\Illuminate\Database\QueryException $ex){
@@ -357,22 +495,49 @@ class MedicalServiceController extends Controller
     }
     public function insertDiagnosticAppointment(Request $request){
         try{
-            if($request) {
+            $status = $request->status;
+            $type = 'Diagnostic Appointment';
+            $msg = $request->msg;
+            $tx_id = $request->tx_id;
+            $bank_tx_id = $request->bank_tx_id;
+            $amount = $request->amount;
+            $bank_status = $request->bank_status;
+            $sp_code = $request->sp_code;
+            $sp_code_des = $request->sp_code_des;
+            $sp_payment_option = $request->sp_payment_option;
+            $date = date('Y-m-d');
+            $result = DB::table('payment_info')->insert([
+                'user_id' => Cookie::get('user_id'),
+                'status' => $status,
+                'type' => $type,
+                'msg' => $msg,
+                'tx_id' => $tx_id,
+                'bank_tx_id' => $bank_tx_id,
+                'amount' => $amount,
+                'bank_status' => $bank_status,
+                'sp_code' => $sp_code,
+                'sp_code_des' => $sp_code_des,
+                'sp_payment_option' => $sp_payment_option,
+            ]);
+            if($result) {
+                $sessRequest = json_encode(Session::get('diagnosticAppointmentRequest'));
+                $sessRequest = json_decode($sessRequest);
                 $result = DB::table('diagonostic_appointment')->insert([
-                    'diagnostic_fees_id' => $request->df_id,
+                    'tx_id' => $tx_id,
+                    'diagnostic_fees_id' => $sessRequest->df_id,
                     'user_id' => Cookie::get('user_id'),
-                    'date' => $request->date,
-                    'patient_name' => $request->patient_name,
-                    'age' => $request->age,
-                    'problem' => $request->problem,
-                    'address' => $request->patient_address,
-                    'price' => $request->fees,
+                    'date' => $sessRequest->date,
+                    'patient_name' => $sessRequest->patient_name,
+                    'age' => $sessRequest->age,
+                    'problem' => $sessRequest->problem,
+                    'address' => $sessRequest->patient_address,
+                    'price' => $sessRequest->fees,
                 ]);
                 if ($result) {
                     $lastId = DB::getPdo()->lastInsertId();
                     $rowsDr = DB::table('diagonostic_appointment')
-                        ->where('diagnostic_fees_id', $request->df_id)
-                        ->where('date', $request->date)
+                        ->where('diagnostic_fees_id', $sessRequest->df_id)
+                        ->where('date', $sessRequest->date)
                         ->orderBy('id','desc')
                         ->skip(1)
                         ->take(1)
@@ -389,18 +554,18 @@ class MedicalServiceController extends Controller
                             'serial' =>  $currSerial,
                         ]);
                     if($result){
-                        return back()->with('successMessage', 'আপনার সিরিয়াল নম্বর: = '. $currSerial. '। প্রতিটি  সিরিয়াল টাইম = '.$request->time.' মিনিট।');
+                        return redirect()->to('myDiagnosticAppointment')->with('successMessage', 'আপনার সিরিয়াল নম্বর: = '. $currSerial. '। প্রতিটি  সিরিয়াল টাইম = '.$sessRequest->time.' মিনিট।');
                     }
                     else{
                         return back()->with('errorMessage', 'আবার চেষ্টা করুন।');
                     }
-                    return back()->with('successMessage', 'সফল্ভাবে সম্পন্ন্য হয়েছে।');
-                } else {
+                }
+                else {
                     return back()->with('errorMessage', 'আবার চেষ্টা করুন।');
                 }
             }
             else{
-                return back()->with('errorMessage', 'ফর্ম পুরন করুন।');
+                return back()->with('errorMessage', 'আবার চেষ্টা করুন।');
             }
         }
         catch(\Illuminate\Database\QueryException $ex){

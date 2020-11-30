@@ -516,6 +516,11 @@
                         <i class="fa fa-medkit"></i> <span>ডোনেশন রিপোর্ট</span>
                     </a>
                 </li>
+                <li class="@yield('dealerProductAdmin')">
+                    <a href="{{ url('dealerProductAdmin') }}">
+                        <i class="fa fa-user"></i> <span>ডিলার পণ্য রিপোর্ট</span>
+                    </a>
+                </li>
                 @endif
                 <li class="header">ব্যবস্থাপনা</li>
                 @if(Cookie::get('user_type') == 15)

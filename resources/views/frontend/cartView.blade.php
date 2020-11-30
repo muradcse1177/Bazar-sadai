@@ -61,6 +61,10 @@
                     @if(Cookie::get('user_id') != null && $count >0)
                         {{ Form::open(array('url' => 'getPaymentCartView',  'method' => 'post')) }}
                         {{ csrf_field() }}
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" id="cash" name="cash">
+                            <label class="form-check-label" for="cash">ক্যাশ অন ডেলিভারি</label>
+                        </div>
                         <h4>
                             <a href='#'>
                                 <input type="hidden" class="in_donate" name="donate" value="">

@@ -936,7 +936,7 @@ class AddressController extends Controller
         try{
 
             if($request->id) {
-                $result =DB::table('c_ward')
+                $result =DB::table('c_wards')
                     ->where('id', $request->id)
                     ->update([
                         'status' =>  0,

@@ -54,7 +54,7 @@
                     <?php
 
                     if(Cookie::get('user') != null) {?>
-                    <h4><a href='{{url('productSales/'.$products->id)}}'>
+                    <h4><a href='{{url('paymentFromVariousMarket/'.$products->id)}}'>
                             <button type='button' class='btn allButton active'>অর্ডার প্লেস করুন</button></a></h4>
                     <?php }
 

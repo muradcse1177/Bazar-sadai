@@ -16,7 +16,7 @@
             {{ $message }}
         </div>
     @endif
-    {{ Form::open(array('url' => 'insertTransport',  'method' => 'post')) }}
+    {{ Form::open(array('url' => 'insertTicketPayment',  'method' => 'post')) }}
     {{ csrf_field() }}
     <div class="row">
         <div class="card">

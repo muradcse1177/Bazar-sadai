@@ -249,4 +249,42 @@ class DealerController extends Controller
             return back()->with('errorMessage', $ex->getMessage());
         }
     }
+    public function dealerProductAdmin (Request $request){
+        try{
+
+            $rows = DB::table('products')->where('status', 1)
+                ->orderBy('id', 'DESC')->Paginate(20);
+            return view('backend.dealerProductAdmin', ['products' => $rows]);
+        }
+        catch(\Illuminate\Database\QueryException $ex){
+            return back()->with('errorMessage', $ex->getMessage());
+        }
+    }
+    public function getAllDealerAdmin(Request $request){
+        try{
+            $rows = DB::table('users')
+                ->where('status', 1)
+                ->where('user_type', 7)
+                ->get();
+            return response()->json(array('data'=>$rows));
+        }
+        catch(\Illuminate\Database\QueryException $ex){
+            return response()->json(array('data'=>$ex->getMessage()));
+        }
+    }
+    public function searchDealerProductsAdmin(Request $request){
+        try{
+            $rows = DB::table('products')
+                ->select('*','product_assign.id as p_id')
+                ->join('product_assign','product_assign.product_id','=','products.id')
+                ->where('product_assign.dealer_id', $request->dealer)
+                ->where('products.status', 1)
+                ->orderBy('products.id', 'ASC')
+                ->Paginate(100);
+            return view('backend.dealerProductAdmin', ['products' => $rows]);
+        }
+        catch(\Illuminate\Database\QueryException $ex){
+            return back()->with('errorMessage', $ex->getMessage());
+        }
+    }
 }

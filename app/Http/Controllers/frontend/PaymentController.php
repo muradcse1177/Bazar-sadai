@@ -12,6 +12,9 @@ use smasif\ShurjopayLaravelPackage\ShurjopayService;
 class PaymentController extends Controller
 {
    public function getPaymentCartView(Request $request){
+       if($request->cash == 'on') {
+           return redirect('sales?status=cash');
+       }
        Session::put('donate', $request->donate);
        $customer = DB::table('users')
            ->where('id',Cookie::get('user_id'))
@@ -75,5 +78,66 @@ class PaymentController extends Controller
        $tx_id = $shurjopay_service->generateTxId();
        $success_route = url('sales');
        $shurjopay_service->sendPayment($Total, $success_route);
+   }
+   public function paymentFromVariousMarket($id){
+       $rows = DB::table('seller_product')
+           ->where('id', $id)
+           ->first();
+       $price  = $rows->price;
+       $shurjopay_service = new ShurjopayService();
+       $tx_id = $shurjopay_service->generateTxId();
+       $success_route = url('productSales?id='.$id);
+       $shurjopay_service->sendPayment($price, $success_route);
+   }
+   public function insertTicketPayment(Request $request){
+       Session::put('ticketRequest', $request->all());
+       $rows = DB::table('transport_tickets')
+           ->join('transport_types', 'transport_tickets.transport_id', '=', 'transport_types.tranport_id')
+           ->join('transports_caoch', 'transports_caoch.id', '=', 'transport_tickets.coach_id')
+           ->where('transports_caoch.coach_name', $request->transportName)
+           ->where('from_address', $request->from_address)
+           ->where('to_address', $request->to_address)
+           ->where('transport_types.type', $request->transportType)
+           ->where('transport_tickets.transport_id', $request->ticketGroup)
+           ->where('transport_tickets.time', $request->transportTime)
+           ->where('transport_tickets.status', 1)
+           ->first();
+       $ticket_price = $rows->price*$request->adult;
+       $shurjopay_service = new ShurjopayService();
+       $tx_id = $shurjopay_service->generateTxId();
+       $success_route = url('insertTransport');
+       $shurjopay_service->sendPayment($ticket_price, $success_route);
+   }
+   public function insertDrAppointmentPayment(Request $request){
+       Session::put('drAppointmentRequest', $request->all());
+       $fees = $request->fees;
+       $shurjopay_service = new ShurjopayService();
+       $tx_id = $shurjopay_service->generateTxId();
+       $success_route = url('insertAppointment');
+       $shurjopay_service->sendPayment($fees, $success_route);
+   }
+   public function insertTherapyAppointmentPayment(Request $request){
+       Session::put('therapyAppointmentRequest', $request->all());
+       $fees = $request->fees;
+       $shurjopay_service = new ShurjopayService();
+       $tx_id = $shurjopay_service->generateTxId();
+       $success_route = url('insertTherapyAppointment');
+       $shurjopay_service->sendPayment($fees, $success_route);
+   }
+   public function insertDiagnosticAppointmentPayment(Request $request){
+       Session::put('diagnosticAppointmentRequest', $request->all());
+       $fees = $request->fees;
+       $shurjopay_service = new ShurjopayService();
+       $tx_id = $shurjopay_service->generateTxId();
+       $success_route = url('insertDiagnosticAppointment');
+       $shurjopay_service->sendPayment($fees, $success_route);
+   }
+   public function insertLocalAppointmentPayment(Request $request){
+       Session::put('localAppointmentRequest', $request->all());
+       $fees = $request->fees;
+       $shurjopay_service = new ShurjopayService();
+       $tx_id = $shurjopay_service->generateTxId();
+       $success_route = url('insertLocalAppointment');
+       $shurjopay_service->sendPayment($fees, $success_route);
    }
 }

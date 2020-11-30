@@ -43,7 +43,7 @@
                             ?>
                         </p>
                         <h3 class="card-title">{{"এপয়েনমেন্ট ফর্ম পুরন করুন" }}</h3>
-                        {{ Form::open(array('url' => 'insertDiagnosticAppointment',  'method' => 'post')) }}
+                        {{ Form::open(array('url' => 'insertDiagnosticAppointmentPayment',  'method' => 'post')) }}
                         {{ csrf_field() }}
                         <div class="form-group">
                             <input type="text" class="form-control date" name="date" id="date" placeholder="তারিখ নির্বাচন করুন " required>
