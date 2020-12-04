@@ -37,6 +37,12 @@
                 </div>
                 <div class="col-sm-12">
                     <div class="form-group">
+                        <label><b>শর্তাবলিঃ</b></label>
+                        <div><label>Standard: সর্বোচ্চ  ৭২ ঘণ্টার ভিতর ডেলিভারি দেওয়া হবে।  </label></div>
+                        <div><label>Express: সর্বোচ্চ ৪৮ ঘণ্টার ভিতর ডেলিভারি দেওয়া হবে।</label></div>
+                        <div> <label>Emergency Express: সর্বোচ্চ ২৪ ঘণ্টার ভিতর ডেলিভারি দেওয়া হবে।</label></div>
+                    </div>
+                    <div class="form-group">
                         <label for="dis_name" >কুরিয়ার  ধরণ</label>
                         <select class="form-control select2 type" id="type" name="type" style="width: 100%;" required>
                             <option value="" selected> কুরিয়ার  ধরণ  নির্বাচন করুন</option>
@@ -163,6 +169,22 @@
                     <div class="form-group">
                         <input type="text" class="form-control" name="address" placeholder="ঠিকানা (Address)"  required>
                     </div>
+                    <div class="form-check">
+                        <div>
+                            <label>বুকিংকৃত পণ্য অফিসে কিভাবে পৌছাবেন </label>
+                        </div>
+                        <input class="form-check-input" type="radio" name="bookingPlace" id="bookingPlace1" value="own" required>
+                        <label class="form-check-label" for="bookingPlace1">
+                            নিজ দায়িত্বে
+                        </label>
+                        <input class="form-check-input" type="radio" name="bookingPlace" id="bookingPlace2" value="office">
+                        <label class="form-check-label" for="bookingPlace2">
+                            পিক আপ প্রয়োজন
+                        </label>
+                    </div>
+                    <div class="form-group pickupAddress" style="display: none;">
+                        <input type="text" class="form-control pickupAddress" name="pickupAddress" placeholder=" ঠিকানা (Pickup Address)"  required>
+                    </div>
                 </div>
                 <div class="col-sm-12">
                     @if(Cookie::get('user_id'))
@@ -185,6 +207,14 @@
 @section('js')
     <script>
         $('.select2').select2();
+        $("#bookingPlace2").click(function(){
+            $(".pickupAddress").show();
+            $('.pickupAddress').prop('required',true);
+        });
+        $("#bookingPlace1").click(function(){
+            $(".pickupAddress").hide();
+            $('.pickupAddress').prop('required',false);
+        });
         $(".country").change(function(){
             var id =$(this).val();
             $('.f_country').find('option:not(:first)').remove();

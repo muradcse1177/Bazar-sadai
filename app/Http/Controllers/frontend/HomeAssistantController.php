@@ -1755,7 +1755,8 @@ class HomeAssistantController extends Controller
                             }
                         }
                     }
-                    if(!empty($delivery_man)){ Session::put('d_name', $delivery_man->name);
+                    if(!empty($delivery_man)){
+                        Session::put('d_name', $delivery_man->name);
                         Session::put('d_phone', $delivery_man->phone);
                         $shurjopay_service = new ShurjopayService();
                         $tx_id = $shurjopay_service->generateTxId();
@@ -1774,7 +1775,7 @@ class HomeAssistantController extends Controller
                             'price' => $price,
                         ]);
                         $success_route = url('insertLaundryPaymentInfo');
-                        $shurjopay_service->sendPayment(1, $success_route);
+                        $shurjopay_service->sendPayment($price, $success_route);
                     }
                     else{
                         return redirect()->to('laundryServicePage')->with('errorMessage', 'আপনার এলাকাই কোন কাপড় পরিস্কারক খুজে পাওয়া যায়নি।');

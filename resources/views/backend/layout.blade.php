@@ -159,7 +159,7 @@
                     @php
                         $Image =url("public/asset/images/noImage.jpg");
                         if(Cookie::get('user_photo'))
-                            $Image = Cookie::get('user_photo');
+                            $Image = url(Cookie::get('user_photo'));
                     @endphp
                     <li class="dropdown user user-menu">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown">
@@ -200,10 +200,10 @@
             <!-- Sidebar user panel -->
             <div class="user-panel">
                 <div class="pull-left image">
-                    <img src="{{url('public/asset/dist/img/user2-160x160.jpg')}}" class="img-circle" alt="User Image">
+                    <img src="{{$Image}}" class="img-circle" alt="User Image">
                 </div>
                 <div class="pull-left info">
-                    <p>Alexander Pierce</p>
+                    <p>{{ Cookie::get('user_name') }}</p>
                     <a href="#"><i class="fa fa-circle text-success"></i> Online</a>
                 </div>
             </div>
@@ -347,6 +347,13 @@
                 @if(Cookie::get('user_type') == 31)
                     <li class="@yield('parlorProfile')">
                         <a href ="{{ url('parlorProfile') }}" >
+                            <i class="fa fa-dashboard"></i> <span>আমার প্রোফাইল</span>
+                        </a>
+                    </li>
+                @endif
+                @if(Cookie::get('user_type') == 33)
+                    <li class="@yield('courierProfile')">
+                        <a href ="{{ url('courierProfile') }}" >
                             <i class="fa fa-dashboard"></i> <span>আমার প্রোফাইল</span>
                         </a>
                     </li>

@@ -88,7 +88,7 @@
                         </div>
                         <div class="form-group">
                             <select id="c_uni_name" name ="c_uniid" class="form-control select2 thana_name"  style="width: 100%;" required="required">
-                                <option value="" selected>থানা  নির্বাচন করুন</option>
+                                <option value="" selected>অঞ্চল/থানা  নির্বাচন করুন</option>
                             </select>
                         </div>
                         <div class="form-group">

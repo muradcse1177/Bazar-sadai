@@ -200,6 +200,8 @@ Route::group(['middleware' => ['adminUser']], function () {
     Route::get('dealerProductAdmin', 'backend\DealerController@dealerProductAdmin');
     Route::get('getAllDealerAdmin', 'backend\DealerController@getAllDealerAdmin');
     Route::post('searchDealerProductsAdmin', 'backend\DealerController@searchDealerProductsAdmin');
+    Route::post('changeCourierStatusAdmin', 'backend\CourierController@changeCourierStatus');
+    Route::post('changeCourierMessageAdmin', 'backend\CourierController@changeCourierMessage');
 //Accounting
     Route::get('accounting', 'backend\ReportController@accounting');
     Route::post('insertAccounting', 'backend\ReportController@insertAccounting');
@@ -357,6 +359,7 @@ Route::group(['middleware' => ['buyer']], function () {
     Route::get('myLaundryOrder', 'backend\UserController@myLaundryOrder');
     Route::post('getLaundryWashingByIdUser', 'backend\UserController@getLaundryWashingByIdUser');
     Route::get('myParlorOrder', 'backend\UserController@myParlorOrder');
+    Route::get('myCourierOrder', 'backend\UserController@myCourierOrder');
 });
 Route::group(['middleware' => ['deliveryMan']], function () {
     Route::get('deliveryProfile', 'backend\UserController@deliveryProfile');
@@ -431,6 +434,11 @@ Route::group(['middleware' => ['laundry']], function () {
     Route::get('laundryProfile', 'backend\LaundryController@laundryProfile');
     Route::post('getLaundryWashingByIdOwn', 'backend\LaundryController@getLaundryWashingByIdOwn');
 });
+Route::group(['middleware' => ['courier']], function () {
+    Route::get('courierProfile', 'backend\CourierController@courierProfile');
+    Route::post('changeCourierStatus', 'backend\CourierController@changeCourierStatus');
+    Route::post('changeCourierMessage', 'backend\CourierController@changeCourierMessage');
+});
     Route::get('/clear-cache', function() {
         $exitCode = Artisan::call('cache:clear');
         // return what you want
@@ -485,22 +493,25 @@ Route::group(['middleware' => ['laundry']], function () {
         Route::get('/', 'backend\GuardController@guardProfile');
     }
     elseif(Cookie::get('stove') != null){
-        Route::get('stoveProfile', 'backend\StoveController@stoveProfile');
+        Route::get('/', 'backend\StoveController@stoveProfile');
     }
     elseif(Cookie::get('electronics') != null){
-        Route::get('electronicsProfile', 'backend\ElectronicsController@electronicsProfile');
+        Route::get('/', 'backend\ElectronicsController@electronicsProfile');
     }
     elseif(Cookie::get('sanitary') != null){
-        Route::get('sanitaryProfile', 'backend\SanitaryController@sanitaryProfile');
+        Route::get('/', 'backend\SanitaryController@sanitaryProfile');
     }
     elseif(Cookie::get('ac') != null){
-        Route::get('acProfile', 'backend\AcController@acProfile');
+        Route::get('/', 'backend\AcController@acProfile');
     }
     elseif(Cookie::get('parlor') != null){
-        Route::get('parlorProfile', 'backend\ParlorController@parlorProfile');
+        Route::get('/', 'backend\ParlorController@parlorProfile');
     }
     elseif(Cookie::get('laundry') != null){
-        Route::get('laundryProfile', 'backend\LaundryController@laundryProfile');
+        Route::get('/', 'backend\LaundryController@laundryProfile');
+    }
+    elseif(Cookie::get('/') != null){
+        Route::get('/', 'backend\CourierController@courierProfile');
     }
     else{
         Route::get('/', 'frontend\FrontController@homepageManager');
@@ -674,3 +685,4 @@ Route::group(['middleware' => ['laundry']], function () {
     Route::get('insertProductServicingPaymentInfo', 'frontend\HomeAssistantController@insertProductServicingPaymentInfo');
     Route::get('insertParlorPaymentInfo', 'frontend\HomeAssistantController@insertParlorPaymentInfo');
     Route::get('insertLaundryPaymentInfo', 'frontend\HomeAssistantController@insertLaundryPaymentInfo');
+    Route::get('insertCourierPaymentInfo', 'frontend\TransportController@insertCourierPaymentInfo');

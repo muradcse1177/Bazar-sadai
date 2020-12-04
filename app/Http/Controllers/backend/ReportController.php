@@ -749,8 +749,9 @@ class ReportController extends Controller
     }
     public function courierReport(Request $request){
         $rows = DB::table('courier_booking')
-            ->select('*','naming1s.name as n_name','courier_type.name as c_name')
+            ->select('*','naming1s.name as n_name','courier_type.name as c_name','courier_status.status as c_status','courier_status.id as c_id')
             ->join('courier_type','courier_type.id','=','courier_booking.type')
+            ->join('courier_status','courier_status.c_id','=','courier_booking.id')
             ->join('naming1s','naming1s.id','=','courier_booking.f_country')
             ->get();
         $booking =array();
@@ -920,6 +921,10 @@ class ReportController extends Controller
             $booking[$i]['n_name'] = $couriers->n_name;
             $booking[$i]['cost'] = $couriers->cost;
             $booking[$i]['weight'] = $couriers->weight;
+            $booking[$i]['tx_id'] = $couriers->tx_id;
+            $booking[$i]['status'] = $couriers->c_status;
+            $booking[$i]['msg'] = $couriers->msg;
+            $booking[$i]['id'] = $couriers->c_id;
             $i++;
 
         }
@@ -933,8 +938,9 @@ class ReportController extends Controller
     }
     public function courierListByDate(Request $request){
         $rows = DB::table('courier_booking')
-            ->select('*','naming1s.name as n_name','courier_type.name as c_name')
+            ->select('*','naming1s.name as n_name','courier_type.name as c_name','courier_status.status as c_status','courier_status.id as c_id')
             ->join('courier_type','courier_type.id','=','courier_booking.type')
+            ->join('courier_status','courier_status.c_id','=','courier_booking.id')
             ->join('naming1s','naming1s.id','=','courier_booking.f_country')
             ->whereBetween('date',array($request->from_date,$request->to_date))
             ->get();
@@ -1105,6 +1111,10 @@ class ReportController extends Controller
             $booking[$i]['n_name'] = $couriers->n_name;
             $booking[$i]['cost'] = $couriers->cost;
             $booking[$i]['weight'] = $couriers->weight;
+            $booking[$i]['tx_id'] = $couriers->tx_id;
+            $booking[$i]['status'] = $couriers->c_status;
+            $booking[$i]['msg'] = $couriers->msg;
+            $booking[$i]['id'] = $couriers->c_id;
             $i++;
 
         }

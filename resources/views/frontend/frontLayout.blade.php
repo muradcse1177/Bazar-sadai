@@ -204,6 +204,7 @@
                                     <li><a href="{{url('myProductServicingOrder')}}">পণ্য সার্ভিসিং অর্ডার</a></li>
                                     <li><a href="{{url('myLaundryOrder')}}">লন্ড্রি অর্ডার</a></li>
                                     <li><a href="{{url('myParlorOrder')}}">পার্লার সার্ভিস অর্ডার</a></li>
+                                    <li><a href="{{url('myCourierOrder')}}">কুরিয়ার সার্ভিস অর্ডার</a></li>
                                 </ul>
                             </li>
                         @endif
@@ -217,6 +218,12 @@
                 <div class="navbar-custom-menu">
                     <ul class="nav navbar-nav">
                         <!-- Messages: style can be found in dropdown.less-->
+                        <li class="dropdown messages-menu">
+                            <!-- Menu toggle button -->
+                            <a href="{{url('homepage')}}" class="dropdown-toggle" id="homePage">
+                                <i class="fa fa-home"></i>
+                            </a>
+                        </li>
                         <li class="dropdown messages-menu">
                             <!-- Menu toggle button -->
                             <a href="" class="dropdown-toggle" data-toggle="dropdown" id="backButton">

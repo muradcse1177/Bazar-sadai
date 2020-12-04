@@ -121,6 +121,13 @@ class AuthController extends Controller
                             Cookie::queue('parlor', $rows->id, time()+31556926 ,'/');
                             return redirect()->to('parlorProfile');
                         }
+                        elseif($role==33){
+                            Cookie::queue('courier', $rows->id, time()+31556926 ,'/');
+                            return redirect()->to('courierProfile');
+                        }
+                        else{
+                            return redirect()->to('login');
+                        }
                     }
                     else{
                         return back()->with('errorMessage', 'পাসওয়ার্ড ভুল দিয়েছেন।');

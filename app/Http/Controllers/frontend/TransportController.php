@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
+use smasif\ShurjopayLaravelPackage\ShurjopayService;
 
 class TransportController extends Controller
 {
@@ -682,28 +683,103 @@ class TransportController extends Controller
             $add_part5 = $request->naming5;
             $f_country =$request->f_country;
         }
+        //common
+        $user_info = DB::table('users')
+            ->select('*')
+            ->where('id', Cookie::get('user_id'))
+            ->first();
+        $working_status = 1;
+        $user_type = 33;
+        $delivery_man = DB::table('users')
+            ->where('user_type',  $user_type)
+            ->where('address_type',  $user_info->address_type)
+            ->where('add_part1',  $user_info->add_part1)
+            ->where('add_part2',  $user_info->add_part2)
+            ->where('add_part3',  $user_info->add_part3)
+            ->where('working_status',  $working_status)
+            ->where('status',  1)
+            ->first();
 
-        $result = DB::table('courier_booking')->insert([
-            'user_id' => Cookie::get('user_id'),
-            'date' => Date('Y-m-d'),
-            'type' => $request->type,
-            'weight' => $request->weight,
-            'country' => $request->country,
-            'f_country' => $f_country,
-            'address_type' => $addressGroup,
-            'add_part1' => $add_part1,
-            'add_part2' => $add_part2,
-            'add_part3' => $add_part3,
-            'add_part4' => $add_part4,
-            'add_part5' => $add_part5,
-            'address' => $request->address,
-            'cost' => $request->lastPrice,
-        ]);
-        if ($result) {
-            return redirect('courier')->with('successMessage', 'সফল্ভাবে সম্পন্ন্য হয়েছে।');
-        } else {
-            return back()->with('errorMessage', 'আবার চেষ্টা করুন।');
+        if(!empty($delivery_man)){
+
+            Session::put('d_name', $delivery_man->name);
+            Session::put('d_phone', $delivery_man->phone);
+            $shurjopay_service = new ShurjopayService();
+            $tx_id = $shurjopay_service->generateTxId();
+
+            $result = DB::table('courier_booking')->insert([
+                'user_id' => Cookie::get('user_id'),
+                'date' => Date('Y-m-d'),
+                'type' => $request->type,
+                'tx_id' => $tx_id,
+                'weight' => $request->weight,
+                'country' => $request->country,
+                'f_country' => $f_country,
+                'address_type' => $addressGroup,
+                'add_part1' => $add_part1,
+                'add_part2' => $add_part2,
+                'add_part3' => $add_part3,
+                'add_part4' => $add_part4,
+                'add_part5' => $add_part5,
+                'address' => $request->address,
+                'cost' => $request->lastPrice,
+                'pickup' => $request->bookingPlace,
+                'pickup_address' => $request->pickupAddress,
+                'delivery_id' => $delivery_man->id,
+            ]);
+            if($result){
+                $lastId = DB::getPdo()->lastInsertId();
+                $result = DB::table('courier_status')->insert([
+                    'c_id' => $lastId,
+                    'status' => 'Assigned',
+                    'msg' => 'Assigned to courier agent.',
+                ]);
+                $success_route = url('insertCourierPaymentInfo');
+                $shurjopay_service->sendPayment(1, $success_route);
+            }
         }
-
+        else{
+            return redirect()->to('courier')->with('errorMessage', 'আপনার এলাকাই আমাদের কোন কুরিয়ার এজেন্ট নেই।');
+        }
+    }
+    public function insertCourierPaymentInfo(Request $request){
+        $name = Session::get('d_name');
+        $phone =Session::get('d_phone');
+        $status = $request->status;
+        $type = 'Courier';
+        $msg = $request->msg;
+        $tx_id = $request->tx_id;
+        $bank_tx_id = $request->bank_tx_id;
+        $amount = $request->amount;
+        $bank_status = $request->bank_status;
+        $sp_code = $request->sp_code;
+        $sp_code_des = $request->sp_code_des;
+        $sp_payment_option = $request->sp_payment_option;
+        $date = date('Y-m-d');
+        if($bank_tx_id){
+            $result = DB::table('payment_info')->insert([
+                'user_id' => Cookie::get('user_id'),
+                'status' => $status,
+                'type' => $type,
+                'msg' => $msg,
+                'tx_id' => $tx_id,
+                'bank_tx_id' => $bank_tx_id,
+                'amount' => $amount,
+                'bank_status' => $bank_status,
+                'sp_code' => $sp_code,
+                'sp_code_des' => $sp_code_des,
+                'sp_payment_option' => $sp_payment_option,
+            ]);
+            session()->forget('d_name');
+            session()->forget('d_phone');
+            return redirect()->to('courier')->with('successMessage', 'সফল্ভাবে অর্ডার সম্পন্ন্য হয়েছে। '.$name.' আপনার অর্ডার এর দায়িত্বে আছে। প্রয়োজনে '.$phone.' কল করুন।'  );
+        }
+        else{
+            $c_user = DB::table('courier_booking')->where('user_id', Cookie::get('user_id'))->orderBy('id','desc')->first();
+            $c_delete = DB::table('courier_booking')->where('id', $c_user->id)->delete();
+            session()->forget('d_name');
+            session()->forget('d_phone');
+            return redirect()->to('courier')->with('errorMessage', 'আবার চেষ্টা করুন।'  );
+        }
     }
 }
