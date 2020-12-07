@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Session;
 
@@ -405,5 +406,94 @@ class AuthController extends Controller
         $search_array= array("1", "2", "3", "4", "5", "6", "7", "8", "9", "0");
         $bn_number = str_replace($search_array, $replace_array, $number);
         return $bn_number;
+    }
+    public function forgotPasswordLink(){
+        return view('frontend.forgotPassForm');
+    }
+    public function verificationCodeForm(){
+        return view('frontend.verificationCodeForm');
+    }
+    public function nePasswordForm(){
+        return view('frontend.nePasswordForm');
+    }
+    public function verifyEmail(Request $request){
+        $rows = DB::table('users')->where('email', $request->email)->first();
+        if(!empty($rows)){
+            $email = $rows->email;
+            $userName = $rows->name;
+            $dataNum = substr(str_shuffle(str_repeat($x='0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ', ceil(8/strlen($x)) )),1,8);
+            $data = array(
+                'userName'=> $userName,
+                'data'=> $dataNum,
+            );
+            Mail::send('frontend.forgotPassEmailFormat',$data, function($message) use($email,$userName) {
+                $message->to($email, $userName)->subject('Password recovery email.');
+                $message->from('support@bazar-sadai.com','Bazar-sadai.com');
+            });
+            if (Mail::failures()) {
+                return back()->with('errorMessage', 'আবার চেষ্টা করুন।');
+            }
+            else{
+                $result =DB::table('users')
+                    ->where('id', $rows->id)
+                    ->update([
+                        'reset_code' => $dataNum,
+                    ]);
+                if($result){
+                    return view('frontend.verificationCodeForm', ['id' =>  $rows->id]);
+                }
+                else{
+                    return back()->with('errorMessage', 'আবার চেষ্টা করুন।');
+                }
+            }
+        }
+        else{
+            return back()->with('errorMessage', 'আপনাকে খুজে পাওয়া যাচ্ছে না!');
+        }
+    }
+    public function verifyForgetCode(Request $request){
+        if($request->code){
+            $rows = DB::table('users')->where('id', $request->id)->first();
+            if($request->code == $rows->reset_code){
+                return view('frontend.nePasswordForm', ['id' =>  $rows->id]);
+            }
+            else{
+                return back()->with('errorMessage', 'সঠিক কোড প্রবেশ করুন!');
+            }
+        }
+        else{
+            return back()->with('errorMessage', 'ফর্ম পুরন করুন।');
+        }
+
+    }
+    public function passwordUpdate(Request $request){
+        if($request->password){
+            $password = Hash::make($request->password);
+            $result =DB::table('users')
+                ->where('id', $request->id)
+                ->update([
+                    'password' => $password,
+                ]);
+            if($result){
+                $result =DB::table('users')
+                    ->where('id', $request->id)
+                    ->update([
+                        'reset_code' => '',
+                    ]);
+                if($result){
+                    return view('frontend.login');
+                }
+                else{
+                    return back()->with('errorMessage', 'আবার চেষ্টা করুন।');
+                }
+            }
+            else{
+                return back()->with('errorMessage', 'আবার চেষ্টা করুন।');
+            }
+        }
+        else{
+            return back()->with('errorMessage', 'ফর্ম পুরন করুন।');
+        }
+
     }
 }

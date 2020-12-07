@@ -701,7 +701,6 @@ class TransportController extends Controller
             ->first();
 
         if(!empty($delivery_man)){
-
             Session::put('d_name', $delivery_man->name);
             Session::put('d_phone', $delivery_man->phone);
             $shurjopay_service = new ShurjopayService();
@@ -772,7 +771,7 @@ class TransportController extends Controller
             ]);
             session()->forget('d_name');
             session()->forget('d_phone');
-            return redirect()->to('courier')->with('successMessage', 'সফল্ভাবে অর্ডার সম্পন্ন্য হয়েছে। '.$name.' আপনার অর্ডার এর দায়িত্বে আছে। প্রয়োজনে '.$phone.' কল করুন।'  );
+            return redirect()->to('myCourierOrder')->with('successMessage', 'সফল্ভাবে অর্ডার সম্পন্ন্য হয়েছে। '.$name.' আপনার অর্ডার এর দায়িত্বে আছে। প্রয়োজনে '.$phone.' কল করুন।'  );
         }
         else{
             $c_user = DB::table('courier_booking')->where('user_id', Cookie::get('user_id'))->orderBy('id','desc')->first();

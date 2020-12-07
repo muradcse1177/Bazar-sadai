@@ -519,6 +519,13 @@ Route::group(['middleware' => ['courier']], function () {
     Route::get('login', function () {
         return view('frontend.login');
     });
+    //Forgot Password
+    Route::get('forgotPasswordLink', 'frontend\AuthController@forgotPasswordLink');
+    Route::post('verifyEmail', 'frontend\AuthController@verifyEmail');
+    Route::post('verifyForgetCode', 'frontend\AuthController@verifyForgetCode');
+    Route::post('passwordUpdate', 'frontend\AuthController@passwordUpdate');
+
+
     Route::post('getUserList', 'backend\UserController@getUserList');
     Route::post('insertUser', 'backend\UserController@insertUser');
     Route::get('changeWorkingStatusProvider', 'backend\UserController@changeWorkingStatusProvider');

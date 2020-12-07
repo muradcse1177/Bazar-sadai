@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Session;
 use smasif\ShurjopayLaravelPackage\ShurjopayService;
 
@@ -809,18 +810,7 @@ class FrontController extends Controller
                     ->where('status',  1)
                     ->get();
                 if($delivery_man->count()>0){
-                    $result =DB::table('users')
-                        ->where('id', $delivery_man[0]->id)
-                        ->update([
-                            'working_status' => 2,
-                        ]);
-                    $result =DB::table('v_assign')
-                        ->where('id', $salesid)
-                        ->update([
-                            'v_id' => $delivery_man[0]->id,
-                            'v_type' => $delivery_man[0]->user_type,
-                            'v_status' => 2,
-                        ]);
+
                 }
                 else{
                     $delivery_man = DB::table('users')
@@ -835,18 +825,7 @@ class FrontController extends Controller
                         ->where('status',  1)
                         ->get();
                     if($delivery_man->count()>0){
-                        $result =DB::table('users')
-                            ->where('id', $delivery_man[0]->id)
-                            ->update([
-                                'working_status' => 2,
-                            ]);
-                        $result =DB::table('v_assign')
-                            ->where('id', $salesid)
-                            ->update([
-                                'v_id' => $delivery_man[0]->id,
-                                'v_type' => $delivery_man[0]->user_type,
-                                'v_status' => 2,
-                            ]);
+
                     }
                     else{
                         $delivery_man = DB::table('users')
@@ -861,35 +840,59 @@ class FrontController extends Controller
                             ->where('status',  1)
                             ->get();
                         if($delivery_man->count()>0){
-                            $result =DB::table('users')
-                                ->where('id', $delivery_man[0]->id)
-                                ->update([
-                                    'working_status' => 2,
-                                ]);
-                            $result =DB::table('v_assign')
-                                ->where('id', $salesid)
-                                ->update([
-                                    'v_id' => $delivery_man[0]->id,
-                                    'v_type' => $delivery_man[0]->user_type,
-                                    'v_status' => 2,
-                                ]);
-                        }
-                        else{
-                            $result =DB::table('v_assign')
-                                ->where('id', $salesid)
-                                ->update([
-                                    'v_id' => 0,
-                                    'v_type' => 0,
-                                    'v_status' => 0,
-                                ]);
+
                         }
                     }
                 }
                 if($delivery_man->count()>0){
-                    return redirect()->to('myProductOrder')->with('successMessage', 'সফল্ভাবে অর্ডার সম্পন্ন্য হয়েছে। '.$delivery_man[0]->name.' আপনার অর্ডার এর দায়িত্বে আছে। প্রয়োজনে '.$delivery_man[0]->phone.' কল করুন।'  );
+                    $data = array(
+                        'userName'=> $user_info->name,
+                        'dev_name'=> $delivery_man[0]->name,
+                        'dev_phone'=> $delivery_man[0]->phone,
+                        'data' => $stmt,
+                        'tx_id' => $tx_id,
+                    );
+                    $userName = $user_info->name;
+                    $userPhone = $user_info->phone;
+                    $dealerName = $delear->name;
+                    $userEmail = $user_info->email;
+                    $dealerEmail = $delear->email;
+                    $deliveryEmail = $delivery_man[0]->email;
+                    $salesEmail = 'sales@bazar-sadai.com';
+                    $emails = [$userEmail, $dealerEmail,$salesEmail,$deliveryEmail];
+                    Mail::send('frontend.salesEmailFormat',$data, function($message) use($emails,$userName,$userPhone) {
+                        $message->to($emails)->subject('Daily bazar order by '.$userName.' ('.$userPhone. ' )');
+                        $message->from('support@bazar-sadai.com','Bazar-sadai.com');
+                    });
+                    if (Mail::failures()) {
+                        return back()->with('errorMessage', 'আবার চেষ্টা করুন।');
+                    }
+                    else{
+                        $result =DB::table('users')
+                            ->where('id', $delivery_man[0]->id)
+                            ->update([
+                                'working_status' => 2,
+                            ]);
+                        $result =DB::table('v_assign')
+                            ->where('id', $salesid)
+                            ->update([
+                                'v_id' => $delivery_man[0]->id,
+                                'v_type' => $delivery_man[0]->user_type,
+                                'v_status' => 2,
+                            ]);
+                        return redirect()->to('myProductOrder')->with('successMessage', 'সফল্ভাবে অর্ডার সম্পন্ন্য হয়েছে। '.$delivery_man[0]->name.' আপনার অর্ডার এর দায়িত্বে আছে। প্রয়োজনে '.$delivery_man[0]->phone.' কল করুন।'  );
+
+                    }
                 }
                 else{
-                    return redirect()->to('myProductOrder')->with('successMessage', 'অর্ডার প্রোসেসিং আছে। ');
+                    $result =DB::table('v_assign')
+                        ->where('id', $salesid)
+                        ->update([
+                            'v_id' => 0,
+                            'v_type' => 0,
+                            'v_status' => 0,
+                        ]);
+                    return redirect()->to('myProductOrder')->with('successMessage', 'আপনার অর্ডার প্রোসেসিং আছে।');
                 }
 
             }

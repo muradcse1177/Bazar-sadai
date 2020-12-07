@@ -36,7 +36,7 @@
                 <!-- /.col -->
             </div>
         {{ Form::close() }}
-        <a href="#">পাসওয়ার্ড ভুলে গেছি</a><br>
+        <a href="{{url('forgotPasswordLink')}}">পাসওয়ার্ড ভুলে গেছি</a><br>
         <a href="{{ url('signup') }}" class="text-center">আমি নতুন মেম্বার</a>
 
     </div>
