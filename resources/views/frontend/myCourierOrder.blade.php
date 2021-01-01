@@ -30,9 +30,9 @@
                             <table class="table table-bordered">
                                 <tr>
                                     <th>তারিখ</th>
-                                    <th>পে আইডি</th>
-                                    <th>স্ট্যাটাস</th>
+                                    <th>অর্ডার আইডি</th>
                                     <th>মেসেজ</th>
+                                    <th>স্ট্যাটাস</th>
                                     <th>ইউজার</th>
                                     <th>ফোন</th>
                                     <th>ওজন</th>
@@ -46,7 +46,11 @@
                                         <td> {{$booking['date']}} </td>
                                         <td> {{$booking['tx_id']}} </td>
                                         <td> {{$booking['status']}}</td>
-                                        <td>{{$booking['msg']}}</td>
+                                        <td>
+                                            <button type="button" rel="tooltip" class="btn btn-success status" data-m="{{$booking['cc_id']}}">
+                                                <i class="fa fa-eye"></i> Status
+                                            </button>
+                                        </td>
                                         <td> {{$booking['user']}} </td>
                                         <td> {{$booking['user_phone']}} </td>
                                         <td> {{$booking['weight']}} </td>
@@ -64,11 +68,44 @@
                 </div>
             </div>
         </div>
+        <div class="modal fade"  tabindex="-1"   id="msgStatusModal"  role="dialog">
+            <div class="modal-dialog modal-medium">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h4 class="modal-title">মেসেজ স্ট্যাটাস</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div class="box-body">
+                            <div id="statusBody">
 
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 @endsection
 @section('js')
     <script>
-
+        $(document).on('click', '.status', function(e){
+            e.preventDefault();
+            var msgId = $(this).data('m');
+            $('#msgStatusModal').modal('show');
+            $.ajax({
+                type: 'GET',
+                url: 'getCourierMessageBuyer',
+                data: {id:msgId},
+                success: function(response){
+                    var data = response.output;
+                    //console.log(data);
+                    $('#statusBody').html(data.list);
+                }
+            });
+        });
     </script>
 @endsection

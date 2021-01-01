@@ -1245,7 +1245,7 @@ class UserController extends Controller
     }
     public function myCourierOrder(Request $request){
         $rows = DB::table('courier_booking')
-            ->select('*','naming1s.name as n_name','courier_type.name as c_name','courier_status.status as c_status','courier_status.id as c_id')
+            ->select('*','naming1s.name as n_name','courier_type.name as c_name','courier_status.status as c_status','courier_status.id as c_id','courier_status.c_id as cc_id')
             ->join('courier_type','courier_type.id','=','courier_booking.type')
             ->join('courier_status','courier_status.c_id','=','courier_booking.id')
             ->join('naming1s','naming1s.id','=','courier_booking.f_country')
@@ -1421,8 +1421,8 @@ class UserController extends Controller
             $booking[$i]['weight'] = $couriers->weight;
             $booking[$i]['tx_id'] = $couriers->tx_id;
             $booking[$i]['status'] = $couriers->c_status;
-            $booking[$i]['msg'] = $couriers->msg;
             $booking[$i]['id'] = $couriers->c_id;
+            $booking[$i]['cc_id'] = $couriers->cc_id;
             $i++;
 
         }

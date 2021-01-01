@@ -317,30 +317,30 @@
 
    <footer class="main-footer" style="background-color: darkgreen; color: white;">
        <!-- Load Facebook SDK for JavaScript -->
-       <div id="fb-root"></div>
-       <script>
-           window.fbAsyncInit = function() {
-               FB.init({
-                   xfbml            : true,
-                   version          : 'v7.0'
-               });
-           };
-           (function(d, s, id) {
-               var js, fjs = d.getElementsByTagName(s)[0];
-               if (d.getElementById(id)) return;
-               js = d.createElement(s); js.id = id;
-               js.src = 'https://connect.facebook.net/en_US/sdk/xfbml.customerchat.js';
-               fjs.parentNode.insertBefore(js, fjs);
-           }(document, 'script', 'facebook-jssdk'));</script>
+{{--       <div id="fb-root"></div>--}}
+{{--       <script>--}}
+{{--           window.fbAsyncInit = function() {--}}
+{{--               FB.init({--}}
+{{--                   xfbml            : true,--}}
+{{--                   version          : 'v7.0'--}}
+{{--               });--}}
+{{--           };--}}
+{{--           (function(d, s, id) {--}}
+{{--               var js, fjs = d.getElementsByTagName(s)[0];--}}
+{{--               if (d.getElementById(id)) return;--}}
+{{--               js = d.createElement(s); js.id = id;--}}
+{{--               js.src = 'https://connect.facebook.net/en_US/sdk/xfbml.customerchat.js';--}}
+{{--               fjs.parentNode.insertBefore(js, fjs);--}}
+{{--           }(document, 'script', 'facebook-jssdk'));</script>--}}
 
-       <!-- Your Chat Plugin code -->
-       <div class="fb-customerchat"
-            attribution=setup_tool
-            page_id="104600097984633"
-            theme_color="#13cf13"
-            logged_in_greeting="হ্যালো, আপনাকে কিভাবে সাহায্য করতে পারি?"
-            logged_out_greeting="হ্যালো, আপনাকে কিভাবে সাহায্য করতে পারি?">
-       </div>
+{{--       <!-- Your Chat Plugin code -->--}}
+{{--       <div class="fb-customerchat"--}}
+{{--            attribution=setup_tool--}}
+{{--            page_id="104600097984633"--}}
+{{--            theme_color="#13cf13"--}}
+{{--            logged_in_greeting="হ্যালো, আপনাকে কিভাবে সাহায্য করতে পারি?"--}}
+{{--            logged_out_greeting="হ্যালো, আপনাকে কিভাবে সাহায্য করতে পারি?">--}}
+{{--       </div>--}}
         <center><strong >&copy; বাজার-সদাই, ২০২০ ।। সার্বিক সহযোগীতায় - <br> <a href="https://parallaxsoft.com/" style="color: white;">Parallax Soft Inc.</a></strong></center>
     </footer>
 </div>

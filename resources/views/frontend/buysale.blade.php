@@ -18,6 +18,12 @@
             padding-right: 0px;
             padding-left: 0px;
         }
+         .market {
+             display: flex;
+             justify-content: center;
+             align-items: center;
+             height: 200px;
+         }
     </style>
 @endsection
 @section('content')
@@ -47,6 +53,17 @@
 
     ?>
     <div class="row">
+        <div class="col-sm-4">
+            <div class="card">
+                <div class="card-body cardBody pCard">
+                    <a href="{{url('bondhonBazar')}}">
+                        <div class="col-md-12 market" style="height: 370px; background-color:darkgreen; color: white; font-size: 45px;">
+                            <p>বন্ধন বাজার</p>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
     <?php
         foreach ($products as $product){
             ?>

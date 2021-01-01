@@ -728,13 +728,18 @@ class TransportController extends Controller
             ]);
             if($result){
                 $lastId = DB::getPdo()->lastInsertId();
+                Session::put('lastId', $lastId);
                 $result = DB::table('courier_status')->insert([
                     'c_id' => $lastId,
                     'status' => 'Assigned',
+                ]);
+                $result = DB::table('courier_status2')->insert([
+                    'm_id' => $lastId,
                     'msg' => 'Assigned to courier agent.',
+                    'date' => date('Y-m-d'),
                 ]);
                 $success_route = url('insertCourierPaymentInfo');
-                $shurjopay_service->sendPayment(1, $success_route);
+                $shurjopay_service->sendPayment($request->lastPrice, $success_route);
             }
         }
         else{
@@ -744,6 +749,7 @@ class TransportController extends Controller
     public function insertCourierPaymentInfo(Request $request){
         $name = Session::get('d_name');
         $phone =Session::get('d_phone');
+        $lastId =Session::get('lastId');
         $status = $request->status;
         $type = 'Courier';
         $msg = $request->msg;
@@ -771,13 +777,17 @@ class TransportController extends Controller
             ]);
             session()->forget('d_name');
             session()->forget('d_phone');
+            session()->forget('lastId');
             return redirect()->to('myCourierOrder')->with('successMessage', 'সফল্ভাবে অর্ডার সম্পন্ন্য হয়েছে। '.$name.' আপনার অর্ডার এর দায়িত্বে আছে। প্রয়োজনে '.$phone.' কল করুন।'  );
         }
         else{
             $c_user = DB::table('courier_booking')->where('user_id', Cookie::get('user_id'))->orderBy('id','desc')->first();
             $c_delete = DB::table('courier_booking')->where('id', $c_user->id)->delete();
+            $c_delete = DB::table('courier_status')->where('c_id', $lastId)->delete();
+            $c_delete = DB::table('courier_status2')->where('m_id', $lastId)->delete();
             session()->forget('d_name');
             session()->forget('d_phone');
+            session()->forget('lastId');
             return redirect()->to('courier')->with('errorMessage', 'আবার চেষ্টা করুন।'  );
         }
     }

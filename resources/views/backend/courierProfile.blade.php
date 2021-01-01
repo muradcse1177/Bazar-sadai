@@ -61,8 +61,13 @@
                                     </button>
                                 </td>
                                 <td>
-                                    <button type="button" rel="tooltip" class="btn btn-success msg" data-msg="{{$booking['id']}}">
-                                        <i class="fa fa-edit"></i>{{$booking['msg']}}
+                                    <button type="button" rel="tooltip" class="btn btn-success msg" data-msg="{{$booking['cc_id']}}">
+                                        <i class="fa fa-edit"></i> Set Message
+                                    </button>
+                                </td>
+                                <td>
+                                    <button type="button" rel="tooltip" class="btn btn-success status" data-m="{{$booking['cc_id']}}">
+                                        <i class="fa fa-eye"></i> Status
                                     </button>
                                 </td>
                                 <td> {{$booking['user']}} </td>
@@ -93,8 +98,8 @@
                                         <label>স্ট্যাটাস</label>
                                         <select class="form-control select2 status" name="status" style="width: 100%;" required>
                                             <option value="" selected>স্ট্যাটাস  নির্বাচন করুন</option>
-                                            <option value="On the way" selected>On the way</option>
-                                            <option value="Delivered" selected>Delivered</option>
+                                            <option value="On the way">On the way</option>
+                                            <option value="Delivered">Delivered</option>
                                         </select>
                                     </div>
                                 </div>
@@ -136,6 +141,26 @@
                         </div>
                     </div>
                 </div>
+                <div class="modal fade"  tabindex="-1"   id="msgStatusModal"  role="dialog">
+                    <div class="modal-dialog modal-medium">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                <h4 class="modal-title">মেসেজ স্ট্যাটাস</h4>
+                            </div>
+                            <div class="modal-body">
+                                <div class="box-body">
+                                    <div id="statusBody">
+
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -157,6 +182,21 @@
                 $('#msgModal').modal('show');
                 var msg = $(this).data('msg');
                 $('#msg').val(msg);
+            });
+            $(document).on('click', '.status', function(e){
+                e.preventDefault();
+                var msgId = $(this).data('m');
+                $('#msgStatusModal').modal('show');
+                $.ajax({
+                    type: 'GET',
+                    url: 'getCourierMessage',
+                    data: {id:msgId},
+                    success: function(response){
+                        var data = response.output;
+                        //console.log(data);
+                        $('#statusBody').html(data.list);
+                    }
+                });
             });
         });
 

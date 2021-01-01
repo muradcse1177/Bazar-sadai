@@ -1549,7 +1549,59 @@ class FrontController extends Controller
             ->get();
         return view('frontend.forHumanity',['products' => $rows]);
     }
+    public function bondhonBazar(){
+        try{
+            if(Cookie::get('user_id') != null) {
+                $customer = DB::table('users')
+                    ->where('id',Cookie::get('user_id'))
+                    ->first();
+                $dealer = DB::table('users')
+                    ->where('add_part1',$customer->add_part1)
+                    ->where('add_part2',$customer->add_part2)
+                    ->where('add_part3',$customer->add_part3)
+                    ->where('address_type',$customer->address_type)
+                    ->where('user_type',7)
+                    ->first();
+                if(!empty($dealer)) {
+                    $dealer_product = DB::table('products')
+                        ->select('*', 'product_assign.id as p_a_id', 'products.id as id')
+                        ->join('product_assign', 'product_assign.product_id', '=', 'products.id')
+                        ->where('products.cat_id', 1)
+                        ->orWhere('products.cat_id', 2)
+                        ->where('products.status', 1)
+                        ->where('product_assign.dealer_id', $dealer->id)
+                        ->orderBy('products.id', 'ASC')->paginate(100);
+                    //dd($dealer_product);
+                    if($dealer_product->count()>0){
+                        $dealer_status['status'] = 1;
+                        //dd($dealer_product);
+                        return view('frontend.productPage', ['products' => $dealer_product,'status' =>$dealer_status]);
+                    }
+                }
+                else{
+                    $dealer_product = DB::table('products')
+                        ->where('products.cat_id', 1)
+                        ->orWhere('products.cat_id', 2)
+                        ->where('status', 1)
+                        ->orderBy('id', 'ASC')->paginate(100);
+                    $dealer_status['status'] = 0;
+                    return view('frontend.productPage', ['products' => $dealer_product ,'status' =>$dealer_status]);
+                }
 
-
+            }
+            else {
+                $dealer_product = DB::table('products')
+                    ->where('products.cat_id', 1)
+                    ->orWhere('products.cat_id', 2)
+                    ->where('status', 1)
+                    ->orderBy('id', 'ASC')->paginate(100);
+                $dealer_status['status'] = 0;
+                return view('frontend.productPage', ['products' => $dealer_product,'status' =>$dealer_status]);
+            }
+        }
+        catch(\Illuminate\Database\QueryException $ex){
+            return back()->with('errorMessage', $ex->getMessage());
+        }
+    }
 
 }

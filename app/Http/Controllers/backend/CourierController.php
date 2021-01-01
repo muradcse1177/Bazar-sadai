@@ -12,7 +12,7 @@ class CourierController extends Controller
 {
     public function courierProfile(Request $request){
         $rows = DB::table('courier_booking')
-            ->select('*','naming1s.name as n_name','courier_type.name as c_name','courier_status.status as c_status','courier_status.id as c_id')
+            ->select('*','naming1s.name as n_name','courier_type.name as c_name','courier_status.status as c_status','courier_status.id as c_id','courier_status.c_id as cc_id')
             ->join('courier_type','courier_type.id','=','courier_booking.type')
             ->join('courier_status','courier_status.c_id','=','courier_booking.id')
             ->join('naming1s','naming1s.id','=','courier_booking.f_country')
@@ -188,8 +188,8 @@ class CourierController extends Controller
             $booking[$i]['weight'] = $couriers->weight;
             $booking[$i]['tx_id'] = $couriers->tx_id;
             $booking[$i]['status'] = $couriers->c_status;
-            $booking[$i]['msg'] = $couriers->msg;
             $booking[$i]['id'] = $couriers->c_id;
+            $booking[$i]['cc_id'] = $couriers->cc_id;
             $i++;
 
         }
@@ -227,11 +227,11 @@ class CourierController extends Controller
     public function changeCourierMessage(Request  $request){
         try{
             if($request->msg) {
-                $result =DB::table('courier_status')
-                    ->where('id', $request->msg)
-                    ->update([
-                        'msg' =>  $request->message,
-                    ]);
+                $result = DB::table('courier_status2')->insert([
+                    'm_id'=> $request->msg,
+                    'msg' =>  $request->message,
+                    'date' =>  date('Y-m-d'),
+                ]);
                 if ($result) {
                     return back()->with('successMessage', 'সফল্ভাবে সম্পন্ন্য হয়েছে।');
                 } else {
@@ -246,6 +246,21 @@ class CourierController extends Controller
         catch(\Illuminate\Database\QueryException $ex){
             return back()->with('errorMessage', $ex->getMessage());
         }
+    }
+    public function getCourierMessageAdmin(Request  $request){
+        $output = array('list'=>'');
+        $rows = DB::table('courier_status2')
+            ->where('m_id',$request->id)
+            ->orderBy('id','desc')
+            ->get();
+        foreach ($rows as $status){
+            $output['list'] .= "
+            <p>Date: $status->date</p>
+            <p>Status: $status->msg</p>
+            <img src='public/asset/images/uparrow.png' height='20' width='20'>
+            ";
+        }
+        return response()->json(array('output'=>$output));
     }
 
 }

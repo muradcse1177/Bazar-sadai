@@ -202,6 +202,7 @@ Route::group(['middleware' => ['adminUser']], function () {
     Route::post('searchDealerProductsAdmin', 'backend\DealerController@searchDealerProductsAdmin');
     Route::post('changeCourierStatusAdmin', 'backend\CourierController@changeCourierStatus');
     Route::post('changeCourierMessageAdmin', 'backend\CourierController@changeCourierMessage');
+    Route::get('getCourierMessageAdmin', 'backend\CourierController@getCourierMessageAdmin');
 //Accounting
     Route::get('accounting', 'backend\ReportController@accounting');
     Route::post('insertAccounting', 'backend\ReportController@insertAccounting');
@@ -360,6 +361,7 @@ Route::group(['middleware' => ['buyer']], function () {
     Route::post('getLaundryWashingByIdUser', 'backend\UserController@getLaundryWashingByIdUser');
     Route::get('myParlorOrder', 'backend\UserController@myParlorOrder');
     Route::get('myCourierOrder', 'backend\UserController@myCourierOrder');
+    Route::get('getCourierMessageBuyer', 'backend\CourierController@getCourierMessageAdmin');
 });
 Route::group(['middleware' => ['deliveryMan']], function () {
     Route::get('deliveryProfile', 'backend\UserController@deliveryProfile');
@@ -438,6 +440,7 @@ Route::group(['middleware' => ['courier']], function () {
     Route::get('courierProfile', 'backend\CourierController@courierProfile');
     Route::post('changeCourierStatus', 'backend\CourierController@changeCourierStatus');
     Route::post('changeCourierMessage', 'backend\CourierController@changeCourierMessage');
+    Route::get('getCourierMessage', 'backend\CourierController@getCourierMessageAdmin');
 });
     Route::get('/clear-cache', function() {
         $exitCode = Artisan::call('cache:clear');
@@ -583,8 +586,8 @@ Route::group(['middleware' => ['courier']], function () {
     Route::get('getTransportPrice', 'frontend\TransportController@getTransportPrice');
     Route::get('searchMedicine', 'frontend\FrontController@searchMedicine');
     Route::get('searchMedicineByLetter/{letter}', 'frontend\FrontController@searchMedicineByLetter');
-    //Route::get('price', 'frontend\TransportController@price');
     Route::get('serviceSubCategoryMedical/{id}', 'frontend\FrontController@serviceSubCategoryMedical');
+    Route::get('bondhonBazar', 'frontend\FrontController@bondhonBazar');
     Route::get('doctorAppointmentForm', 'frontend\MedicalServiceController@doctorAppointmentForm');
     Route::get('getDepartmentListAllFromDap', 'frontend\MedicalServiceController@getDepartmentListAllFromDap');
     Route::get('getAllMedDepartmentFront', 'backend\MedicalServiceController@getAllMedDepartment');
