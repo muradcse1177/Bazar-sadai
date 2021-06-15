@@ -84,5 +84,6 @@ class Kernel extends HttpKernel
         'parlor' => \App\Http\Middleware\parlor::class,
         'laundry' => \App\Http\Middleware\laundry::class,
         'courier' => \App\Http\Middleware\courier::class,
+        'tnt' => \App\Http\Middleware\tnt::class,
     ];
 }

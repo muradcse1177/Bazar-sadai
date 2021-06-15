@@ -1432,12 +1432,18 @@ class FrontController extends Controller
             ->where('type', 2)
             ->where('status', 1)
             ->orderBy('id', 'ASC')->get();
+        $tours = DB::table('categories')
+            ->where('id', 12)
+            ->where('type', 2)
+            ->where('status', 1)
+            ->orderBy('id', 'ASC')->get();
         return view('frontend.servicesCategory',
                 [
                     'services_cat_trans' => $services_cat_trans,
                     'services_cat_medical'=>$services_cat_medical,
                     'home_assistants'=>$home_assistants,
-                    'services_cat_couriers'=>$services_cat_courier
+                    'services_cat_couriers'=>$services_cat_courier,
+                    'tours'=>$tours
                 ]);
     }
     public function serviceSubCategoryMedical($id){
@@ -1566,8 +1572,10 @@ class FrontController extends Controller
                     $dealer_product = DB::table('products')
                         ->select('*', 'product_assign.id as p_a_id', 'products.id as id')
                         ->join('product_assign', 'product_assign.product_id', '=', 'products.id')
-                        ->where('products.cat_id', 1)
-                        ->orWhere('products.cat_id', 2)
+                        ->where(function($query) {
+                            $query->where('products.cat_id', 1)
+                                ->orWhere('products.cat_id', 2);
+                        })
                         ->where('products.status', 1)
                         ->where('product_assign.dealer_id', $dealer->id)
                         ->orderBy('products.id', 'ASC')->paginate(100);
@@ -1580,8 +1588,10 @@ class FrontController extends Controller
                 }
                 else{
                     $dealer_product = DB::table('products')
-                        ->where('products.cat_id', 1)
-                        ->orWhere('products.cat_id', 2)
+                        ->where(function($query) {
+                            $query->where('products.cat_id', 1)
+                                ->orWhere('products.cat_id', 2);
+                        })
                         ->where('status', 1)
                         ->orderBy('id', 'ASC')->paginate(100);
                     $dealer_status['status'] = 0;
@@ -1591,8 +1601,10 @@ class FrontController extends Controller
             }
             else {
                 $dealer_product = DB::table('products')
-                    ->where('products.cat_id', 1)
-                    ->orWhere('products.cat_id', 2)
+                    ->where(function($query) {
+                        $query->where('products.cat_id', 1)
+                            ->orWhere('products.cat_id', 2);
+                    })
                     ->where('status', 1)
                     ->orderBy('id', 'ASC')->paginate(100);
                 $dealer_status['status'] = 0;

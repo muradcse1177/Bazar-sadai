@@ -70,6 +70,19 @@
                     </div>
                 </a>
             @endforeach
+            @foreach($tours as $tour)
+                <a href='{{ URL::to('serviceSubCategoryToursNTravel/'.$tour->id) }}'>
+                    <div class='col-sm-4'>
+                        <div class='box box-solid'>
+                            <div class='box-body prod-body'>
+                                <div class="alert boxBody">
+                                    <center><strong>{{ $tour->name }}</strong></center>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            @endforeach
         </div>
     </div>
 @endsection

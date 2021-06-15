@@ -1428,5 +1428,33 @@ class ReportController extends Controller
             return back()->with('errorMessage', $ex->getMessage());
         }
     }
-
+    public function toursNTravelsReport(){
+        try{
+            $results = DB::table('bookingtnt')
+                ->select('*','bookingtnt.price as f_price')
+                ->join('toor_booking2','toor_booking2.id','=','bookingtnt.pack_id')
+                ->join('toor_booking1','toor_booking1.id','=','toor_booking2.name_id')
+                ->orderBy('bookingtnt.id','desc')
+                ->paginate(20);
+            return view('backend.toursNTravelsReport',['orders' => $results]);
+        }
+        catch(\Illuminate\Database\QueryException $ex){
+            return back()->with('errorMessage', $ex->getMessage());
+        }
+    }
+    public function toursNTravelsReportListByDate(Request  $request){
+        try{
+            $results = DB::table('bookingtnt')
+                ->select('*','bookingtnt.price as f_price')
+                ->join('toor_booking2','toor_booking2.id','=','bookingtnt.pack_id')
+                ->join('toor_booking1','toor_booking1.id','=','toor_booking2.name_id')
+                ->orderBy('bookingtnt.id','desc')
+                ->whereBetween('bookingtnt.date',array($request->from_date,$request->to_date))
+                ->paginate(20);
+            return view('backend.toursNTravelsReport',['orders' => $results,'from_date'=>$request->from_date,'to_date'=>$request->to_date]);
+        }
+        catch(\Illuminate\Database\QueryException $ex){
+            return back()->with('errorMessage', $ex->getMessage());
+        }
+    }
 }

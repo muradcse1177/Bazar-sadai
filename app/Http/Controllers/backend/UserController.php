@@ -1434,4 +1434,129 @@ class UserController extends Controller
         $paginatedItems->setPath($request->url());
         return view('frontend.myCourierOrder',['bookings' => $paginatedItems]);
     }
+    public function myToursNTravelsOrder(){
+        try{
+            $results = DB::table('bookingtnt')
+                ->select('*','bookingtnt.price as f_price')
+                ->join('toor_booking2','toor_booking2.id','=','bookingtnt.pack_id')
+                ->join('toor_booking1','toor_booking1.id','=','toor_booking2.name_id')
+                ->where('bookingtnt.user_id', Cookie::get('user_id'))
+                ->orderBy('bookingtnt.id','desc')
+                ->paginate(20);
+            return view('frontend.myToursNTravels',['orders' => $results]);
+        }
+        catch(\Illuminate\Database\QueryException $ex){
+            return back()->with('errorMessage', $ex->getMessage());
+        }
+    }
+    public function m_acc(){
+        try{
+            $row = DB::table('m_acc')
+                ->orderBy('date','desc')
+                ->paginate(50);
+            return view('backend.m_acc', ['accountings' => $row]);
+        }
+        catch(\Illuminate\Database\QueryException $ex){
+            return back()->with('errorMessage', $ex->getMessage());
+        }
+    }
+    public function getAllCompany(){
+        try{
+            $rows = DB::table('company_name')->get();
+            return response()->json(array('data'=>$rows));
+        }
+        catch(\Illuminate\Database\QueryException $ex){
+            return response()->json(array('data'=>$ex->getMessage()));
+        }
+    }
+    public function getAllProject(){
+        try{
+            $rows = DB::table('project_name')->get();
+            return response()->json(array('data'=>$rows));
+        }
+        catch(\Illuminate\Database\QueryException $ex){
+            return response()->json(array('data'=>$ex->getMessage()));
+        }
+    }
+    public function insertM_acc(Request $request){
+        try{
+            if($request) {
+                if($request->id) {
+                    $result =DB::table('m_acc')
+                        ->where('id', $request->id)
+                        ->update([
+                            'company' => $request->company,
+                            'project' => $request->project,
+                            'type' => $request->type,
+                            'purpose' => $request->purpose,
+                            'reference' => $request->reference,
+                            'amount' => $request->amount,
+                            'date' => $request->date,
+                            'person' => $request->person,
+                        ]);
+                    if ($result) {
+                        return back()->with('successMessage', 'সফল্ভাবে সম্পন্ন্য হয়েছে।');
+                    } else {
+                        return back()->with('errorMessage', 'আবার চেষ্টা করুন।');
+                    }
+                }
+                else {
+                    $rows = DB::table('m_acc')
+                        ->select('id')
+                        ->where([
+                            ['company', '=', $request->company],
+                            ['project', '=', $request->project],
+                            ['type', '=', $request->type],
+                            ['purpose', '=', $request->purpose],
+                            ['amount', '=', $request->amount],
+                            ['date', '=', $request->date],
+                            ['person', '=', $request->person],
+                        ])
+                        ->distinct()->get()->count();
+                    if ($rows > 0) {
+                        return back()->with('errorMessage', ' নতুন ডাটা দিন');
+                    } else {
+                        $result = DB::table('m_acc')->insert([
+                            'company' => $request->company,
+                            'project' => $request->project,
+                            'type' => $request->type,
+                            'purpose' => $request->purpose,
+                            'reference' => $request->reference,
+                            'amount' => $request->amount,
+                            'date' => $request->date,
+                            'person' => $request->person,
+                        ]);
+                        if ($result) {
+                            return back()->with('successMessage', 'সফল্ভাবে সম্পন্ন্য হয়েছে।');
+                        } else {
+                            return back()->with('errorMessage', 'আবার চেষ্টা করুন।');
+                        }
+                    }
+                }
+            }
+            else{
+                return back()->with('errorMessage', 'ফর্ম পুরন করুন।');
+            }
+        }
+        catch(\Illuminate\Database\QueryException $ex){
+            return back()->with('errorMessage', $ex->getMessage());
+        }
+    }
+    public function getM_accReportByDate (Request $request){
+        $row = DB::table('m_acc')
+            ->whereBetween('date',array($request->from_date,$request->to_date))
+            ->orderBy('date', 'Desc')->paginate(50);
+        return view('backend.m_acc', ['accountings' => $row,'from_date'=>$request->from_date,'to_date'=>$request->to_date]);
+    }
+    public function getM_accListById(Request $request){
+        try{
+            $rows = DB::table('m_acc')
+                ->where('id', $request->id)
+                ->first();
+            return response()->json(array('data'=>$rows));
+        }
+        catch(\Illuminate\Database\QueryException $ex){
+            return response()->json(array('data'=>$ex->getMessage()));
+        }
+    }
 }

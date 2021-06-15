@@ -155,6 +155,9 @@
             margin-right: auto;
             margin-left: auto;
         }
+        .carousel-inner > .item > img {
+            height:170px;
+        }
     </style>
     @yield('ExtCss')
 </head>
@@ -205,6 +208,7 @@
                                     <li><a href="{{url('myLaundryOrder')}}">লন্ড্রি অর্ডার</a></li>
                                     <li><a href="{{url('myParlorOrder')}}">পার্লার সার্ভিস অর্ডার</a></li>
                                     <li><a href="{{url('myCourierOrder')}}">কুরিয়ার সার্ভিস অর্ডার</a></li>
+                                    <li><a href="{{url('myToursNTravels')}}">ট্যুরস এন্ড ট্রাভেলস অর্ডার</a></li>
                                 </ul>
                             </li>
                         @endif

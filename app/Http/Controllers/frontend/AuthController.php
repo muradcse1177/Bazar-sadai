@@ -126,6 +126,10 @@ class AuthController extends Controller
                             Cookie::queue('courier', $rows->id, time()+31556926 ,'/');
                             return redirect()->to('courierProfile');
                         }
+                        elseif($role==34){
+                            Cookie::queue('tnt', $rows->id, time()+31556926 ,'/');
+                            return redirect()->to('tntProfile');
+                        }
                         else{
                             return redirect()->to('login');
                         }

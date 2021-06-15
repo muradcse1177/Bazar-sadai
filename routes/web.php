@@ -203,6 +203,8 @@ Route::group(['middleware' => ['adminUser']], function () {
     Route::post('changeCourierStatusAdmin', 'backend\CourierController@changeCourierStatus');
     Route::post('changeCourierMessageAdmin', 'backend\CourierController@changeCourierMessage');
     Route::get('getCourierMessageAdmin', 'backend\CourierController@getCourierMessageAdmin');
+    Route::get('toursNTravelsReport', 'backend\ReportController@toursNTravelsReport');
+    Route::post('toursNTravelsReportListByDate', 'backend\ReportController@toursNTravelsReportListByDate');
 //Accounting
     Route::get('accounting', 'backend\ReportController@accounting');
     Route::post('insertAccounting', 'backend\ReportController@insertAccounting');
@@ -276,7 +278,7 @@ Route::group(['middleware' => ['adminUser']], function () {
     Route::post('deleteMedicalCamp', 'backend\MedicalServiceController@deleteMedicalCamp');
 //Pharmacy
     Route::get('medicineCompanyEmail', 'backend\PharmacyController@medicineCompanyEmail');
-    Route::get('getAllMedicineCompany', 'backend\PharmacyController@getAllMedicineCompany');
+    //Route::get('getAllMedicineCompany', 'backend\PharmacyController@getAllMedicineCompany');
     Route::post('insertMedicineCompanyEmail', 'backend\PharmacyController@insertMedicineCompanyEmail');
     Route::post('getMedicineCompanyEmailById', 'backend\PharmacyController@getMedicineCompanyEmailById');
     Route::post('deleteMedicineCompanyEmail', 'backend\PharmacyController@deleteMedicineCompanyEmail');
@@ -327,7 +329,7 @@ Route::group(['middleware' => ['adminUser']], function () {
     Route::post('insertLaundry', 'backend\HomeAssistantController@insertLaundry');
     Route::post('getLaundryById', 'backend\HomeAssistantController@getLaundryById');
     Route::post('deleteLaundry', 'backend\HomeAssistantController@deleteLaundry');
-//courier
+    //courier
     Route::get('courierType', 'backend\TransportController@courierType');
     Route::post('insertCourierType', 'backend\TransportController@insertCourierType');
     Route::post('getCourierTypeList', 'backend\TransportController@getCourierTypeList');
@@ -338,6 +340,22 @@ Route::group(['middleware' => ['adminUser']], function () {
     Route::post('insertCourierSettings', 'backend\TransportController@insertCourierSettings');
     Route::post('getCourierSettingList', 'backend\TransportController@getCourierSettingList');
     Route::post('deleteCourierSetting', 'backend\TransportController@deleteCourierSetting');
+    // Tours & Travels
+    Route::get('bookingMainAddress', 'backend\ToursController@bookingMainAddress');
+    Route::post('insertMainAddress', 'backend\ToursController@insertMainAddress');
+    Route::post('getTourAddressListById', 'backend\ToursController@getTourAddressListById');
+    Route::post('deleteTourAddress', 'backend\ToursController@deleteTourAddress');
+    Route::get('bookingTourAll1', 'backend\ToursController@bookingTourAll1');
+    Route::get('getMainPlaceListAll', 'backend\ToursController@getMainPlaceListAll');
+    Route::post('insertTourBooking1', 'backend\ToursController@insertTourBooking1');
+    Route::post('getTourMainListById', 'backend\ToursController@getTourMainListById');
+    Route::post('deleteTourMainList', 'backend\ToursController@deleteTourMainList');
+    Route::get('bookingTourAll2', 'backend\ToursController@bookingTourAll2');
+    Route::post('bookingTourAll2', 'backend\ToursController@bookingTourAll2');
+    Route::get('getAllToursNameList', 'backend\ToursController@getAllToursNameList');
+    Route::post('insertTourBooking2', 'backend\ToursController@insertTourBooking2');
+    Route::post('getTourBooking2ListById', 'backend\ToursController@getTourBooking2ListById');
+    Route::post('deleteTourBookingList', 'backend\ToursController@deleteTourBookingList');
 });
 Route::group(['middleware' => ['buyer']], function () {
     Route::get('profile', 'frontend\AuthController@profile');
@@ -362,6 +380,7 @@ Route::group(['middleware' => ['buyer']], function () {
     Route::get('myParlorOrder', 'backend\UserController@myParlorOrder');
     Route::get('myCourierOrder', 'backend\UserController@myCourierOrder');
     Route::get('getCourierMessageBuyer', 'backend\CourierController@getCourierMessageAdmin');
+    Route::get('myToursNTravels', 'backend\UserController@myToursNTravelsOrder');
 });
 Route::group(['middleware' => ['deliveryMan']], function () {
     Route::get('deliveryProfile', 'backend\UserController@deliveryProfile');
@@ -442,6 +461,20 @@ Route::group(['middleware' => ['courier']], function () {
     Route::post('changeCourierMessage', 'backend\CourierController@changeCourierMessage');
     Route::get('getCourierMessage', 'backend\CourierController@getCourierMessageAdmin');
 });
+Route::group(['middleware' => ['tnt']], function () {
+    Route::get('tntProfile', 'backend\ToursController@tntProfile');
+    Route::get('bookingTourAllAgent1', 'backend\ToursController@bookingTourAllAgent1');
+    Route::get('getMainPlaceListAllAgent', 'backend\ToursController@getMainPlaceListAllAgent');
+    Route::post('insertTourBooking1Agent', 'backend\ToursController@insertTourBooking1Agent');
+    Route::post('getTourMainListByIdAgent', 'backend\ToursController@getTourMainListByIdAgent');
+    Route::post('deleteTourMainListAgent', 'backend\ToursController@deleteTourMainListAgent');
+    Route::get('bookingTourAllAgent2', 'backend\ToursController@bookingTourAllAgent2');
+    Route::get('getAllToursNameListAgent', 'backend\ToursController@getAllToursNameListAgent');
+    Route::post('insertTourBooking2Agent', 'backend\ToursController@insertTourBooking2Agent');
+    Route::post('getTourBooking2ListByIdAgent', 'backend\ToursController@getTourBooking2ListByIdAgent');
+    Route::post('deleteTourBookingListAgent', 'backend\ToursController@deleteTourBookingListAgent');
+
+});
     Route::get('/clear-cache', function() {
         $exitCode = Artisan::call('cache:clear');
         // return what you want
@@ -513,8 +546,11 @@ Route::group(['middleware' => ['courier']], function () {
     elseif(Cookie::get('laundry') != null){
         Route::get('/', 'backend\LaundryController@laundryProfile');
     }
-    elseif(Cookie::get('/') != null){
+    elseif(Cookie::get('courier') != null){
         Route::get('/', 'backend\CourierController@courierProfile');
+    }
+    elseif(Cookie::get('tnt') != null){
+        Route::get('/', 'backend\ToursController@tntProfile');
     }
     else{
         Route::get('/', 'frontend\FrontController@homepageManager');
@@ -677,7 +713,14 @@ Route::group(['middleware' => ['courier']], function () {
     Route::get('getLaundryPriceByIdFront', 'frontend\HomeAssistantController@getLaundryPriceByIdFront');
     Route::post('laundryBookingFront', 'frontend\HomeAssistantController@laundryBookingFront');
 
-
+    Route::get('serviceSubCategoryToursNTravel/{id}', 'frontend\ToursController@serviceSubCategoryToursNTravel');
+    Route::get('getAllToursListFront', 'frontend\ToursController@getAllToursListFront');
+    Route::get('getMainPlaceListAllFront', 'backend\ToursController@getMainPlaceListAll');
+    Route::post('searchTourNTravels', 'frontend\ToursController@searchTourNTravels');
+    Route::get('bookingHotel', 'frontend\ToursController@bookingHotel');
+    Route::get('bookingHNT', 'frontend\ToursController@bookingHNT');
+    Route::get('getHNTPrice', 'frontend\ToursController@getHNTPrice');
+    Route::get('bookingTourPackage', 'frontend\ToursController@bookingTourPackage');
 
 //Payment Gateway
     Route::post('getPaymentCartView', 'frontend\PaymentController@getPaymentCartView');
@@ -696,3 +739,16 @@ Route::group(['middleware' => ['courier']], function () {
     Route::get('insertParlorPaymentInfo', 'frontend\HomeAssistantController@insertParlorPaymentInfo');
     Route::get('insertLaundryPaymentInfo', 'frontend\HomeAssistantController@insertLaundryPaymentInfo');
     Route::get('insertCourierPaymentInfo', 'frontend\TransportController@insertCourierPaymentInfo');
+    Route::post('insertBookingHNTPayment', 'frontend\PaymentController@insertBookingHNTPayment');
+    Route::get('insertBookingHNTOnOnline', 'frontend\ToursController@insertBookingHNTOnOnline');
+    Route::get('insertBookingHNTOnCash', 'frontend\ToursController@insertBookingHNTOnCash');
+    Route::post('insertTourPackagePayment', 'frontend\PaymentController@insertTourPackagePayment');
+    Route::get('insertTourPackagePayOnline', 'frontend\ToursController@insertTourPackagePayOnline');
+
+    //my_acc_personal
+    Route::get('m_acc', 'backend\UserController@m_acc');
+    Route::get('getAllCompany', 'backend\UserController@getAllCompany');
+    Route::get('getAllProject', 'backend\UserController@getAllProject');
+    Route::post('insertM_acc', 'backend\UserController@insertM_acc');
+    Route::post('getM_accReportByDate', 'backend\UserController@getM_accReportByDate');
+    Route::post('getM_accListById', 'backend\UserController@getM_accListById');

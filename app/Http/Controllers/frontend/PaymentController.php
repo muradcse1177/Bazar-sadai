@@ -140,4 +140,26 @@ class PaymentController extends Controller
        $success_route = url('insertLocalAppointment');
        $shurjopay_service->sendPayment($fees, $success_route);
    }
+   public function insertBookingHNTPayment(Request $request){
+       Session::put('bookingNHT', $request->all());
+       if($request->cod == '1') {
+           return redirect('insertBookingHNTOnCash');
+       }
+       $fees = $request->price;
+       $shurjopay_service = new ShurjopayService();
+       $tx_id = $shurjopay_service->generateTxId();
+       $success_route = url('insertBookingHNTOnOnline');
+       $shurjopay_service->sendPayment($fees, $success_route);
+   }
+   public function insertTourPackagePayment(Request $request){
+       Session::put('bookingTourPackage', $request->all());
+       if(@$request->cod == '1') {
+           return redirect('insertTourPackagePayOnline');
+       }
+       $fees = $request->price;
+       $shurjopay_service = new ShurjopayService();
+       $tx_id = $shurjopay_service->generateTxId();
+       $success_route = url('insertTourPackagePayOnline');
+       $shurjopay_service->sendPayment($fees, $success_route);
+   }
 }
