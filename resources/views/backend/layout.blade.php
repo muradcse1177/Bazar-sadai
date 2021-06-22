@@ -839,6 +839,15 @@
                                         <li class ="@yield('ticketRoute')"><a href="{{ url('ticketRoute') }}"><i class="fa fa-circle-o"></i> টিকেট রুট</a></li>
                                         <li class ="@yield('courierType')"><a href="{{ url('courierType') }}"><i class="fa fa-circle-o"></i>কুরিয়ার ধরণ</a></li>
                                         <li class ="@yield('courierSettings')"><a href="{{ url('courierSettings') }}"><i class="fa fa-circle-o"></i>কুরিয়ার সেটিংস</a></li>
+                                    </ul>
+                                </li>
+                                <li class="treeview  @yield('tntMainLi')">
+                                    <a href="#"><i class="fa fa-circle-o"></i> ট্যুরস এন্ড ট্রাভেলস
+                                        <span class="pull-right-container">
+                                      <i class="fa fa-angle-left pull-right"></i>
+                                    </span>
+                                    </a>
+                                    <ul class="treeview-menu">
                                         <li class ="@yield('bookingMainAddress')"><a href="{{ url('bookingMainAddress') }}"><i class="fa fa-circle-o"></i>বুকিং প্রধান ঠিকানা</a></li>
                                         <li class ="@yield('bookingTourAll1')"><a href="{{ url('bookingTourAll1') }}"><i class="fa fa-circle-o"></i>হোটেল/রুম/ট্যুর বুকিং ধাপ-১</a></li>
                                         <li class ="@yield('bookingTourAll2')"><a href="{{ url('bookingTourAll2') }}"><i class="fa fa-circle-o"></i>হোটেল/রুম/ট্যুর বুকিং ধাপ-২</a></li>

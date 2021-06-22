@@ -19,6 +19,9 @@ class ToursController extends Controller
             ->orderBy('id', 'ASC')->get();
         return view('frontend.serviceSubCategoryTours', ['tours_sub_cats' => $tours_sub_cats]);
     }
+    public function bookingPageTNT(Request $request){
+        return view('frontend.searchBTNT', ['scat_id' => $request->scat_id]);
+    }
     public function getAllToursListFront(Request $request){
         $rows = DB::table('subcategories')
             ->where('cat_id',12)
@@ -26,8 +29,11 @@ class ToursController extends Controller
         return response()->json(array('data'=>$rows));
     }
     public function searchTourNTravels(Request $request){
+        $results = DB::table('subcategories')
+            ->where('id', $request->bookingName)
+            ->first();
         $rows = DB::table('toor_booking1')
-            ->where('bookingName',$request->bookingName)
+            ->where('bookingName',$results->name)
             ->where('country',$request->country)
             ->where('place',$request->place)
             ->paginate(20);

@@ -3,7 +3,7 @@
 @section('page_header', 'ঠিকানা ব্যবস্থাপনা')
 @section('serviceMainLi','active menu-open')
 @section('bookingMainAddress','active')
-@section('transportMainLi','active menu-open')
+@section('tntMainLi','active menu-open')
 @section('content')
 
     @if ($message = Session::get('successMessage'))

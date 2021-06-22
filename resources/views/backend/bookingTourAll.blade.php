@@ -1,7 +1,9 @@
 @extends('backend.layout')
 @section('title', 'বুকিং')
 @section('page_header', 'বুকিং ব্যবস্থাপনা')
-@section('tntProfile','active')
+@section('serviceMainLi','active menu-open')
+@section('bookingTourAll1','active')
+@section('tntMainLi','active menu-open')
 @section('extracss')
     <link rel="stylesheet" href="public/asset/plugins/bootstrap-wysihtml5/bootstrap3-wysihtml5.min.css">
 @endsection

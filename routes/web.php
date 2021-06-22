@@ -721,6 +721,7 @@ Route::group(['middleware' => ['tnt']], function () {
     Route::get('bookingHNT', 'frontend\ToursController@bookingHNT');
     Route::get('getHNTPrice', 'frontend\ToursController@getHNTPrice');
     Route::get('bookingTourPackage', 'frontend\ToursController@bookingTourPackage');
+    Route::get('bookingPageTNT', 'frontend\ToursController@bookingPageTNT');
 
 //Payment Gateway
     Route::post('getPaymentCartView', 'frontend\PaymentController@getPaymentCartView');

@@ -3,7 +3,7 @@
 @section('page_header', 'বুকিং ব্যবস্থাপনা')
 @section('serviceMainLi','active menu-open')
 @section('bookingTourAll2','active')
-@section('transportMainLi','active menu-open')
+@section('tntMainLi','active menu-open')
 @section('extracss')
     <link rel="stylesheet" href="public/asset/plugins/bootstrap-wysihtml5/bootstrap3-wysihtml5.min.css">
 @endsection
