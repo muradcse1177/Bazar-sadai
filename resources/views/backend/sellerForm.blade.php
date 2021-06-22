@@ -36,6 +36,15 @@
                     {{ csrf_field() }}
                     <div class="box-body">
                         <div class="form-group">
+                            <label>ধরন</label>
+                            <select class="form-control  type" name="type" style="width: 100%;" required>
+                                <option value="" selected>ধরন  নির্বাচন করুন</option>
+                                <option value="Animal">পশু</option>
+                                <option value="Others">অন্যান্য</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
                             <label for="name" >নাম</label>
                             <input type="text" class="form-control name" name="name" placeholder="নাম"  required>
                         </div>

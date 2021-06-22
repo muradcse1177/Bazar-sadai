@@ -34,6 +34,7 @@ class SellerController extends Controller
                         $result =DB::table('seller_product')
                             ->where('id', $request->id)
                             ->update([
+                                'type' => $request->type,
                                 'name' => $request->name,
                                 'amount' => $request->amount,
                                 'price' => $request->price,
@@ -60,6 +61,7 @@ class SellerController extends Controller
                         $address = $request->address1.','.$request->address2.','.$request->address3;
                         $result = DB::table('seller_product')->insert([
                             'seller_id' => Cookie::get('user_id'),
+                            'type' => $request->type,
                             'name' => $request->name,
                             'amount' => $request->amount,
                             'price' => $request->price,

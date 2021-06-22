@@ -31,8 +31,12 @@
                         </div>
                     </a>
             @endforeach
+            <?php
+            $url_arr = array("buySaleAnimal", "buySale");
+            $i=0;
+            ?>
             @foreach($se_categories as $secategory)
-            <a href='{{ URL::to('buySale/'.$secategory->id) }}'>
+            <a href='{{ url($url_arr[$i].'/'.$secategory->id)}}'>
                 <div class='col-sm-4'>
                     <div class='box box-solid'>
                         <div class='box-body prod-body'>
@@ -43,6 +47,7 @@
                     </div>
                 </div>
             </a>
+            <?php $i++; ?>
             @endforeach
             <a href='{{ URL::to('serviceCategory') }}'>
                 <div class='col-sm-4'>

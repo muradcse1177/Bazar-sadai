@@ -21,7 +21,7 @@ class FrontController extends Controller
             $sale_cat = DB::table('categories')
                 ->where('type', 3)
                 ->where('status', 1)
-                ->orderBy('id', 'ASC')->get();
+                ->orderBy('id', 'DESC')->get();
             return view('frontend.homepage',
                 [
                     'p_categories' => $product_cat,
@@ -907,9 +907,19 @@ class FrontController extends Controller
                 ->where('status', 'Active')
                 ->where('amount','>', 0)
                 ->get();
-            //dd($products);
-
-            //dd($product);
+               return view('frontend.buysale', ['products' => $products]);
+            }
+        catch(\Illuminate\Database\QueryException $ex){
+            return back()->with('errorMessage', $ex->getMessage());
+        }
+    }
+    public function buySaleAnimal($id){
+        try{
+            $products = DB::table('seller_product')
+                ->where('status', 'Active')
+                ->where('type', 'Animal')
+                ->where('amount','>', 0)
+                ->get();
                return view('frontend.buysale', ['products' => $products]);
             }
         catch(\Illuminate\Database\QueryException $ex){
