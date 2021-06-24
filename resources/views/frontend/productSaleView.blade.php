@@ -51,23 +51,14 @@
                         </tr>
 
                     </table>
-                    <?php
 
-                    if(Cookie::get('user') != null) {?>
+                    @if(Cookie::get('user') != null)
                     <h4><a href='{{url('paymentFromVariousMarket/'.$products->id)}}'>
                             <button type='button' class='btn allButton active'>অর্ডার প্লেস করুন</button></a></h4>
-                    <?php }
-
-                    else {
-                    if(Cookie::get('user') != null){ ?>
-                    <h4><a href='{{url('productSales/'.$products->id)}}'><button type='button' class='btn allButton active'>অর্ডার প্লেস করুন</button></a></h4>
-                    <?php  }
-
-                    else{?>
+                    @else
                     <h4> আপনার অর্ডার সম্পন্ন্য করতে   <a href='{{url('login')}}'>
                             <button type='button' class='btn btn-primary active'>লগ ইন</button></a> করুন</h4>
-                    <?php }
-                    } ?>
+                    @endif
                 </div>
             </div>
         </div>

@@ -56,44 +56,29 @@
                         <tr>
                             <th>ছবি</th>
                             <th>তারিখ</th>
-                            <th>পশুর নাম</th>
+                            <th>নাম</th>
                             <th>অর্ডার নং</th>
-                            <th>বিক্রেতার নাম</th>
-                            <th>বিক্রেতার ফোন</th>
-                            <th>ক্রেতার নাম</th>
-                            <th>ক্রেতার ফোন</th>
+                            <th>ক্রেতা</th>
+                            <th>ক্রেতা ফোন</th>
+                            <th>বিক্রেতা </th>
+                            <th>বিক্রেতা ফোন</th>
                             <th>দাম</th>
-                            <th>ডেলিভারি ঠিকানা </th>
                         </tr>
-                        <?php
-                        $sum =0;
-                        ?>
-                        @foreach($aminal_Sales as $aminal_Sale)
-                            @php
-                                $Image =url('/')."/public/asset/images/noImage.jpg";
-                                   if(!empty($aminal_Sale->salPPhoto))
-                                       $Image =url('/').'/'.$aminal_Sale->salPPhoto;
-                                   $sum= $sum +$aminal_Sale->price;
-                            @endphp
+                        @foreach($orders as $order)
                             <tr>
-                                <td> <img src="{{$Image}}" width ="45" height="45" ></td>
-                                <td> {{$aminal_Sale-> date}} </td>
-                                <td> {{$aminal_Sale->salName}} </td>
-                                <td> {{$aminal_Sale->pay_id}} </td>
-                                <td> {{$aminal_Sale->name}} </td>
-                                <td> {{$aminal_Sale->sellerPhone}} </td>
-                                <td> {{$aminal_Sale->buyerName}} </td>
-                                <td> {{$aminal_Sale->buyerPhone}} </td>
-                                <td> {{$aminal_Sale->delivery_address}} </td>
-                                <td> {{$aminal_Sale->price.'/-'}} </td>
+                                <td><img src="{{$order->pp}}" width="42" height="42"></td>
+                                <td>{{$order->date}}</td>
+                                <td>{{$order->name}}</td>
+                                <td>{{$order->pay_id}}</td>
+                                <td>{{$order->buyerName}}</td>
+                                <td>{{$order->buyerPhone}}</td>
+                                <td>{{$order->sellerName}}</td>
+                                <td>{{$order->sellerPhone}}</td>
+                                <td><b>{{$order->price.'/-'}}</b></td>
                             </tr>
                         @endforeach
-                        <tr>
-                            <td colspan="9" style="text-align: right"><b>মোটঃ</b></td>
-                            <td><b>{{$sum.'/-'}}</b></td>
-                        </tr>
                     </table>
-                    {{ $aminal_Sales->links() }}
+                    {{ $orders->links() }}
                 </div>
             </div>
 
@@ -106,13 +91,13 @@
         $( function() {
             $('#from_date').datepicker({
                 autoclose: true,
-                dateFormat: "yy-m-dd",
+                dateFormat: "yy-mm-dd",
             })
         } );
         $( function() {
             $('#to_date').datepicker({
                 autoclose: true,
-                dateFormat: "yy-m-dd",
+                dateFormat: "yy-mm-dd",
             })
         } );
     </script>

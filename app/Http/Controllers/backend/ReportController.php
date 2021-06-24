@@ -189,19 +189,17 @@ class ReportController extends Controller
             return back()->with('errorMessage', $ex->getMessage());
         }
     }
-    public function animalSalesReport ( ){
+    public function animalSalesReport(){
         try{
-
-            $aminal_Sale = DB::table('sale_products')
-                ->select('*','sale_products.id as salePID', 'sale_products.name as salName',
-                    'sale_products.photo as salPPhoto','u1.name as buyerName','u1.phone as buyerPhone','u2.phone as sellerPhone')
-                ->join('animal_sales', 'sale_products.id', '=', 'animal_sales.product_id')
-                ->join('users as u1', 'u1.id', '=', 'animal_sales.buyer_id')
-                ->join('users as u2', 'u2.id', '=', 'animal_sales.seller_id')
-                ->where('sale_products.sale_status', 0)
+            $orders = DB::table('product_sales')
+                ->select('*','product_sales.id as ps_id','a.address as ps_address','a.photo as pp','u1.name as buyerName','u1.phone as buyerPhone','u2.phone as sellerPhone')
+                ->join('seller_product as a','product_sales.product_id','=','a.id')
+                ->join('users as u1', 'u1.id', '=', 'product_sales.buyer_id')
+                ->join('users as u2', 'u2.id', '=', 'product_sales.seller_id')
+                ->where('a.type', 'Animal')
+                ->orderBy('product_sales.id','desc')
                 ->paginate(20);
-
-            return view('backend.animalSalesReport', ['aminal_Sales' => $aminal_Sale]);
+            return view('backend.animalSalesReport', ['orders' => $orders]);
         }
         catch(\Illuminate\Database\QueryException $ex){
             return back()->with('errorMessage', $ex->getMessage());
@@ -210,17 +208,16 @@ class ReportController extends Controller
     public function getAnimalSalesOrderListByDate (Request $request){
         try{
 
-            $aminal_Sale = DB::table('sale_products')
-                ->select('*','sale_products.id as salePID', 'sale_products.name as salName',
-                    'sale_products.photo as salPPhoto','u1.name as buyerName','u1.phone as buyerPhone','u2.phone as sellerPhone')
-                ->join('animal_sales', 'sale_products.id', '=', 'animal_sales.product_id')
-                ->join('users as u1', 'u1.id', '=', 'animal_sales.buyer_id')
-                ->join('users as u2', 'u2.id', '=', 'animal_sales.seller_id')
-                ->where('sale_products.sale_status', 0)
-                ->whereBetween('date',array($request->from_date,$request->to_date))
+            $orders = DB::table('product_sales')
+                ->select('*','product_sales.id as ps_id','a.address as ps_address','a.photo as pp','u1.name as buyerName','u1.phone as buyerPhone','u2.phone as sellerPhone','u2.name as sellerName')
+                ->join('seller_product as a','product_sales.product_id','=','a.id')
+                ->join('users as u1', 'u1.id', '=', 'product_sales.buyer_id')
+                ->join('users as u2', 'u2.id', '=', 'product_sales.seller_id') ->where('a.type', 'Animal')
+                ->whereBetween('product_sales.date',array($request->from_date,$request->to_date))
+                ->orderBy('product_sales.id','desc')
                 ->paginate(20);
 
-            return view('backend.animalSalesReport', ['aminal_Sales' => $aminal_Sale,'from_date'=>$request->from_date,'to_date'=>$request->to_date]);
+            return view('backend.animalSalesReport', ['orders' => $orders,'from_date'=>$request->from_date,'to_date'=>$request->to_date]);
         }
         catch(\Illuminate\Database\QueryException $ex){
             return back()->with('errorMessage', $ex->getMessage());

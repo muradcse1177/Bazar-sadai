@@ -192,8 +192,7 @@
                                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-expanded="false">আমার ট্রানজেকশন <span class="caret"></span></a>
                                 <ul class="dropdown-menu" role="menu">
                                     <li><a href="{{url('myProductOrder')}}">পণ্য ক্রয়</a></li>
-                                    <li><a href="{{url('myVariousProductOrderUser')}}">হরেক রকম পণ্য ক্রয়</a></li>
-                                    <li><a href="{{url('myAnimalOrder')}}">পশু ক্রয়</a></li>
+                                    <li><a href="{{url('myVariousProductOrderUser')}}">হরেক রকম পণ্য/পশু ক্রয়</a></li>
                                     <li><a href="{{url('myTicketOrder')}}">টিকেট ক্রয়</a></li>
                                     <li><a href="{{url('myDrAppointment')}}">ডাক্তার এপয়েনমেনট</a></li>
                                     <li><a href="{{url('myTherapyAppointment')}}">থেরাপি এপয়েনমেনট</a></li>
