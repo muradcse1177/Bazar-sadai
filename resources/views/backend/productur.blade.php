@@ -1,7 +1,7 @@
 @extends('backend.layout')
-@section('title', 'সেলার')
-@section('page_header', 'সেলার ব্যবস্থাপনা')
-@section('sellerForm','active')
+@section('title', 'আপলোড ব্যবস্থাপনা')
+@section('page_header', 'আপলোড ব্যবস্থাপনা')
+@section('productUploadReport','active')
 @section('extracss')
     <link rel="stylesheet" href="public/asset/plugins/bootstrap-wysihtml5/bootstrap3-wysihtml5.min.css">
 @endsection
@@ -112,7 +112,10 @@
                 <div class="box-body table-responsive">
                     <table class="table table-bordered">
                         <tr>
-                            <th>নাম</th>
+                            <th>ছবি</th>
+                            <th>সেলার নাম</th>
+                            <th>পণ্য নাম</th>
+                            <th>ফোন</th>
                             <th>দাম</th>
                             <th>পরিমান</th>
                             <th>পণ্য মালিক</th>
@@ -121,26 +124,28 @@
                         </tr>
                         @foreach($products as $product)
                             <?php
-                            $photo = json_decode($product->photo);
-                            $photos = explode(",",$photo);
-                            array_pop($photos);
-                            $i=0;
+                                $photo = json_decode($product->s_photos);
+                                $photos = explode(",",$photo);
+                                array_pop($photos);
+                                $i=0;
                             ?>
                             <tr>
                                 <td> <img src="{{url($photos[0])}}" width ="45" height="45" ></td>
                                 <td> {{$product->name}} </td>
+                                <td> {{$product->uname}} </td>
+                                <td> {{$product->phone}} </td>
                                 <td> {{$product->price}} </td>
                                 <td> {{$product->amount}} </td>
                                 <td> {{$product->w_phone}} </td>
-                                <td> {{$product->status}} </td>
+                                <td> {{$product->s_status}} </td>
                                 <td class="td-actions text-center">
-                                    <button type="button" rel="tooltip" class="btn btn-success edit" data-id="{{$product->id}}">
+                                    <button type="button" rel="tooltip" class="btn btn-success edit" data-id="{{$product->s_id}}">
                                         <i class="fa fa-edit"></i>
                                     </button>
-                                    <button type="button" rel="tooltip"  class="btn btn-danger delete" data-id="{{$product->id}}">
+                                    <button type="button" rel="tooltip"  class="btn btn-danger delete" data-id="{{$product->s_id}}">
                                         <i class="fa fa-close"></i>
                                     </button>
-                                    <button type="button" rel="tooltip" class="btn btn-success search" data-id="{{$product->id}}">
+                                    <button type="button" rel="tooltip" class="btn btn-success search" data-id="{{$product->s_id}}">
                                         <i class="fa fa-search"></i>
                                     </button>
                                 </td>
@@ -160,7 +165,7 @@
                                     <center><p>মুছে ফেলতে চান?</p></center>
                                 </div>
                                 <div class="modal-footer">
-                                    {{ Form::open(array('url' => 'deleteSellerProduct',  'method' => 'post')) }}
+                                    {{ Form::open(array('url' => 'deleteSellerUploadProduct',  'method' => 'post')) }}
                                     {{ csrf_field() }}
                                     <button type="button" class="btn btn-outline pull-left" data-dismiss="modal">না</button>
                                     <button type="submit" class="btn btn-outline">হ্যা</button>
@@ -236,7 +241,7 @@
         function getRow(id){
             $.ajax({
                 type: 'POST',
-                url: 'getSellerProductsById',
+                url: 'getSellerProductsByIdAdmin',
                 data: {
                     "_token": "{{ csrf_token() }}",
                     "id": id
@@ -257,6 +262,7 @@
                     $('#description ~ iframe').contents().find('.wysihtml5-editor').html(data.description);
                     $('.id').val(data.id);
                     $('.select2').select2()
+
                 }
             });
         }

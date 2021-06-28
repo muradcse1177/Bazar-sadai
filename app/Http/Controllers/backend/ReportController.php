@@ -1454,4 +1454,14 @@ class ReportController extends Controller
             return back()->with('errorMessage', $ex->getMessage());
         }
     }
+    public function productUploadReport(){
+        $rows = DB::table('seller_product')
+            ->select('*', 'seller_product.id as s_id','seller_product.name as uname','seller_product.status as s_status','seller_product.address as s_address','seller_product.photo as s_photos')
+            ->join('users','users.id','=','seller_product.seller_id')
+            ->where('seller_product.status', 'Active')
+            ->where('seller_product.amount','>', '0')
+            ->orderBy('seller_product.id','desc')
+            ->paginate(20);
+        return view('backend.productur',['products' => $rows]);
+    }
 }

@@ -32,11 +32,12 @@
                     return $bn_number;
                 }
                 ?>
-                @php
-                    $Image =url('/')."/public/asset/images/noImage.jpg";
-                       if(!empty($products->photo))
-                           $Image =url('/').'/'.$products->photo;
-                @endphp
+                <?php
+                $photo = json_decode($products->photo);
+                $photos = explode(",",$photo);
+                array_pop($photos);
+                $i=0;
+                ?>
                 <div class="box-body table-responsive">
                     <table class="table table-bordered">
                         <thead>
@@ -45,20 +46,27 @@
                             <th>দাম </th>
                         </thead>
                         <tr>
-                            <td> <img src="{{$Image}}" width ="45" height="45" ></td>
+                            <td> <img src="{{url($photos[0])}}" width ="45" height="45" ></td>
                             <td>{{$products->name}}</td>
                             <td>{{en2bn($products->price.'/-')}}</td>
                         </tr>
 
-                    </table>
+                    </table><br>
 
-                    @if(Cookie::get('user') != null)
-                    <h4><a href='{{url('paymentFromVariousMarket/'.$products->id)}}'>
-                            <button type='button' class='btn allButton active'>অর্ডার প্লেস করুন</button></a></h4>
-                    @else
-                    <h4> আপনার অর্ডার সম্পন্ন্য করতে   <a href='{{url('login')}}'>
-                            <button type='button' class='btn btn-primary active'>লগ ইন</button></a> করুন</h4>
-                    @endif
+                    {{ Form::open(array('url' => 'paymentFromVariousMarket',  'method' => 'get')) }}
+                    {{ csrf_field() }}
+                        <div class="form-group">
+                            <input type="text"  class="form-control ref" id="ref"  name="ref"  placeholder="রেফারেন্স">
+                            <input type="hidden" name="id" dirname="id" value="{{$products->id}}">
+                        </div>
+                        @if(Cookie::get('user') != null)
+                        <h4>
+                            <button type='submit' class='btn allButton active'>অর্ডার প্লেস করুন</button></h4>
+                        @else
+                        <h4> আপনার অর্ডার সম্পন্ন্য করতে   <a href='{{url('login')}}'>
+                                <button type='button' class='btn btn-primary active'>লগ ইন</button></a> করুন</h4>
+                        @endif
+                    {{ Form::close() }}
                 </div>
             </div>
         </div>

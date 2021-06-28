@@ -164,6 +164,9 @@ Route::group(['middleware' => ['adminUser']], function () {
 //Report
     Route::get('salesReport', 'backend\ReportController@salesReport');
     Route::get('animalSalesReport', 'backend\ReportController@animalSalesReport');
+    Route::get('productUploadReport', 'backend\ReportController@productUploadReport');
+    Route::post('getSellerProductsByIdAdmin', 'backend\SellerController@getSellerProductsByIdAdmin');
+    Route::post('deleteSellerUploadProduct', 'backend\SellerController@deleteSellerUploadProduct');
     Route::post('getAnimalSalesOrderListByDate', 'backend\ReportController@getAnimalSalesOrderListByDate');
     Route::get('ticketSalesReport', 'backend\ReportController@ticketSalesReport');
     Route::post('getTicketSalesOrderListByDate', 'backend\ReportController@getTicketSalesOrderListByDate');
@@ -387,11 +390,11 @@ Route::group(['middleware' => ['deliveryMan']], function () {
 });
 Route::group(['middleware' => ['seller']], function () {
     Route::get('sellerForm', 'backend\SellerController@sellerForm');
-    Route::post('insertSellerProduct', 'backend\SellerController@insertSellerProduct');
     Route::post('getSellerProductsById', 'backend\SellerController@getSellerProductsById');
     Route::post('deleteSellerProduct', 'backend\SellerController@deleteSellerProduct');
     Route::get('mySaleProduct', 'backend\SellerController@mySaleProduct');
 });
+Route::post('insertSellerProduct', 'backend\SellerController@insertSellerProduct');
 Route::group(['middleware' => ['dealer']], function () {
     Route::get('dealerProfile', 'backend\DealerController@dealerProfile');
     Route::post('changeProductPrice', 'backend\DealerController@changeProductPrice');
@@ -727,7 +730,7 @@ Route::group(['middleware' => ['tnt']], function () {
 
 //Payment Gateway
     Route::post('getPaymentCartView', 'frontend\PaymentController@getPaymentCartView');
-    Route::get('paymentFromVariousMarket/{id}', 'frontend\PaymentController@paymentFromVariousMarket');
+    Route::get('paymentFromVariousMarket', 'frontend\PaymentController@paymentFromVariousMarket');
     Route::post('insertTicketPayment', 'frontend\PaymentController@insertTicketPayment');
     Route::post('insertDrAppointmentPayment', 'frontend\PaymentController@insertDrAppointmentPayment');
     Route::post('insertTherapyAppointmentPayment', 'frontend\PaymentController@insertTherapyAppointmentPayment');

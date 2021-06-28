@@ -22,13 +22,17 @@ class SellerController extends Controller
             if($request) {
                 if(Cookie::get('user_id')) {
                     if($request->id) {
+                        $PhotoPath ='';
                         if ($request->hasFile('photo')) {
-                            $targetFolder = 'public/asset/images/';
-                            $file = $request->file('photo');
-                            $pname = time() . '.' . $file->getClientOriginalName();
-                            $image['filePath'] = $pname;
-                            $file->move($targetFolder, $pname);
-                            $PhotoPath = $targetFolder . $pname;
+                            $files = $request->file('photo');
+
+                            foreach ($files as $file) {
+                                $targetFolder = 'public/asset/images/';
+                                $pname = time() . '.' . $file->getClientOriginalName();
+                                $image['filePath'] = $pname;
+                                $file->move($targetFolder, $pname);
+                                $PhotoPath .= $targetFolder . $pname.',';
+                            }
                         }
                         $video = '';
                         if ($request->hasFile('video')) {
@@ -48,8 +52,9 @@ class SellerController extends Controller
                                 'amount' => $request->amount,
                                 'price' => $request->price,
                                 'address' => $address,
-                                'photo' => $PhotoPath,
+                                'photo' => json_encode($PhotoPath),
                                 'video' => $video,
+                                'w_phone' => $request->w_phone,
                                 'description' => $request->description,
                                 'status' => $request->status,
                             ]);
@@ -60,13 +65,17 @@ class SellerController extends Controller
                         }
                     }
                     else{
+                        $PhotoPath ='';
                         if ($request->hasFile('photo')) {
-                            $targetFolder = 'public/asset/images/';
-                            $file = $request->file('photo');
-                            $pname = time() . '.' . $file->getClientOriginalName();
-                            $image['filePath'] = $pname;
-                            $file->move($targetFolder, $pname);
-                            $PhotoPath = $targetFolder . $pname;
+                            $files = $request->file('photo');
+
+                            foreach ($files as $file) {
+                                $targetFolder = 'public/asset/images/';
+                                $pname = time() . '.' . $file->getClientOriginalName();
+                                $image['filePath'] = $pname;
+                                $file->move($targetFolder, $pname);
+                                $PhotoPath .= $targetFolder . $pname.',';
+                            }
                         }
                         $video = '';
                         if ($request->hasFile('video')) {
@@ -92,8 +101,9 @@ class SellerController extends Controller
                             'amount' => $request->amount,
                             'price' => $request->price,
                             'address' => $address,
-                            'photo' => $PhotoPath,
+                            'photo' => json_encode($PhotoPath),
                             'video' => $video,
+                            'w_phone' => $request->w_phone,
                             'description' => $request->description,
                             'status' => $request->status,
                         ]);
@@ -129,6 +139,17 @@ class SellerController extends Controller
             return response()->json(array('data'=>$ex->getMessage()));
         }
     }
+    public function getSellerProductsByIdAdmin(Request $request){
+        try{
+            $rows = DB::table('seller_product')
+                ->where('id', $request->id)
+                ->first();
+            return response()->json(array('data'=>$rows));
+        }
+        catch(\Illuminate\Database\QueryException $ex){
+            return response()->json(array('data'=>$ex->getMessage()));
+        }
+    }
     public function deleteSellerProduct(Request $request){
         try{
             if($request->id) {
@@ -138,6 +159,27 @@ class SellerController extends Controller
                     ->update([
                         'status' =>  0,
                     ]);
+                if ($result) {
+                    return back()->with('successMessage', 'সফল্ভাবে সম্পন্ন্য হয়েছে।');
+                } else {
+                    return back()->with('errorMessage', 'আবার চেষ্টা করুন।');
+                }
+            }
+            else{
+                return back()->with('errorMessage', 'আবার চেষ্টা করুন।');
+            }
+
+        }
+        catch(\Illuminate\Database\QueryException $ex){
+            return back()->with('errorMessage', $ex->getMessage());
+        }
+    }
+    public function deleteSellerUploadProduct(Request $request){
+        try{
+            if($request->id) {
+                $result =DB::table('seller_product')
+                    ->where('id', $request->id)
+                    ->delete();
                 if ($result) {
                     return back()->with('successMessage', 'সফল্ভাবে সম্পন্ন্য হয়েছে।');
                 } else {

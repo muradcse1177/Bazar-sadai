@@ -1068,10 +1068,10 @@ class FrontController extends Controller
     }
     public function productSales(Request $request){
         try{
-            $pieces = explode("?", $request->id);
-            $id = (int) $pieces[0];
-            $pieces1 = explode("=", $pieces[1]);
-            $status =  $pieces1[1];
+            $sessRequest = json_encode(Session::get('variousMarket'));
+            $sessRequest = json_decode($sessRequest);
+            $ref = $sessRequest->ref;
+            $id = $sessRequest->id;
             $rows = DB::table('seller_product')
                 ->where('id', $id)
                 ->first();
@@ -1079,6 +1079,7 @@ class FrontController extends Controller
             $type = 'various kinds of product sales';
             $msg = $request->msg;
             $tx_id = $request->tx_id;
+            $status = $request->status;
             $bank_tx_id = $request->bank_tx_id;
             $amount = $request->amount;
             $bank_status = $request->bank_status;
@@ -1086,45 +1087,52 @@ class FrontController extends Controller
             $sp_code_des = $request->sp_code_des;
             $sp_payment_option = $request->sp_payment_option;
             $date = date('Y-m-d');
-            $result = DB::table('payment_info')->insert([
-                'user_id' => Cookie::get('user_id'),
-                'status' => $status,
-                'type' => $type,
-                'msg' => $msg,
-                'tx_id' => $tx_id,
-                'bank_tx_id' => $bank_tx_id,
-                'amount' => $amount,
-                'bank_status' => $bank_status,
-                'sp_code' => $sp_code,
-                'sp_code_des' => $sp_code_des,
-                'sp_payment_option' => $sp_payment_option,
-            ]);
-            if($result){
-                $result = DB::table('product_sales')->insert([
-                    'seller_id' => $rows->seller_id,
-                    'buyer_id' =>  Cookie::get('user_id'),
-                    'product_id' => $rows->id,
-                    'date' =>date("Y-m-d"),
-                    'pay_id' => $tx_id,
+            if($status == 'Failed'){
+                return redirect('homepage')->with('errorMessage', 'আবার চেষ্টা করুন।');
+            }
+            else{
+                $result = DB::table('payment_info')->insert([
+                    'user_id' => Cookie::get('user_id'),
+                    'status' => $status,
+                    'type' => $type,
+                    'msg' => $msg,
+                    'tx_id' => $tx_id,
+                    'bank_tx_id' => $bank_tx_id,
+                    'amount' => $amount,
+                    'bank_status' => $bank_status,
+                    'sp_code' => $sp_code,
+                    'sp_code_des' => $sp_code_des,
+                    'sp_payment_option' => $sp_payment_option,
                 ]);
-                if ($result) {
-                    $upresult =DB::table('seller_product')
-                        ->where('id', $rows->id)
-                        ->update([
-                            'amount' => $rows->amount-1,
-                        ]);
-                    if ($upresult) {
-                        return redirect()->to('myVariousProductOrderUser')->with('successMessage', 'সফল্ভাবে সম্পন্ন্য হয়েছে। দ্রুত আপনার সাথে যোগাযোগ করা হবে।');
-                    }
-                    else{
-                        return back()->with('errorMessage', 'আবার চেষ্টা করুন।');
-                    }
+                if($result){
+                    $result = DB::table('product_sales')->insert([
+                        'seller_id' => $rows->seller_id,
+                        'buyer_id' =>  Cookie::get('user_id'),
+                        'product_id' => $rows->id,
+                        'date' =>date("Y-m-d"),
+                        'pay_id' => $tx_id,
+                        'ref' => $ref,
+                    ]);
+                    if ($result) {
+                        $upresult =DB::table('seller_product')
+                            ->where('id', $rows->id)
+                            ->update([
+                                'amount' => $rows->amount-1,
+                            ]);
+                        if ($upresult) {
+                            return redirect()->to('myVariousProductOrderUser')->with('successMessage', 'সফল্ভাবে সম্পন্ন্য হয়েছে। দ্রুত আপনার সাথে যোগাযোগ করা হবে।');
+                        }
+                        else{
+                            return back()->with('errorMessage', 'আবার চেষ্টা করুন।');
+                        }
 
+                    }
+                }
+                else {
+                    return back()->with('errorMessage', 'আবার চেষ্টা করুন।');
                 }
             }
-            else {
-                return back()->with('errorMessage', 'আবার চেষ্টা করুন।');
-            }
+
         }
         catch(\Illuminate\Database\QueryException $ex){
             return back()->with('errorMessage', $ex->getMessage());

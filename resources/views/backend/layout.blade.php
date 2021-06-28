@@ -452,6 +452,11 @@
                         <i class="fa fa-shopping-bag"></i> <span>পশু বিক্রয় রিপোর্ট</span>
                     </a>
                 </li>
+                <li class="@yield('productUploadReport')">
+                    <a href="{{ url('productUploadReport') }}">
+                        <i class="fa fa-upload"></i> <span>পণ্য আপলোড রিপোর্ট</span>
+                    </a>
+                </li>
                 <li class="@yield('ticketSalesLiAdd')">
                     <a href="{{ url('ticketSalesReport') }}">
                         <i class="fa fa-shopping-bag"></i> <span>টিকেট বিক্রয় রিপোর্ট</span>

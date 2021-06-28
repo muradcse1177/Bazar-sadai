@@ -50,41 +50,89 @@
         $bn_number = str_replace($search_array, $replace_array, $number);
         return $bn_number;
     }
-
+    ?>
+    <?php
+    $j=0;
     ?>
     <div class="row">
         @foreach ($products as $product)
             <div class="col-sm-4">
                 <div class="card">
                     <div class="card-body cardBody pCard">
-                            @php
-                                $Image =url('/')."/public/asset/images/noImage.jpg";
-                                   if(!empty($product->photo))
-                                       $Image =url('/').'/'.$product->photo;
-                            @endphp
-                            <div  id="" class="col-md-12" style="margin-bottom: 10px;">
-                                <img src="{{$Image}}" width ="100%" height="240" >
-                            </div>
-                            <div class='col-sm-12'>
-                                <p>
-                                    <b>{{"নামঃ ". $product->name .','.' '.'দামঃ '. en2bn($product->price).' টাকা' }} </b>
-                                </p>
-                            </div>
+                        <div class="col-sm-12">
+                            {{--                            <img src="{{$result->cover_photo}}" height="170" width="100%"/>--}}
+                            <div id="myCarousel<?php echo $j; ?>" class="carousel slide" data-ride="carousel">
+                                <?php
+                                $photo = json_decode($product->photo);
+                                $photos = explode(",",$photo);
+                                array_pop($photos);
 
-                            <div class="col-md-12">
-                                <span>
-                                    <div class='col-sm-12'>
-                                        <button class='btn btn-success btn-sm edit btn-flat details ' data-id='{{$product->id}}'><i class="fa fa-shopping-search "></i> বিস্তারিত</button>
-                                        @if(@$product->video)
-                                        <a href="{{ URL::to('videoView?id='.$product->id) }}"> <button class='btn btn-default btn-flat btn-sm video ' data-id='{{$product->id}}'><i class="fa fa-youtube-play "></i></button></a>
+                                $i=0;
+                                ?>
+                                <ol class="carousel-indicators">
+                                @foreach($photos as $ph)
+                                    <!-- Indicators -->
+                                        @if($i==0)
+                                            <li data-target="#myCarousel<?php echo $j; ?>" data-slide-to="<?php echo rand()?>" class="active"></li>
+                                        @else
+                                            <li data-target="#myCarousel<?php echo $j; ?>" data-slide-to="<?php echo rand()?>"></li>
                                         @endif
-                                        <a href="{{ URL::to('productSaleView/'.$product->id) }}"><button type="submit" data-id="{{$product->id}}" class="btn btn-default btn-flat btn-sm submit"><i class="fa fa-shopping-bag"></i></button></a>
-                                    </div>
-                                </span>
+                                        <?php $i++; ?>
+                                    @endforeach
+                                </ol>
+                            <?php
+                            $i=0;
+                            ?>
+                            <!-- Wrapper for slides -->
+                                <div class="carousel-inner">
+                                    @foreach($photos as $ph)
+                                        @if($i==0)
+                                            <div class="item active">
+                                                <img src="{{url($ph)}}"  style="width:100%;" height="170">
+                                            </div>
+                                        @else
+                                            <div class="item">
+                                                <img src="{{url($ph)}}"  style="width:100%; height: 170px;">
+                                            </div>
+                                        @endif
+                                        <?php $i++; ?>
+                                    @endforeach
+                                </div>
+                                <a class="left carousel-control" href="#myCarousel<?php echo $j; ?>" data-slide="prev">
+                                    <span class="glyphicon glyphicon-chevron-left"></span>
+                                    <span class="sr-only">Previous</span>
+                                </a>
+                                <a class="right carousel-control" href="#myCarousel<?php echo $j; ?>" data-slide="next">
+                                    <span class="glyphicon glyphicon-chevron-right"></span>
+                                    <span class="sr-only">Next</span>
+                                </a>
                             </div>
+                        </div>
+                        <div class='col-sm-12'>
+                            <p>
+                                <b>{{"নামঃ ". $product->name .','.' '.'দামঃ '. en2bn($product->price).' টাকা' }} </b>
+                            </p>
+                        </div>
+                        <div class='col-sm-12'>
+                            <p>
+                                <b>{{"ঠিকানাঃ". $product->address}} </b>
+                            </p>
+                        </div>
+                        <div class="col-md-12">
+                            <span>
+                                <div class='col-sm-12'>
+                                    <button class='btn btn-success btn-sm edit btn-flat details ' data-id='{{$product->id}}'><i class="fa fa-shopping-search "></i> বিস্তারিত</button>
+                                    @if(@$product->video)
+                                    <a href="{{ URL::to('videoView?id='.$product->id) }}"> <button class='btn btn-default btn-flat btn-sm video ' data-id='{{$product->id}}'><i class="fa fa-youtube-play "></i></button></a>
+                                    @endif
+                                    <a href="{{ URL::to('productSaleView/'.$product->id) }}"><button type="submit" data-id="{{$product->id}}" class="btn btn-default btn-flat btn-sm submit"><i class="fa fa-shopping-bag"></i></button></a>
+                                </div>
+                            </span>
+                        </div>
                     </div>
                 </div>
             </div>
+            <?php  $j++; ?>
         @endforeach
         {{$products->links()}}
     </div>

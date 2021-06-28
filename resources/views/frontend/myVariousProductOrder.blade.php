@@ -36,8 +36,14 @@
                                     <th>দাম</th>
                                 </tr>
                                 @foreach($orders as $order)
+                                    <?php
+                                    $photo = json_decode($order->photo);
+                                    $photos = explode(",",$photo);
+                                    array_pop($photos);
+                                    $i=0;
+                                    ?>
                                     <tr>
-                                        <td><img src="{{$order->photo}}" width="42" height="42"></td>
+                                        <td> <img src="{{url($photos[0])}}" width ="45" height="45" ></td>
                                         <td>{{$order->name}}</td>
                                         <td>{{$order->date}}</td>
                                         <td>{{$order->pay_id}}</td>
