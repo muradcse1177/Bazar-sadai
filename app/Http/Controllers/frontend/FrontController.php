@@ -906,8 +906,20 @@ class FrontController extends Controller
             $products = DB::table('seller_product')
                 ->where('status', 'Active')
                 ->where('amount','>', 0)
-                ->get();
+                ->orderBy('id','desc')
+                ->paginate(50);
                return view('frontend.buysale', ['products' => $products]);
+            }
+        catch(\Illuminate\Database\QueryException $ex){
+            return back()->with('errorMessage', $ex->getMessage());
+        }
+    }public function videoView(Request $request){
+        try{
+            $products = DB::table('seller_product')
+                ->where('id', $request->id)
+                ->where('status', 'Active')
+                ->first();
+               return view('frontend.videoView', ['products' => $products]);
             }
         catch(\Illuminate\Database\QueryException $ex){
             return back()->with('errorMessage', $ex->getMessage());
@@ -919,7 +931,8 @@ class FrontController extends Controller
                 ->where('status', 'Active')
                 ->where('type', 'Animal')
                 ->where('amount','>', 0)
-                ->get();
+                ->orderBy('id','desc')
+                ->paginate(50);
                return view('frontend.buysale', ['products' => $products]);
             }
         catch(\Illuminate\Database\QueryException $ex){

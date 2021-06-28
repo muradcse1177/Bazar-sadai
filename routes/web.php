@@ -602,6 +602,7 @@ Route::group(['middleware' => ['tnt']], function () {
     Route::post('insertContactUs', 'backend\UserController@insertContactUs');
     Route::get('buySale/{id}', 'frontend\FrontController@buySale');
     Route::get('buySaleAnimal/{id}', 'frontend\FrontController@buySaleAnimal');
+    Route::get('videoView', 'frontend\FrontController@videoView');
     Route::get('getAllSaleCategory', 'frontend\FrontController@getAllSaleCategory');
     Route::post('insertSaleProduct', 'frontend\FrontController@insertSaleProduct');
     Route::post('getSaleProductsDetails', 'frontend\FrontController@getSaleProductsDetails');

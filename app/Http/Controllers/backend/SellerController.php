@@ -30,6 +30,15 @@ class SellerController extends Controller
                             $file->move($targetFolder, $pname);
                             $PhotoPath = $targetFolder . $pname;
                         }
+                        $video = '';
+                        if ($request->hasFile('video')) {
+                            $targetFolder = 'public/asset/images/';
+                            $file = $request->file('video');
+                            $pname = time() . '.' . $file->getClientOriginalName();
+                            $image['filePath'] = $pname;
+                            $file->move($targetFolder, $pname);
+                            $video = $targetFolder . $pname;
+                        }
                         $address = $request->address1.','.$request->address2.','.$request->address3;
                         $result =DB::table('seller_product')
                             ->where('id', $request->id)
@@ -40,6 +49,7 @@ class SellerController extends Controller
                                 'price' => $request->price,
                                 'address' => $address,
                                 'photo' => $PhotoPath,
+                                'video' => $video,
                                 'description' => $request->description,
                                 'status' => $request->status,
                             ]);
@@ -58,6 +68,22 @@ class SellerController extends Controller
                             $file->move($targetFolder, $pname);
                             $PhotoPath = $targetFolder . $pname;
                         }
+                        $video = '';
+                        if ($request->hasFile('video')) {
+                            $size = $request->file('video')->getSize();
+                            $mb = number_format($size / 1048576, 2);
+                            if($mb>40){
+                                return back()->with('errorMessage', '40MB এর কম ফাইল আপলোড করুন।');
+                            }
+                            else{
+                                $targetFolder = 'public/asset/images/';
+                                $file = $request->file('video');
+                                $pname = time() . '.' . $file->getClientOriginalName();
+                                $image['filePath'] = $pname;
+                                $file->move($targetFolder, $pname);
+                                $video = $targetFolder . $pname;
+                            }
+                        }
                         $address = $request->address1.','.$request->address2.','.$request->address3;
                         $result = DB::table('seller_product')->insert([
                             'seller_id' => Cookie::get('user_id'),
@@ -67,6 +93,7 @@ class SellerController extends Controller
                             'price' => $request->price,
                             'address' => $address,
                             'photo' => $PhotoPath,
+                            'video' => $video,
                             'description' => $request->description,
                             'status' => $request->status,
                         ]);

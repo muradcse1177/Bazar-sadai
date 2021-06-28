@@ -73,6 +73,10 @@
                             <input type="file" class="form-control" accept="image/*" name="photo" placeholder="ছবি" required>
                         </div>
                         <div class="form-group">
+                            <label for="type" >ভিডিও</label>
+                            <input type="file" class="form-control video" accept="video/mp4,video/x-m4v,video/*" name="video" placeholder="ভিডিও">
+                        </div>
+                        <div class="form-group">
                             <label>স্ট্যাটাস</label>
                             <select class="form-control select2 status" name="status" style="width: 100%;" required>
                                 <option value="" selected>স্ট্যাটাস  নির্বাচন করুন</option>
@@ -83,7 +87,7 @@
                         <div class="form-group">
                             <label for="">বিবরন</label>
                             <textarea class="textarea description" id="description" placeholder="বিবরন লিখুন" name="description"
-                                      style="width: 100%; height: 200px; font-size: 14px; line-height: 18px; border: 1px solid #dddddd; padding: 10px;"></textarea>
+                                      style="width: 100%; height: 200px; font-size: 14px; line-height: 18px; border: 1px solid #dddddd; padding: 10px;" required></textarea>
                         </div>
                     </div>
                     <div class="box-footer">

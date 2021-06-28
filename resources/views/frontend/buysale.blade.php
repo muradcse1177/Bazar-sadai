@@ -53,41 +53,40 @@
 
     ?>
     <div class="row">
-    <?php
-        foreach ($products as $product){
-            ?>
-        <div class="col-sm-4">
-            <div class="card">
-                <div class="card-body cardBody pCard">
-                        @php
-                            $Image =url('/')."/public/asset/images/noImage.jpg";
-                               if(!empty($product->photo))
-                                   $Image =url('/').'/'.$product->photo;
-                        @endphp
-                        <div  id="" class="col-md-12" style="margin-bottom: 10px;">
-                            <img src="{{$Image}}" width ="100%" height="300" >
-                        </div>
-                        <div class='col-sm-12'>
-                            <p>
-                                <b>{{"নামঃ ". $product->name .','.' '.'দামঃ '. en2bn($product->price).' টাকা' }} </b>
-                            </p>
-                        </div>
+        @foreach ($products as $product)
+            <div class="col-sm-4">
+                <div class="card">
+                    <div class="card-body cardBody pCard">
+                            @php
+                                $Image =url('/')."/public/asset/images/noImage.jpg";
+                                   if(!empty($product->photo))
+                                       $Image =url('/').'/'.$product->photo;
+                            @endphp
+                            <div  id="" class="col-md-12" style="margin-bottom: 10px;">
+                                <img src="{{$Image}}" width ="100%" height="240" >
+                            </div>
+                            <div class='col-sm-12'>
+                                <p>
+                                    <b>{{"নামঃ ". $product->name .','.' '.'দামঃ '. en2bn($product->price).' টাকা' }} </b>
+                                </p>
+                            </div>
 
-                        <div class="col-md-12">
-                            <span>
-                                <div class='col-sm-4'>
-                                    <button class='btn btn-success btn-sm edit btn-flat details ' data-id='{{$product->id}}'><i class="fa fa-shopping-search "></i> বিস্তারিত</button>
-                                   <a href="{{ URL::to('productSaleView/'.$product->id) }}">
-                                       <button type="submit" data-id="{{$product->id}}" class="btn btn-default btn-flat btn-sm submit"><i class="fa fa-shopping-bag"></i>
-                                       </button>
-                                   </a>
-                                </div>
-                            </span>
-                        </div>
+                            <div class="col-md-12">
+                                <span>
+                                    <div class='col-sm-12'>
+                                        <button class='btn btn-success btn-sm edit btn-flat details ' data-id='{{$product->id}}'><i class="fa fa-shopping-search "></i> বিস্তারিত</button>
+                                        @if(@$product->video)
+                                        <a href="{{ URL::to('videoView?id='.$product->id) }}"> <button class='btn btn-default btn-flat btn-sm video ' data-id='{{$product->id}}'><i class="fa fa-youtube-play "></i></button></a>
+                                        @endif
+                                        <a href="{{ URL::to('productSaleView/'.$product->id) }}"><button type="submit" data-id="{{$product->id}}" class="btn btn-default btn-flat btn-sm submit"><i class="fa fa-shopping-bag"></i></button></a>
+                                    </div>
+                                </span>
+                            </div>
+                    </div>
                 </div>
             </div>
-        </div>
-        <?php } ?>
+        @endforeach
+        {{$products->links()}}
     </div>
     <div class="modal fade"  tabindex="-1"   id="detailsModal"  role="dialog">
         <div class="modal-dialog modal-lg">
@@ -119,6 +118,21 @@
             });
         });
         function getRow(id){
+            $.ajax({
+                type: 'POST',
+                url: '{{url('/')}}/getSaleProductsDetails',
+                data: {
+                    "_token": "{{ csrf_token() }}",
+                    "id": id
+                },
+                dataType: 'json',
+                success: function(response){
+                    var data = response.data;
+                    $('#modalRes').html(data.description);
+                }
+            });
+        }
+        function getVideo(id){
             $.ajax({
                 type: 'POST',
                 url: '{{url('/')}}/getSaleProductsDetails',
