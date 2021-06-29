@@ -453,7 +453,7 @@
                     </a>
                 </li>
                 <li class="@yield('productUploadReport')">
-                    <a href="{{ url('productUploadReport') }}">
+                    <a href="{{ url('productur') }}">
                         <i class="fa fa-upload"></i> <span>পণ্য আপলোড রিপোর্ট</span>
                     </a>
                 </li>
