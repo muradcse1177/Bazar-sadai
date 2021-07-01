@@ -68,9 +68,21 @@
                             <label for="name" >ইউনিয়ন /ওয়ার্ড </label>
                             <input type="text" class="form-control address3" name="address3" placeholder="ইউনিয়ন /ওয়ার্ড"  required>
                         </div>
+                        <div class="form-check deleteCheck" style="display: none;">
+                            <input class="form-check-input" type="checkbox" name="deleteCheck" value="1">
+                            <label class="form-check-label" for="flexCheckDefault">
+                                আপনার আগের ছবিগুলা কি ডিলিট করতে চান?
+                            </label>
+                        </div>
                         <div class="form-group">
                             <label for="type" >ছবি</label>
-                            <input type="file" class="form-control" accept="image/*" name="photo[]" placeholder="ছবি" required multiple>
+                            <input class="form-control" type="file" accept="image/*"name="photo[]" required>
+                        </div>
+                        <div id="newRow">
+
+                        </div>
+                        <div class="form-group">
+                            <a type="submit" class="btn btn-primary" id="addMore"><i class="fa-fa ion-plus"></i>আরও যোগ করুন</a>
                         </div>
                         <div class="form-group">
                             <label for="type" >ভিডিও</label>
@@ -93,6 +105,7 @@
                             <textarea class="textarea description" id="description" placeholder="বিবরন লিখুন" name="description"
                                       style="width: 100%; height: 200px; font-size: 14px; line-height: 18px; border: 1px solid #dddddd; padding: 10px;" required></textarea>
                         </div>
+
                     </div>
                     <div class="box-footer">
                         <input type="hidden" name="id" id="id" class="id">
@@ -112,7 +125,6 @@
                 <div class="box-body table-responsive">
                     <table class="table table-bordered">
                         <tr>
-                            <th>ছবি</th>
                             <th>সেলার নাম</th>
                             <th>পণ্য নাম</th>
                             <th>ফোন</th>
@@ -130,7 +142,6 @@
                                 $i=0;
                             ?>
                             <tr>
-                                <td> <img src="{{url($photos[0])}}" width ="45" height="45" ></td>
                                 <td> {{$product->name}} </td>
                                 <td> {{$product->uname}} </td>
                                 <td> {{$product->phone}} </td>
@@ -197,13 +208,29 @@
                     </div>
                 </div>
             </div>
-
         </div>
     </div>
+
 @endsection
 @section('js')
     <script src="public/asset/plugins/bootstrap-wysihtml5/bootstrap3-wysihtml5.all.min.js"></script>
     <script>
+        $("#addMore").click(function () {
+            var html = '';
+            html += '<div class="form-group" id="inputFormRow">';
+            html += '<div class="input-group">';
+            html += '<input class="form-control" type="file" accept="image/*"name="photo[]" required>';
+            html += '<span class="input-group-btn">';
+            html += '<a class="btn btn-danger" id="remove">বাদ দিন</a>';
+            html += '</span>';
+            html += '</div>';
+            html += '</div>';
+
+            $('#newRow').append(html);
+        });
+        $(document).on('click', '#remove', function () {
+            $(this).closest('#inputFormRow').remove();
+        });
         $('.textarea').wysihtml5();
         $(document).ready(function(){
             $(".addbut").click(function(){
@@ -254,6 +281,7 @@
                     $('.status').val(data.status);
                     $('.type').val(data.type);
                     $('.price').val(data.price);
+                    $('.w_phone').val(data.w_phone);
                     $('.amount').val(data.amount);
                     $('.address1').val(address[0]);
                     $('.address2').val(address[1]);
@@ -261,6 +289,7 @@
                     $('#modalRes').html(data.description);
                     $('#description ~ iframe').contents().find('.wysihtml5-editor').html(data.description);
                     $('.id').val(data.id);
+                    $(".deleteCheck").show();
                     $('.select2').select2()
 
                 }

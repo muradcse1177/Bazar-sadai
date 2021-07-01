@@ -17,6 +17,24 @@
         </div>
     @endif
     <div class="row">
+        <div>
+            @foreach($p_categories as $category)
+                <a href='{{ URL::to('product/'.$category->id) }}'>
+                    <div>
+                        <div>
+                            <div>
+                                <div>
+                                    <center><strong>{{ $category->name }}</strong></center>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            @endforeach
+        </div>
+        <div class="col-md-8">
+
+        </div>
         <div class="col-md-12">
             @foreach($p_categories as $category)
                     <a href='{{ URL::to('product/'.$category->id) }}'>

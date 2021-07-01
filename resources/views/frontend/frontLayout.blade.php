@@ -107,6 +107,12 @@
             margin-right: 10px;
             margin-bottom: 10px;
         }
+        .sCard{
+            margin-top: 10px;
+            margin-left: 10px;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
         .boxBody{
             background-color: darkgreen;
             color: white;

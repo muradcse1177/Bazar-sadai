@@ -1646,5 +1646,52 @@ class FrontController extends Controller
             return back()->with('errorMessage', $ex->getMessage());
         }
     }
+    public function getAnimalSearchByValue(Request $request){
+        try{
+            $rows = DB::table('seller_product')
+                ->where('name', 'like', '%'.$request->val.'%')
+                ->where('type', 'Animal')
+                ->get();
+            $rows1 = DB::table('seller_product')
+                ->where('address', 'like', '%'.$request->val.'%')
+                ->where('type', 'Animal')
+                ->get();
+            $name = array();
+            foreach ($rows as $row){
+                $name [] = $row->name;
+            }
+            $address = array();
+            foreach ($rows1 as $row1){
+                $address [] = $row1->address;
+            }
+            $total = array_merge($name,$address);
+            return response()->json(array('data'=>$total));
+        }
+        catch(\Illuminate\Database\QueryException $ex){
+            return response()->json(array('data'=>$ex->getMessage()));
+        }
+    }
+    public function searchAnimal(Request $request){
+        try{
+            $products = DB::table('seller_product')
+                ->where('status', 'Active')
+                ->where('name', 'like', '%'.$request->search.'%')
+                ->orWhere('address', 'like', '%'.$request->search.'%')
+                ->where('type', 'Animal')
+                ->where('amount','>', 0)
+                ->orderBy('id','desc')
+                ->paginate(50);
+            if(count($products)<1){
+                Session::flash('errorMessage', 'কোন তথ্য পাওয়া যায়নি।');
+                return view('frontend.buysale', ['products' => $products,'val'=>$request->search]);
+            }
+            else{
+                return view('frontend.buysale', ['products' => $products,'val'=>$request->search]);
+            }
 
+        }
+        catch(\Illuminate\Database\QueryException $ex){
+            return back()->with('errorMessage', $ex->getMessage());
+        }
+    }
 }

@@ -14,6 +14,7 @@ class SellerController extends Controller
             ->where('status', 'Active')
             ->where('amount','>', '0')
             ->where('seller_id', Cookie::get('user_id'))
+            ->orderBy('id', 'desc')
             ->paginate(20);
         return view('backend.sellerForm',['products' => $rows]);
     }
@@ -23,15 +24,34 @@ class SellerController extends Controller
                 if(Cookie::get('user_id')) {
                     if($request->id) {
                         $PhotoPath ='';
-                        if ($request->hasFile('photo')) {
-                            $files = $request->file('photo');
+                        if(empty($request->deleteCheck)){
+                            $row =DB::table('seller_product')
+                                ->where('id', $request->id)
+                                ->first();
+                            if ($request->hasFile('photo')) {
+                                $files = $request->file('photo');
 
-                            foreach ($files as $file) {
-                                $targetFolder = 'public/asset/images/';
-                                $pname = time() . '.' . $file->getClientOriginalName();
-                                $image['filePath'] = $pname;
-                                $file->move($targetFolder, $pname);
-                                $PhotoPath .= $targetFolder . $pname.',';
+                                foreach ($files as $file) {
+                                    $targetFolder = 'public/asset/images/';
+                                    $pname = time() . '.' . $file->getClientOriginalName();
+                                    $image['filePath'] = $pname;
+                                    $file->move($targetFolder, $pname);
+                                    $PhotoPath .= $targetFolder . $pname.',';
+                                }
+                            }
+                            $PhotoPath .= json_decode($row->photo);
+                        }
+                        else{
+                            if ($request->hasFile('photo')) {
+                                $files = $request->file('photo');
+
+                                foreach ($files as $file) {
+                                    $targetFolder = 'public/asset/images/';
+                                    $pname = time() . '.' . $file->getClientOriginalName();
+                                    $image['filePath'] = $pname;
+                                    $file->move($targetFolder, $pname);
+                                    $PhotoPath .= $targetFolder . $pname.',';
+                                }
                             }
                         }
                         $video = '';
@@ -76,13 +96,13 @@ class SellerController extends Controller
                                 $file->move($targetFolder, $pname);
                                 $PhotoPath .= $targetFolder . $pname.',';
                             }
-                        }
+                        };
                         $video = '';
                         if ($request->hasFile('video')) {
                             $size = $request->file('video')->getSize();
-                            $mb = number_format($size / 1048576, 2);
-                            if($mb>40){
-                                return back()->with('errorMessage', '40MB এর কম ফাইল আপলোড করুন।');
+                            $mb = number_format($size / 1048576, 11);
+                            if($mb>11){
+                                return back()->with('errorMessage', '10MB এর কম ফাইল আপলোড করুন।');
                             }
                             else{
                                 $targetFolder = 'public/asset/images/';

@@ -55,12 +55,26 @@
     $j=0;
     ?>
     <div class="row">
+        <div class="col-sm-12">
+            <div class="sCard sPCard">
+                {{ Form::open(array('url' => 'searchAnimal',  'method' => 'post')) }}
+                {{ csrf_field() }}
+                    <div class="form-group">
+                        <div class="input-group">
+                            <input class="form-control search" name="search" id="search" value="{{@$val}}" placeholder="তথ্য খুজুন">
+                            <span class="input-group-btn">
+                            <button class="btn btn-info"><i class="fa fa-search"></i></button>
+                        </span>
+                        </div>
+                    </div>
+                {{ Form::close() }}
+            </div>
+        </div>
         @foreach ($products as $product)
             <div class="col-sm-4">
                 <div class="card">
                     <div class="card-body cardBody pCard">
                         <div class="col-sm-12">
-                            {{--                            <img src="{{$result->cover_photo}}" height="170" width="100%"/>--}}
                             <div id="myCarousel<?php echo $j; ?>" class="carousel slide" data-ride="carousel">
                                 <?php
                                 $photo = json_decode($product->photo);
@@ -115,7 +129,7 @@
                         </div>
                         <div class='col-sm-12'>
                             <p>
-                                <b>{{"ঠিকানাঃ". $product->address}} </b>
+                                <b>{{"পন্যের লোকেশনঃ". $product->address}} </b>
                             </p>
                         </div>
                         <div class="col-md-12">
@@ -157,6 +171,24 @@
 @endsection
 @section('js')
     <script>
+        $('#search').on('input', function() {
+            var val = $('#search').val();
+            $.ajax({
+                type: 'GET',
+                url: '{{url('/')}}/getAnimalSearchByValue',
+                data: {val:val},
+                dataType: 'json',
+                success: function(response){
+                    var data = response.data;
+
+                    $( "#search" ).autocomplete({
+                        source: data
+                    });
+                }
+            });
+        });
+
+
         $(function(){
             $(document).on('click', '.details', function(e){
                 e.preventDefault();

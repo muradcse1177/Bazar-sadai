@@ -33,7 +33,7 @@
                 <div class="box-body table-responsive">
                     <table class="table table-bordered">
                         <tr>
-                            <th>ছবি</th>
+
                             <th>নাম</th>
                             <th>তারিখ</th>
                             <th>অর্ডার নং</th>
@@ -84,7 +84,6 @@
                                 }
                             ?>
                             <tr>
-                                <td><img src="{{$Image}}" height="42" width="42">  </td>
                                 <td> {{$product->name}} </td>
                                 <td> {{$product->date}} </td>
                                 <td> {{$product->pay_id}} </td>
