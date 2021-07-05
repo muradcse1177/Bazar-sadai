@@ -1469,4 +1469,32 @@ class ReportController extends Controller
             return back()->with('errorMessage', $ex->getMessage());
         }
     }
+    public function approvalChange(Request  $request){
+        try{
+            if($request->id) {
+                $status =DB::table('seller_product')
+                    ->where('id', $request->id)->first();
+                if($status->approval == 1)
+                    $approval = 0;
+                else
+                    $approval = 1;
+                $result =DB::table('seller_product')
+                    ->where('id', $request->id)
+                    ->update([
+                        'approval' =>  $approval,
+                    ]);
+                if ($result) {
+                    return back()->with('successMessage', 'সফল্ভাবে সম্পন্ন্য হয়েছে।');
+                } else {
+                    return back()->with('errorMessage', 'আবার চেষ্টা করুন।');
+                }
+            }
+            else{
+                return back()->with('errorMessage', 'আবার চেষ্টা করুন।');
+            }
+        }
+        catch(\Illuminate\Database\QueryException $ex){
+            return back()->with('errorMessage', $ex->getMessage());
+        }
+    }
 }

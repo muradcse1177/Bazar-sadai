@@ -132,6 +132,7 @@
                             <th>পরিমান</th>
                             <th>পণ্য মালিক</th>
                             <th>স্ট্যাটাস</th>
+                            <th>এপ্রুভাল</th>
                             <th>টুল</th>
                         </tr>
                         @foreach($products as $product)
@@ -149,6 +150,22 @@
                                 <td> {{$product->amount}} </td>
                                 <td> {{$product->w_phone}} </td>
                                 <td> {{$product->s_status}} </td>
+                                @if($product->approval == 1)
+                                    @php
+                                        $button = 'info';
+                                        $approval = 'Approved';
+                                    @endphp
+                                @else
+                                    @php
+                                        $button = 'warning';
+                                        $approval = 'Not Approved';
+                                    @endphp
+                                @endif
+                                <td class="td-actions text-center">
+                                    <button type="button" rel="tooltip" class="btn btn-{{$button}} approval" data-id="{{$product->s_id}}">
+                                        {{$approval}}
+                                    </button>
+                                </td>
                                 <td class="td-actions text-center">
                                     <button type="button" rel="tooltip" class="btn btn-success edit" data-id="{{$product->s_id}}">
                                         <i class="fa fa-edit"></i>
@@ -164,6 +181,30 @@
                         @endforeach
                     </table>
                     {{ $products->links() }}
+                    <div class="modal modal-danger fade" id="modal-approval">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span></button>
+                                    <h4 class="modal-title">এপ্রুভাল পরিবর্তন করতে চান</h4>
+                                </div>
+                                <div class="modal-body">
+                                    <center><p>এপ্রুভাল পরিবর্তন করতে চান?</p></center>
+                                </div>
+                                <div class="modal-footer">
+                                    {{ Form::open(array('url' => 'approvalChange',  'method' => 'post')) }}
+                                    {{ csrf_field() }}
+                                    <button type="button" class="btn btn-outline pull-left" data-dismiss="modal">না</button>
+                                    <button type="submit" class="btn btn-outline">হ্যা</button>
+                                    <input type="hidden" name="id" id="id" class="id">
+                                    {{ Form::close() }}
+                                </div>
+                            </div>
+                            <!-- /.modal-content -->
+                        </div>
+                        <!-- /.modal-dialog -->
+                    </div>
                     <div class="modal modal-danger fade" id="modal-danger">
                         <div class="modal-dialog">
                             <div class="modal-content">
@@ -255,6 +296,12 @@
             $(document).on('click', '.delete', function(e){
                 e.preventDefault();
                 $('#modal-danger').modal('show');
+                var id = $(this).data('id');
+                getRow(id);
+            });
+            $(document).on('click', '.approval', function(e){
+                e.preventDefault();
+                $('#modal-approval').modal('show');
                 var id = $(this).data('id');
                 getRow(id);
             });

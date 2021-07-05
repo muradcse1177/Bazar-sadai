@@ -934,6 +934,7 @@ class FrontController extends Controller
             $products = DB::table('seller_product')
                 ->where('status', 'Active')
                 ->where('type', 'Animal')
+                ->where('approval','=' ,1)
                 ->where('amount','>', 0)
                 ->orderBy('id','desc')
                 ->paginate(50);

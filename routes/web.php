@@ -169,6 +169,7 @@ Route::group(['middleware' => ['adminUser']], function () {
     Route::get('salesReport', 'backend\ReportController@salesReport');
     Route::get('animalSalesReport', 'backend\ReportController@animalSalesReport');
     Route::get('productur', 'backend\ReportController@productur');
+    Route::post('approvalChange', 'backend\ReportController@approvalChange');
     Route::post('getSellerProductsByIdAdmin', 'backend\SellerController@getSellerProductsByIdAdmin');
     Route::post('deleteSellerUploadProduct', 'backend\SellerController@deleteSellerUploadProduct');
     Route::post('getAnimalSalesOrderListByDate', 'backend\ReportController@getAnimalSalesOrderListByDate');
