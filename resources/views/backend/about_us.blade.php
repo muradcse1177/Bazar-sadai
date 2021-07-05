@@ -2,6 +2,9 @@
 @section('title', 'আমাদের সম্পর্কে')
 @section('page_header', 'আমাদের সম্পর্কে  ব্যবস্থাপনা')
 @section('aboutLiAdd','active')
+@section('extracss')
+    <link rel="stylesheet" href="public/asset/plugins/bootstrap-wysihtml5/bootstrap3-wysihtml5.min.css">
+@endsection
 @section('content')
 
     @if ($message = Session::get('successMessage'))
@@ -30,7 +33,7 @@
                     <div class="box-body">
                         <div class="form-group">
                             <label for="">আমাদের সম্পর্কে</label>
-                            <textarea  class="form-control name" id="name" rows="9"  name="name" placeholder="আমাদের সম্পর্কে লিখুন" required></textarea>
+                            <textarea  class="form-control name textarea" id="name" rows="9"  name="name" placeholder="আমাদের সম্পর্কে লিখুন" required></textarea>
                         </div>
                     </div>
                     <div class="box-footer">
@@ -56,7 +59,7 @@
                         </tr>
                         @foreach($abouts as $about)
                             <tr>
-                                <td> {{$about->about}} </td>
+                                <td> {!! $about->about !!} </td>
                                 <td class="td-actions text-center">
                                     <button type="button" rel="tooltip" class="btn btn-success edit" data-id="{{$about->id}}">
                                         <i class="fa fa-edit"></i>
@@ -72,8 +75,10 @@
     </div>
 @endsection
 @section('js')
+    <script src="public/asset/plugins/bootstrap-wysihtml5/bootstrap3-wysihtml5.all.min.js"></script>
     <script>
         $(document).ready(function(){
+            $('.textarea').wysihtml5();
         });
         $(function(){
             $(document).on('click', '.edit', function(e){
@@ -100,7 +105,7 @@
                 dataType: 'json',
                 success: function(response){
                     var data = response.data;
-                    $('.name').val(data.about);
+                    $('#name ~ iframe').contents().find('.wysihtml5-editor').html(data.about);
                     $('.id').val(data.id);
                 }
             });
