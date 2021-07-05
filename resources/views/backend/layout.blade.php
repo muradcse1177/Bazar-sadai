@@ -799,6 +799,11 @@
                                 <i class="fa fa-bandcamp"></i> <span> সাব ক্যাটেগরি </span>
                             </a>
                         </li>
+                        <li class="@yield('mainSlide')">
+                            <a href ="{{ url('mainSlide') }}" >
+                                <i class="fa fa-image"></i> <span>স্লাইড ব্যবস্থাপনা</span>
+                            </a>
+                        </li>
                         <li class="@yield('proLiAdd')">
                             <a href ="{{ url('product') }}" >
                                 <i class="fa fa-shopping-cart"></i> <span>পণ্য</span>

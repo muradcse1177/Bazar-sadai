@@ -17,23 +17,57 @@
         </div>
     @endif
     <div class="row">
-        <div>
-            @foreach($p_categories as $category)
-                <a href='{{ URL::to('product/'.$category->id) }}'>
-                    <div>
-                        <div>
-                            <div>
-                                <div>
-                                    <center><strong>{{ $category->name }}</strong></center>
+        <div class="col-sm-12 mainSlide">
+            <div class="card">
+                <div class="card-body cardBody pCard">
+                    <div class="col-sm-12">
+                        <div class="col-sm-12">
+                            <div id="myCarousel" class="carousel slide" data-ride="carousel">
+                                <?php
+                                $i=0;
+                                ?>
+                                <ol class="carousel-indicators">
+                                @foreach($slides as $ph)
+                                    <!-- Indicators -->
+                                        @if($i==0)
+                                            <li data-target="#myCarousel" data-slide-to="<?php echo rand()?>" class="active"></li>
+                                        @else
+                                            <li data-target="#myCarousel" data-slide-to="<?php echo rand()?>"></li>
+                                        @endif
+                                        <?php $i++; ?>
+                                    @endforeach
+                                </ol>
+                            <?php
+                            $i=0;
+                            ?>
+                            <!-- Wrapper for slides -->
+                                <div class="carousel-inner">
+                                    @foreach($slides as $ph)
+                                        @if($i==0)
+                                            <div class="item active">
+                                                <img class="mainImg" src="{{url('public/asset/images/'.$ph->slide)}}"  style="width:100%;">
+                                            </div>
+                                        @else
+                                            <div class="item">
+                                                <img class="mainImg" src="{{url('public/asset/images/'.$ph->slide)}}"  style="width:100%;">
+                                            </div>
+                                        @endif
+                                        <?php $i++; ?>
+                                    @endforeach
                                 </div>
+                                    <a class="left carousel-control" href="#myCarousel" data-slide="prev">
+                                        <span class="glyphicon glyphicon-chevron-left"></span>
+                                        <span class="sr-only">Previous</span>
+                                    </a>
+                                    <a class="right carousel-control" href="#myCarousel" data-slide="next">
+                                        <span class="glyphicon glyphicon-chevron-right"></span>
+                                        <span class="sr-only">Next</span>
+                                    </a>
                             </div>
                         </div>
                     </div>
-                </a>
-            @endforeach
-        </div>
-        <div class="col-md-8">
-
+                </div>
+            </div>
         </div>
         <div class="col-md-12">
             @foreach($p_categories as $category)

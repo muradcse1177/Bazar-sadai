@@ -50,6 +50,8 @@
             padding-left: 7px;
             margin-left: 0px;
             margin-right: 0px;
+            margin-top: 5px;
+            margin-bottom: 5px;
         }
         .word-wrap{
             overflow-wrap: break-word;
@@ -117,23 +119,6 @@
             background-color: darkgreen;
             color: white;
         }
-        /*.modal {*/
-        /*    text-align: center;*/
-        /*    padding: 0!important;*/
-        /*}*/
-        /*.modal:before {*/
-        /*    content: '';*/
-        /*    display: inline-block;*/
-        /*    height: 100%;*/
-        /*    vertical-align: middle;*/
-        /*    margin-right: -4px;*/
-        /*}*/
-
-        /*.modal-dialog {*/
-        /*    display: inline-block;*/
-        /*    text-align: left;*/
-        /*    vertical-align: middle;*/
-        /*}*/
         .allButton{
             background-color: darkgreen;
             color: white;
@@ -161,8 +146,21 @@
             margin-right: auto;
             margin-left: auto;
         }
-        .carousel-inner > .item > img {
-            height:170px;
+        @media screen and (max-width: 600px) {
+            .carousel-inner > .item > img {
+                height:170px;
+            }
+            .mainSlide{
+                display: none;
+            }
+        }
+        @media screen and (min-width: 768px) {
+            .carousel-inner > .item > img {
+                height:200px;
+            }
+            .carousel-inner > .item > .mainImg {
+                height:560px;
+            }
         }
     </style>
     @yield('ExtCss')

@@ -138,6 +138,10 @@ Route::group(['middleware' => ['adminUser']], function () {
 //Login
     Route::get('dashboard ', 'backend\UserController@dashboard');
 //Product & Service
+    Route::get('mainSlide', 'backend\ProductController@mainSlide');
+    Route::post('insertMainSlide', 'backend\ProductController@insertMainSlide');
+    Route::post('getMainSlideById', 'backend\ProductController@getMainSlideById');
+    Route::post('deleteSlideList', 'backend\ProductController@deleteSlideList');
     Route::get('category', 'backend\ProductController@selectCategory');
     Route::post('insertCategory', 'backend\ProductController@insertCategory');
     Route::post('getCategoryList', 'backend\ProductController@getCategoryList');

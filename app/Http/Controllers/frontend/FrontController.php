@@ -22,10 +22,14 @@ class FrontController extends Controller
                 ->where('type', 3)
                 ->where('status', 1)
                 ->orderBy('id', 'DESC')->get();
+            $slide= DB::table('slide')
+                ->orderBy('id', 'DESC')
+                ->take(10)->get();
             return view('frontend.homepage',
                 [
                     'p_categories' => $product_cat,
                     'se_categories' => $sale_cat,
+                    'slides' => $slide,
                 ]);
         }
         catch(\Illuminate\Database\QueryException $ex){

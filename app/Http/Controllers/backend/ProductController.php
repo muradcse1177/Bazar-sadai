@@ -6,9 +6,99 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\DB;
+use Intervention\Image\ImageManagerStatic as Image;
 
 class ProductController extends Controller
 {
+    public function mainSlide(){
+        try{
+            $rows = DB::table('slide')->orderBy('id','desc')->paginate(20);
+            return view('backend.mainSlide', ['slides' => $rows]);
+        }
+        catch(\Illuminate\Database\QueryException $ex){
+            return back()->with('errorMessage', $ex->getMessage());
+        }
+    }
+    public function insertMainSlide (Request $request){
+        try{
+            if($request) {
+                if ($request->id) {
+                    if($request->hasFile('slide')) {
+                        $image       = $request->file('slide');
+                        $filename    = time() . '.' .$image->getClientOriginalName();
+                        $image_resize = Image::make($image->getRealPath());
+                        $image_resize->resize(300, 300);
+                        $image_resize->save(public_path('asset/images/' .$filename));
+                    }
+                    $result =DB::table('slide')
+                        ->where('id', $request->id)
+                        ->update([
+                            'slide' => $filename,
+                        ]);
+                    if ($result) {
+                        return back()->with('successMessage', 'সফল্ভাবে সম্পন্ন্য হয়েছে।');
+                    } else {
+                        return back()->with('errorMessage', 'আবার চেষ্টা করুন।');
+                    }
+                }
+                else{
+                    if($request->hasFile('slide')) {
+                        $image       = $request->file('slide');
+                        $filename    = time() . '.' .$image->getClientOriginalName();
+                        $image_resize = Image::make($image->getRealPath());
+                        $image_resize->resize(1920, 1280);
+                        $image_resize->save(public_path('asset/images/' .$filename));
+                    }
+                    $result = DB::table('slide')->insert([
+                        'slide' => $filename,
+                    ]);
+                    if ($result) {
+                        return back()->with('successMessage', 'সফল্ভাবে সম্পন্ন্য হয়েছে।');
+                    } else {
+                        return back()->with('errorMessage', 'আবার চেষ্টা করুন।');
+                    }
+                }
+            }
+            else{
+                return back()->with('errorMessage', 'আবার চেষ্টা করুন।');
+            }
+        }
+        catch(\Illuminate\Database\QueryException $ex){
+            return back()->with('errorMessage', $ex->getMessage());
+        }
+    }
+    public function getMainSlideById(Request $request){
+        try{
+            $rows = DB::table('slide')
+                ->where('id', $request->id)
+                ->first();
+            return response()->json(array('data'=>$rows));
+        }
+        catch(\Illuminate\Database\QueryException $ex){
+            return response()->json(array('data'=>$ex->getMessage()));
+        }
+    }
+    public function deleteSlideList(Request $request){
+        try{
+
+            if($request->id) {
+                $result =DB::table('slide')
+                    ->where('id', $request->id)
+                    ->delete();
+                if ($result) {
+                    return back()->with('successMessage', 'Data Delete Successfully.');
+                } else {
+                    return back()->with('errorMessage', 'Please Try Again.');
+                }
+            }
+            else{
+                return back()->with('errorMessage', 'Please Try Again.');
+            }
+        }
+        catch(\Illuminate\Database\QueryException $ex){
+            return back()->with('errorMessage', $ex->getMessage());
+        }
+    }
     public function selectCategory(Request $request){
         try{
 

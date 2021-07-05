@@ -102,11 +102,11 @@
                                     @foreach($photos as $ph)
                                         @if($i==0)
                                             <div class="item active">
-                                                <img src="{{url($ph)}}"  style="width:100%;" height="170">
+                                                <img src="{{url($ph)}}"  style="width:100%;" >
                                             </div>
                                         @else
                                             <div class="item">
-                                                <img src="{{url($ph)}}"  style="width:100%; height: 170px;">
+                                                <img src="{{url($ph)}}"  style="width:100%;">
                                             </div>
                                         @endif
                                         <?php $i++; ?>

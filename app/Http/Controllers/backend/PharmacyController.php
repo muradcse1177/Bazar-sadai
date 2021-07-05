@@ -290,7 +290,7 @@ class PharmacyController extends Controller
         $customerName = $user->name;
         Mail::send('backend.pharmacy.medicineOrderEmailFormat', $data, function($message) use($email,$customerName) {
             $message->to($email, $customerName)->subject('Medicine Order Request');
-            $message->from('support@bazar-sadai.com','Bazar-sadai.com');
+            $message->from('hello@bazar-sadai.com','Bazar-sadai.com');
         });
         if (Mail::failures()) {
             return back()->with('errorMessage', 'আবার চেষ্টা করুন।');
