@@ -364,6 +364,9 @@ Route::group(['middleware' => ['adminUser']], function () {
     Route::post('insertTourBooking2', 'backend\ToursController@insertTourBooking2');
     Route::post('getTourBooking2ListById', 'backend\ToursController@getTourBooking2ListById');
     Route::post('deleteTourBookingList', 'backend\ToursController@deleteTourBookingList');
+    //sms
+    Route::get('sms', 'backend\SmsController@sms');
+    Route::post('smsSend', 'backend\SmsController@smsSend');
 });
 Route::group(['middleware' => ['buyer']], function () {
     Route::get('profile', 'frontend\AuthController@profile');

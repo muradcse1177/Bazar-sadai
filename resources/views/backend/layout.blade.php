@@ -794,6 +794,11 @@
                                 <i class="fa fa-bandcamp"></i> <span>ক্যাটেগরি </span>
                             </a>
                         </li>
+                        <li class="@yield('sms')">
+                            <a href ="{{ url('sms') }}">
+                                <i class="fa fa-envelope-square"></i> <span>এসএমএস </span>
+                            </a>
+                        </li>
                         <li class="@yield('subCatLiAdd')">
                             <a href ="{{ url('subcategory') }}">
                                 <i class="fa fa-bandcamp"></i> <span> সাব ক্যাটেগরি </span>
