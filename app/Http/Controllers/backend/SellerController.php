@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Session;
 
 class SellerController extends Controller
 {
@@ -183,6 +184,32 @@ class SellerController extends Controller
                     return back()->with('successMessage', 'সফল্ভাবে সম্পন্ন্য হয়েছে।');
                 } else {
                     return back()->with('errorMessage', 'আবার চেষ্টা করুন।');
+                }
+            }
+            else{
+                return back()->with('errorMessage', 'আবার চেষ্টা করুন।');
+            }
+
+        }
+        catch(\Illuminate\Database\QueryException $ex){
+            return back()->with('errorMessage', $ex->getMessage());
+        }
+    }
+    public function changeSellerProductSituation(Request $request){
+        try{
+            if($request->id) {
+                $id = explode('&',$request->id);
+                $result =DB::table('seller_product')
+                    ->where('id', $id[1])
+                    ->update([
+                        'Situation' =>  $id[0],
+                    ]);
+                if ($result) {
+                    Session::flash('successMessage', 'সফল্ভাবে সম্পন্ন্য হয়েছে।');
+                    return response()->json(array('data'=>$result));
+                } else {
+                    Session::flash('errorMessage', 'আবার চেষ্টা করুন।');
+                    return response()->json(array('data'=>$result));
                 }
             }
             else{

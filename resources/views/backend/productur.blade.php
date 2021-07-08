@@ -132,6 +132,7 @@
                             <th>পরিমান</th>
                             <th>পণ্য মালিক</th>
                             <th>স্ট্যাটাস</th>
+                            <th></th>
                             <th>এপ্রুভাল</th>
                             <th>টুল</th>
                         </tr>
@@ -150,6 +151,16 @@
                                 <td> {{$product->amount}} </td>
                                 <td> {{$product->w_phone}} </td>
                                 <td> {{$product->s_status}} </td>
+                                <td>
+                                    <div class="form-group">
+                                        <select class="form-control  situation" name="situation" style="width: 100%;" required>
+                                            <option value="On Sale&{{$product->s_id}}" @if($product->situation == 'On Sale'){{'Selected'}} @endif>On Sale</option>
+                                            <option value="Booked&{{$product->s_id}}" @if($product->situation == 'Booked'){{'Selected'}} @endif>Booked</option>
+                                            <option value="Shipped&{{$product->s_id}}" @if($product->situation == 'Shipped'){{'Selected'}} @endif>Shipped</option>
+                                            <option value="Delivered&{{$product->s_id}}" @if($product->situation == 'Delivered'){{'Selected'}} @endif>Delivered</option>
+                                        </select>
+                                    </div>
+                                </td>
                                 @if($product->approval == 1)
                                     @php
                                         $button = 'info';
@@ -286,6 +297,18 @@
             });
 
         });
+        $(".situation").change(function(){
+            var id =$(this).val();
+            $.ajax({
+                type: 'GET',
+                url: 'changeSellerProductSituation',
+                data: {id:id},
+                dataType: 'json',
+                success: function(response){
+                    location.reload();
+                }
+            });
+        });
         $(function(){
             $(document).on('click', '.edit', function(e){
                 e.preventDefault();
@@ -311,6 +334,7 @@
                 var id = $(this).data('id');
                 getRow(id);
             });
+
         });
         function getRow(id){
             $.ajax({

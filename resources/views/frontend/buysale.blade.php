@@ -102,10 +102,16 @@
                                     @foreach($photos as $ph)
                                         @if($i==0)
                                             <div class="item active">
+                                                <div class="bottom-right" style="position: absolute; top: 8px;right: 16px; color: red; width: 100px; height: 30px; background-color: #0f253c; font-size: 20px">
+                                                    <b><marquee width="100%" direction="left" height="100px">{{$product->situation}}</marquee></b>
+                                                </div>
                                                 <img src="{{url($ph)}}"  style="width:100%;" >
                                             </div>
                                         @else
-                                            <div class="item">
+                                            <div class="item" style="color: red;">
+                                                <div class="bottom-right" style="position: absolute;top: 8px;right: 16px; color: red; width: 100px; height: 30px; background-color: #0f253c; font-size: 20px">
+                                                    <b><marquee width="100%" direction="left" height="100px">{{$product->situation}}</marquee></b>
+                                                </div>
                                                 <img src="{{url($ph)}}"  style="width:100%;">
                                             </div>
                                         @endif
