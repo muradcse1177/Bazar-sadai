@@ -852,8 +852,18 @@
                                     <ul class="treeview-menu">
                                         <li class ="@yield('coachPage')"><a href="{{ url('coachPage') }}"><i class="fa fa-circle-o"></i> ট্রান্সপোর্ট</a></li>
                                         <li class ="@yield('ticketRoute')"><a href="{{ url('ticketRoute') }}"><i class="fa fa-circle-o"></i> টিকেট রুট</a></li>
+                                    </ul>
+                                </li>
+                                <li class="treeview  @yield('qourierMainLi')">
+                                    <a href="#"><i class="fa fa-circle-o"></i> কুরিয়ার
+                                        <span class="pull-right-container">
+                                      <i class="fa fa-angle-left pull-right"></i>
+                                    </span>
+                                    </a>
+                                    <ul class="treeview-menu">
                                         <li class ="@yield('courierType')"><a href="{{ url('courierType') }}"><i class="fa fa-circle-o"></i>কুরিয়ার ধরণ</a></li>
                                         <li class ="@yield('courierSettings')"><a href="{{ url('courierSettings') }}"><i class="fa fa-circle-o"></i>কুরিয়ার সেটিংস</a></li>
+                                        <li class ="@yield('agentArea')"><a href="{{ url('agentArea') }}"><i class="fa fa-circle-o"></i>এজেন্ট এরিয়া</a></li>
                                     </ul>
                                 </li>
                                 <li class="treeview  @yield('tntMainLi')">

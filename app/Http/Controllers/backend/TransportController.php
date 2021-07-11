@@ -513,4 +513,7 @@ class TransportController extends Controller
             return back()->with('errorMessage', $ex->getMessage());
         }
     }
+    public function agentArea(){
+        return view('backend.agentArea');
+    }
 }

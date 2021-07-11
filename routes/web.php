@@ -349,6 +349,7 @@ Route::group(['middleware' => ['adminUser']], function () {
     Route::post('insertCourierSettings', 'backend\TransportController@insertCourierSettings');
     Route::post('getCourierSettingList', 'backend\TransportController@getCourierSettingList');
     Route::post('deleteCourierSetting', 'backend\TransportController@deleteCourierSetting');
+    Route::get('agentArea', 'backend\TransportController@agentArea');
     // Tours & Travels
     Route::get('bookingMainAddress', 'backend\ToursController@bookingMainAddress');
     Route::post('insertMainAddress', 'backend\ToursController@insertMainAddress');

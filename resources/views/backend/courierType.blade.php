@@ -2,7 +2,7 @@
 @section('title', 'কুরিয়ার ধরণ')
 @section('page_header', 'কুরিয়ার ধরণ ব্যবস্থাপনা')
 @section('serviceMainLi','active menu-open')
-@section('transportMainLi','active menu-open')
+@section('qourierMainLi','active menu-open')
 @section('courierType','active')
 @section('content')
 
