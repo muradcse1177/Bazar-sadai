@@ -177,6 +177,8 @@ class AuthController extends Controller
         Cookie::queue(Cookie::forget('sanitary','/'));
         Cookie::queue(Cookie::forget('ac','/'));
         Cookie::queue(Cookie::forget('parlor','/'));
+        Cookie::queue(Cookie::forget('courier','/'));
+        Cookie::queue(Cookie::forget('tnt','/'));
         session()->forget('user_info');
         session()->flush();
         return redirect()->to('homepage');

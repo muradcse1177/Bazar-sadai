@@ -159,7 +159,7 @@
                 height:200px;
             }
             .carousel-inner > .item > .mainImg {
-                height:560px;
+                height:540px;
             }
         }
     </style>

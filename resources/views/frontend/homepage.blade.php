@@ -17,6 +17,19 @@
         </div>
     @endif
     <div class="row">
+{{--        <div class="col-sm-3" style="background-color: #1a2226">--}}
+{{--            @foreach($p_categories as $category)--}}
+{{--                <a href='{{ URL::to('product/'.$category->id) }}'>--}}
+{{--                    <div class='box box-solid'>--}}
+{{--                        <div class='box-body prod-body'>--}}
+{{--                            <div class="alert boxBody">--}}
+{{--                                <center><strong>{{ $category->name }}</strong></center>--}}
+{{--                            </div>--}}
+{{--                        </div>--}}
+{{--                    </div>--}}
+{{--                </a>--}}
+{{--            @endforeach--}}
+{{--        </div>--}}
         <div class="col-sm-12 mainSlide">
             <div class="card">
                 <div class="card-body cardBody pCard">

@@ -207,7 +207,7 @@ class CourierController extends Controller
                 $result =DB::table('courier_status')
                     ->where('id', $request->id)
                     ->update([
-                        'status' =>  $request->status,
+                        'status' =>  $request->statusA,
                     ]);
                 if ($result) {
                     return back()->with('successMessage', 'সফল্ভাবে সম্পন্ন্য হয়েছে।');

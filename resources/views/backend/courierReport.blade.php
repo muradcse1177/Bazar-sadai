@@ -110,7 +110,7 @@
                                 <div class="box-body">
                                     <div class="form-group">
                                         <label>স্ট্যাটাস</label>
-                                        <select class="form-control select2 status" name="status" style="width: 100%;" required>
+                                        <select class="form-control select2 statusA" name="statusA" style="width: 100%;" required>
                                             <option value="" selected>স্ট্যাটাস  নির্বাচন করুন</option>
                                             <option value="On the way">On the way</option>
                                             <option value="Delivered">Delivered</option>
@@ -200,7 +200,7 @@
                 e.preventDefault();
                 $('#statusModal').modal('show');
                 var id = $(this).data('id');
-                $('#id').val(id);
+                $('.id').val(id);
             });
             $(document).on('click', '.msg', function(e){
                 e.preventDefault();
