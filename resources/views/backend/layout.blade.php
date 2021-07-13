@@ -48,11 +48,22 @@
             padding-right: 7px;
             padding-left: 7px;
         }
+        .centered {
+            height: 100px;
+            width: 100px;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 999;
+        }
     </style>
 </head>
 <body class="hold-transition skin-blue sidebar-mini">
 <div class="wrapper">
-
+    <div  id="loading" class="loading" style="">
+        <img src="{{url('public/bs.png')}}" class="centered">
+    </div>
     <header class="main-header">
         <!-- Logo -->
         <a href="" class="logo">
@@ -951,6 +962,7 @@
         <center><strong>&copy; বাজার-সদাই, ২০২০। সার্বিক সহযোগীতায়-  <a href="https://parallaxsoft.com/">Parallax Soft Inc.</a></strong></center>
     </footer>
 </div>
+
 <!-- ./wrapper -->
 
 <!-- jQuery 3 -->
@@ -984,6 +996,16 @@
 <script src="{{url('public/asset/dist/js/demo.js')}}"></script>
 <script src="{{url('public/asset/toast/jquery.toast.js')}}"></script>
 <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<script type="text/javascript">
+    $(document).ajaxStart(function() {
+        $(".loading").show();
+    }).ajaxStop(function() {
+        $(".loading").hide();
+    });
+    $(window).on('load', function () {
+        $('#loading').hide();
+    })
+</script>
 <!-- Page script -->
 @yield('js')
 </body>

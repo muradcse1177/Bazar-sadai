@@ -162,12 +162,24 @@
                 height:540px;
             }
         }
+        .centered {
+            height: 100px;
+            width: 100px;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 999;
+        }
     </style>
     @yield('ExtCss')
 </head>
 <!-- ADD THE CLASS layout-top-nav TO REMOVE THE SIDEBAR. -->
 <body class="hold-transition skin-blue layout-top-nav">
 <div class="wrapper">
+    <div  id="loading" class="loading" style="">
+        <img src="{{url('public/bs.png')}}" class="centered">
+    </div>
     <header class="main-header">
 
         <nav class="navbar navbar-static-top navbar-fixed-top " id="mNavbar" style="background-color: darkgreen;">
@@ -516,6 +528,17 @@
         });
     }
 </script>
+<script type="text/javascript">
+    $(document).ajaxStart(function() {
+        $(".loading").show();
+    }).ajaxStop(function() {
+        $(".loading").hide();
+    });
+    $(window).on('load', function () {
+        $('#loading').hide();
+    })
+</script>
+
 @yield('js')
 </body>
 </html>

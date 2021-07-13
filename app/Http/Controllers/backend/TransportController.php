@@ -514,6 +514,109 @@ class TransportController extends Controller
         }
     }
     public function agentArea(){
-        return view('backend.agentArea');
+        $rows = DB::table('courier_agent_area')
+            ->select('*','courier_agent_area.id as c_id')
+            ->join('users','users.id','=','courier_agent_area.user_id')
+            ->Paginate(30);
+        return view('backend.agentArea', ['users' => $rows]);
+    }
+    public function insertCourierAgentArea(Request  $request){
+        try{
+            if($request) {
+                $add_part1 = $request->div_id;
+                $addressGroup = $request->addressGroup;
+                if ($addressGroup == 1) {
+                    $add_part2 = $request->disid;
+                    $add_part3 = $request->upzid;
+                    $add_part4 = $request->uniid;
+                    $add_part5 = $request->wardid;
+                }
+                if ($addressGroup == 2) {
+                    $add_part2 = $request->c_disid;
+                    $add_part3 = $request->c_upzid;
+                    $add_part4 = $request->c_uniid;
+                    $add_part5 = $request->c_wardid;
+                }
+                $row = DB::table('courier_agent_area')->where('user_id', $request->agent_id)->get();
+                if (count($row) > 0) {
+
+                    $result =DB::table('courier_agent_area')
+                        ->where('user_id', $request->agent_id)
+                        ->update([
+                            'address_group' => $request->addressGroup,
+                            'add_part1' => $add_part1,
+                            'add_part2' => $add_part2,
+                            'add_part3' => $add_part3,
+                            'add_part4' => $add_part4,
+                            'add_part5' => json_encode($add_part5),
+                        ]);
+                    if ($result) {
+                        return back()->with('successMessage', 'সফল্ভাবে সম্পন্ন্য হয়েছে।');
+                    } else {
+                        return back()->with('errorMessage', 'আবার চেষ্টা করুন।');
+                    }
+                } else {
+                    $result = DB::table('courier_agent_area')->insert([
+                        'user_id' => $request->agent_id,
+                        'address_group' => $request->addressGroup,
+                        'add_part1' => $add_part1,
+                        'add_part2' => $add_part2,
+                        'add_part3' => $add_part3,
+                        'add_part4' => $add_part4,
+                        'add_part5' => json_encode($add_part5),
+                    ]);
+                    if ($result) {
+                        return back()->with('successMessage', 'সফল্ভাবে সম্পন্ন্য হয়েছে।');
+                    } else {
+                        return back()->with('errorMessage', 'আবার চেষ্টা করুন।');
+                    }
+                }
+            }
+            else{
+                    return back()->with('errorMessage', 'আবার চেষ্টা করুন।');
+            }
+        }
+        catch(\Illuminate\Database\QueryException $ex){
+            return back()->with('errorMessage', $ex->getMessage());
+        }
+    }
+    public function getAllCourierAgent(Request  $request){
+        $rows = DB::table('users')
+            ->where('user_type',33)
+            ->orderBy('id','desc')
+            ->get();
+        return response()->json(array('data'=>$rows));
+    }
+    public function deleteAgentArea (Request $request){
+        try{
+            if($request->id) {
+                $result =DB::table('courier_agent_area')
+                    ->where('id', $request->id)
+                    ->delete();
+                if ($result) {
+                    return back()->with('successMessage', 'সফল্ভাবে সম্পন্ন্য হয়েছে।');
+                } else {
+                    return back()->with('errorMessage', 'আবার চেষ্টা করুন।');
+                }
+            }
+            else{
+                return back()->with('errorMessage', 'আবার চেষ্টা করুন।');
+            }
+
+        }
+        catch(\Illuminate\Database\QueryException $ex){
+            return back()->with('errorMessage', $ex->getMessage());
+        }
+    }
+    public function getCourierAgentArea(Request $request){
+        try{
+            $rows = DB::table('courier_agent_area')
+                ->where('id', $request->id)
+                ->first();
+            return response()->json(array('data'=>$rows));
+        }
+        catch(\Illuminate\Database\QueryException $ex){
+            return response()->json(array('data'=>$ex->getMessage()));
+        }
     }
 }

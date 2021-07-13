@@ -350,6 +350,10 @@ Route::group(['middleware' => ['adminUser']], function () {
     Route::post('getCourierSettingList', 'backend\TransportController@getCourierSettingList');
     Route::post('deleteCourierSetting', 'backend\TransportController@deleteCourierSetting');
     Route::get('agentArea', 'backend\TransportController@agentArea');
+    Route::post('insertCourierAgentArea', 'backend\TransportController@insertCourierAgentArea');
+    Route::get('getAllCourierAgent', 'backend\TransportController@getAllCourierAgent');
+    Route::post('getCourierAgentArea', 'backend\TransportController@getCourierAgentArea');
+    Route::post('deleteAgentArea', 'backend\TransportController@deleteAgentArea');
     // Tours & Travels
     Route::get('bookingMainAddress', 'backend\ToursController@bookingMainAddress');
     Route::post('insertMainAddress', 'backend\ToursController@insertMainAddress');

@@ -571,18 +571,21 @@ class TransportController extends Controller
             $add_part2 = $request->disid;
             $add_part3 = $request->upzid;
             $add_part4 = $request->uniid;
+            $add_part5 = $request->wardid;
         }
         if ($addressGroup == 2) {
             $add_part1 = $request->div_id;
             $add_part2 = $request->c_disid;
             $add_part3 = $request->c_upzid;
             $add_part4 = $request->c_uniid;
+            $add_part5 = $request->c_wardid;
         }
         if ($addressGroup == 3) {
             $add_part1 = $request->naming1;
             $add_part2 = $request->naming2;
             $add_part3 = $request->naming3;
             $add_part4 = $request->naming4;
+            $add_part5 = "";
         }
         $rows = DB::table('service_area')
             ->where('user_id', Cookie::get('user_id'))
@@ -596,6 +599,7 @@ class TransportController extends Controller
                     'add_part2' => $add_part2,
                     'add_part3' => $add_part3,
                     'add_part4' => $add_part4,
+                    'add_part5' => $add_part5,
                 ]);
             if ($result) {
                 return redirect('courier')->with('successMessage', 'সফল্ভাবে সম্পন্ন্য হয়েছে।');
@@ -611,6 +615,7 @@ class TransportController extends Controller
                 'add_part2' => $add_part2,
                 'add_part3' => $add_part3,
                 'add_part4' => $add_part4,
+                'add_part5' => $add_part5,
             ]);
             if ($result) {
                 return redirect('courier')->with('successMessage', 'সফল্ভাবে সম্পন্ন্য হয়েছে।');
@@ -684,25 +689,27 @@ class TransportController extends Controller
             $f_country =$request->f_country;
         }
         //common
-        $user_info = DB::table('users')
+        $user_info = DB::table('service_area')
             ->select('*')
-            ->where('id', Cookie::get('user_id'))
+            ->where('user_id', Cookie::get('user_id'))
             ->first();
-        $working_status = 1;
-        $user_type = 33;
-        $delivery_man = DB::table('users')
-            ->where('user_type',  $user_type)
-            ->where('address_type',  $user_info->address_type)
+
+        $courier_agent = DB::table('courier_agent_area')
+            ->where('address_group',  $user_info->address_type)
             ->where('add_part1',  $user_info->add_part1)
             ->where('add_part2',  $user_info->add_part2)
             ->where('add_part3',  $user_info->add_part3)
-            ->where('working_status',  $working_status)
-            ->where('status',  1)
+            ->where('add_part4',  $user_info->add_part4)
+            ->whereJsonContains('add_part5', ''.$user_info->add_part5.'')
             ->first();
-
+        $delivery_man = DB::table('users')
+            ->select('*')
+            ->where('id', $courier_agent->user_id)
+            ->first();
         if(!empty($delivery_man)){
             Session::put('d_name', $delivery_man->name);
             Session::put('d_phone', $delivery_man->phone);
+            Session::put('recp_phone',  $request->phone);
             $shurjopay_service = new ShurjopayService();
             $tx_id = $shurjopay_service->generateTxId();
 
@@ -725,6 +732,7 @@ class TransportController extends Controller
                 'pickup' => $request->bookingPlace,
                 'pickup_address' => $request->pickupAddress,
                 'delivery_id' => $delivery_man->id,
+                'recp_phone' => $request->phone,
             ]);
             if($result){
                 $lastId = DB::getPdo()->lastInsertId();
@@ -749,6 +757,7 @@ class TransportController extends Controller
     public function insertCourierPaymentInfo(Request $request){
         $name = Session::get('d_name');
         $phone =Session::get('d_phone');
+        $recp_phone =Session::get('recp_phone');
         $lastId =Session::get('lastId');
         $status = $request->status;
         $type = 'Courier';
@@ -761,7 +770,17 @@ class TransportController extends Controller
         $sp_code_des = $request->sp_code_des;
         $sp_payment_option = $request->sp_payment_option;
         $date = date('Y-m-d');
-        if($bank_tx_id){
+        if($status == 'Failed'){
+            $c_user = DB::table('courier_booking')->where('user_id', Cookie::get('user_id'))->orderBy('id','desc')->first();
+            $c_delete = DB::table('courier_booking')->where('id', $c_user->id)->delete();
+            $c_delete = DB::table('courier_status')->where('c_id', $lastId)->delete();
+            $c_delete = DB::table('courier_status2')->where('m_id', $lastId)->delete();
+            session()->forget('d_name');
+            session()->forget('d_phone');
+            session()->forget('lastId');
+            return redirect()->to('courier')->with('errorMessage', 'আবার চেষ্টা করুন।'  );
+        }
+        else{
             $result = DB::table('payment_info')->insert([
                 'user_id' => Cookie::get('user_id'),
                 'status' => $status,
@@ -775,20 +794,35 @@ class TransportController extends Controller
                 'sp_code_des' => $sp_code_des,
                 'sp_payment_option' => $sp_payment_option,
             ]);
+
+            $url = "http://66.45.237.70/api.php";
+            $number = $recp_phone;
+            $text='Dear Customer, A parcel is booked at Bazar-Sadai.com today. You will received it as soon as possible. Thanks.';
+            $data= array(
+                'username'=>"01929877307",
+                'password'=>"murad1107053",
+                'number'=>"$number",
+                'message'=>"$text"
+            );
+
+            $ch = curl_init(); // Initialize cURL
+            curl_setopt($ch, CURLOPT_URL,$url);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($data));
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            $smsresult = curl_exec($ch);
+            $p = explode("|",$smsresult);
+            $sendstatus = $p[0];
+            if($sendstatus) {
+                $result = DB::table('smslog')->insert([
+                    'number' => $number,
+                    'msg' => $text
+                ]);
+            }
             session()->forget('d_name');
             session()->forget('d_phone');
+            session()->forget('recp_phone');
             session()->forget('lastId');
             return redirect()->to('myCourierOrder')->with('successMessage', 'সফল্ভাবে অর্ডার সম্পন্ন্য হয়েছে। '.$name.' আপনার অর্ডার এর দায়িত্বে আছে। প্রয়োজনে '.$phone.' কল করুন।'  );
-        }
-        else{
-            $c_user = DB::table('courier_booking')->where('user_id', Cookie::get('user_id'))->orderBy('id','desc')->first();
-            $c_delete = DB::table('courier_booking')->where('id', $c_user->id)->delete();
-            $c_delete = DB::table('courier_status')->where('c_id', $lastId)->delete();
-            $c_delete = DB::table('courier_status2')->where('m_id', $lastId)->delete();
-            session()->forget('d_name');
-            session()->forget('d_phone');
-            session()->forget('lastId');
-            return redirect()->to('courier')->with('errorMessage', 'আবার চেষ্টা করুন।'  );
         }
     }
 }

@@ -61,6 +61,12 @@
                             <option value="" selected>ইউনিয়ন  নির্বাচন করুন</option>
                         </select>
                     </div>
+                    <div class="form-group">
+                        <label for="uni_name" >ওয়ার্ড</label>
+                        <select id="ward_name" name ="wardid" class="form-control select2 ward_name"  style="width: 100%;" required="required">
+                            <option value="" selected>ওয়ার্ড  নির্বাচন করুন</option>
+                        </select>
+                    </div>
                 </div>
                 <div id= "cityGroupId" style="display: none;">
                     <div class="form-group">
@@ -79,6 +85,12 @@
                         <label for="c_uni_name" >থানা</label>
                         <select id="c_uni_name" name ="c_uniid" class="form-control select2 thana_name" style="width: 100%;" required="required">
                             <option value="" selected>থানা  নির্বাচন করুন</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="uni_name" >ওয়ার্ড</label>
+                        <select id="c_ward_name" name ="c_wardid" class="form-control select2 c_ward_name"   style=" width: 100%;" required="required">
+                            <option value="" selected>ওয়ার্ড  নির্বাচন করুন</option>
                         </select>
                     </div>
                 </div>
@@ -257,6 +269,26 @@
                 });
             });
             $(".uni_name").change(function(){
+                var id =$(this).val();
+                $('.ward_name').find('option:not(:first)').remove();
+                $.ajax({
+                    type: 'GET',
+                    url: 'getWardListAll',
+                    data: {id:id},
+                    dataType: 'json',
+                    success: function(response){
+                        var data = response.data;
+                        var len = data.length;
+                        for( var i = 0; i<len; i++){
+                            var id = data[i]['id'];
+                            var name = data[i]['name'];
+                            $(".ward_name").append("<option value='"+id+"'>"+name+"</option>");
+                        }
+                    }
+                });
+            });
+
+            $(".uni_name").change(function(){
                 $(".serviceArea").show();
             });
             $(".div_name").change(function(){
@@ -312,6 +344,25 @@
                             var id = data[i]['id'];
                             var name = data[i]['name'];
                             $(".thana_name").append("<option value='"+id+"'>"+name+"</option>");
+                        }
+                    }
+                });
+            });
+            $(".thana_name").change(function(){
+                var id =$(this).val();
+                $('.c_ward_name').find('option:not(:first)').remove();
+                $.ajax({
+                    type: 'GET',
+                    url: 'getC_wardListAll',
+                    data: {id:id},
+                    dataType: 'json',
+                    success: function(response){
+                        var data = response.data;
+                        var len = data.length;
+                        for( var i = 0; i<len; i++){
+                            var id = data[i]['id'];
+                            var name = data[i]['name'];
+                            $(".c_ward_name").append("<option value='"+id+"'>"+name+"</option>");
                         }
                     }
                 });

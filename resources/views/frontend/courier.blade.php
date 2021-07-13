@@ -167,7 +167,12 @@
                         </div>
                     </div>
                     <div class="form-group">
+                        <label class="form-check-label" for="">ঠিকানা</label>
                         <input type="text" class="form-control" name="address" placeholder="ঠিকানা (Address)"  required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-check-label" for="">প্রাপ্ত ব্যাক্তির ফোন নম্বর</label>
+                        <input type="tel" class="form-control" name="phone"  placeholder="প্রাপ্ত ব্যাক্তির ফোন নম্বর"  required>
                     </div>
                     <div class="form-check">
                         <div>
@@ -365,7 +370,8 @@
             $('.upz_name').prop('required',false);
             $('.uni_name').prop('required',false);
             $('.ward_name').prop('required',false);
-        });$(document).ready(function(){
+        });
+        $(document).ready(function(){
             $.ajax({
                 url: 'getAllDivision',
                 type: "GET",
